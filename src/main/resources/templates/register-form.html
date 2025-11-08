@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Register Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/buttons.css}">
+    <link rel="stylesheet" th:href="@{/css/dropdown.css}">
+    <link rel="stylesheet" th:href="@{/css/form.css}">
+    <link rel="stylesheet" th:href="@{/css/inputs.css}">
+</head>
+<body>
+<div class="background-section">
+    <div class="form-container">
+        <form>
+            <div class="row mb-3 gy-3">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" placeholder="First Name" name="first_name" required>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" placeholder="Last Name" name="last_name" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <input type="text" class="form-control" placeholder="Username" name="username" required>
+            </div>
+            <div class="mb-3">
+                <input type="email" class="form-control" placeholder="Email" name="email" required>
+            </div>
+
+            <div class="row mb-3 g-2">
+                <div class="col">
+                    <input type="number" class="form-control" placeholder="Age" name="age" min="10" max="120"
+                           required>
+                </div>
+
+                <div class="col">
+                    <div class="gender-select">
+                        <button type="button" class="gender-button w-100">
+                            <span class="d-none d-sm-inline">Select Gender</span>
+                            <span class="d-inline d-sm-none">Gender</span>
+                        </button>
+                        <div class="gender-options">
+                            <input type="radio" id="male" name="gender" value="Male">
+                            <label for="male">Male</label>
+                            <input type="radio" id="female" name="gender" value="Female">
+                            <label for="female">Female</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <input type="number" class="form-control" placeholder="Weight (kg)" name="weight" min="20"
+                           max="300" step="0.1" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <input type="password" class="form-control" placeholder="Password" name="password" required>
+            </div>
+            <div class="mb-3">
+                <input type="password" class="form-control" placeholder="Confirm Password" name="confirm_password"
+                       required>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-md-5">
+                    <button type="submit" class="btn btn-theme w-100">Register</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/dropdown.js}"></script>
+</body>
+</html>

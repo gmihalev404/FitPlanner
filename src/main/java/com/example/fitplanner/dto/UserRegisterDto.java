@@ -1,18 +1,13 @@
-package com.example.fitplanner.entity.model;
+package com.example.fitplanner.dto;
 
 import com.example.fitplanner.entity.enums.Gender;
-import com.example.fitplanner.entity.enums.Role;
-import jakarta.persistence.*;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.*;
-import lombok.Data;
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import org.springframework.stereotype.Component;
 
-
-@Entity
-@Data
-public class User extends BaseEntity{
+@Component
+public class UserRegisterDto {
     @NotBlank
     @Size(min = 2, max = 24)
     private String firstName;
@@ -24,9 +19,6 @@ public class User extends BaseEntity{
     @NotBlank
     @Size(max = 64)
     private String username;
-
-    @Enumerated(EnumType.STRING)
-    private Role role;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
@@ -49,14 +41,4 @@ public class User extends BaseEntity{
     @NotBlank
     @Size(min = 4)
     private String password;
-
-    private LocalDate createdAt = LocalDate.now();
-
-    private LocalDate lastUpdated = LocalDate.now();
-
-    @OneToMany(mappedBy = "user")
-    private Set<Program> programs = new HashSet<>();
-
-    @OneToMany(mappedBy = "user")
-    private Set<ExerciseProgress> completedExercises = new HashSet<>();
 }

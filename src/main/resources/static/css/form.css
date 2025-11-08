@@ -1,0 +1,7 @@
+.form-container {
+    background-color: rgba(74, 78, 78, 0.7);
+    border-radius: 10px;
+    padding: 30px;
+    width: 100%;
+    max-width: 600px;
+}

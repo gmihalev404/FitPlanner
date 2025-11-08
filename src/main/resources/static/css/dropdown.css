@@ -1,0 +1,64 @@
+.gender-select {
+    position: relative;
+    width: 100%;
+}
+
+.gender-button {
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    border-radius: 10px;
+    background-color: rgb(127, 135, 135);
+    color: #000;
+    border: 1px solid rgb(127, 135, 135);
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.gender-button:focus {
+    outline: none;
+    background-color: rgb(127, 135, 135);
+}
+
+.gender-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: rgb(127, 135, 135);
+    border-radius: 10px;
+    margin-top: 5px;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    z-index: 10;
+}
+
+.gender-select.open .gender-options {
+    max-height: 500px;
+    opacity: 1;
+}
+
+.gender-options label {
+    display: block;
+    padding: 8px 12px;
+    cursor: pointer;
+    color: #000;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.gender-options label:hover,
+.gender-options label:focus {
+    background-color: #888;
+    color: white;
+}
+
+input[type="radio"] {
+    display: none;
+}
+
+input[type="radio"]:checked+label {
+    background-color: #2c343c;
+    color: white;
+}

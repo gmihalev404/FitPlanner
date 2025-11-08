@@ -1,6 +1,7 @@
 package com.example.fitplanner.entity.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -12,10 +13,13 @@ import java.time.LocalDate;
 @Data
 public class ExerciseProgress extends BaseEntity{
     @ManyToOne
-    private User user;
+    private WorkoutSession workoutSession;
 
     @ManyToOne
     private Exercise exercise;
+
+    @ManyToOne
+    private User user;
 
     @Min(0)
     @Max(100_000)
@@ -24,6 +28,10 @@ public class ExerciseProgress extends BaseEntity{
     @Min(0)
     @Max(100)
     private Integer repetitions;
+
+    @Min(0)
+    @Max(10)
+    private Integer sets;
 
     @Min(0)
     @Max(500)
@@ -37,5 +45,5 @@ public class ExerciseProgress extends BaseEntity{
 
     private Boolean suggestedIncrease = false;
 
-    private Boolean completed;
+    private Boolean completed = false;
 }

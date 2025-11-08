@@ -1,0 +1,36 @@
+body {
+    margin: 0;
+    height: 100vh;
+    background-color: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.background-section {
+    background-image: url('/images/background.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: auto;
+}
+
+@media (max-width: 770px) {
+    .background-section {
+        background-image: none;
+    }
+}
+
+input:-webkit-autofill {
+    background-color: rgb(127, 135, 135) !important;
+    /* same as your input */
+    color: #000 !important;
+    /* text color */
+    transition: background-color 5000s ease-in-out 0s;
+    /* prevents white flash */
+}
