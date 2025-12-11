@@ -2,51 +2,91 @@ package com.example.fitplanner.controller;
 
 import com.example.fitplanner.dto.UserLoginDto;
 import com.example.fitplanner.dto.UserRegisterDto;
+import com.example.fitplanner.dto.UserDto;
 import com.example.fitplanner.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class AuthenticationController {
+
+    private final UserService userService;
+
     @Autowired
-    private UserService userService;
+    public AuthenticationController(UserService userService) {
+        this.userService = userService;
+    }
+
     @GetMapping("/register")
-    public String getRegister(Model model) {
+    public String showRegisterForm(HttpSession session, Model model) {
         model.addAttribute("registerDto", new UserRegisterDto());
+        addThemeAndLanguage(session, model);
         return "register-form";
     }
 
     @PostMapping("/register")
-    public String postRegister(@Valid @ModelAttribute("registerDto") UserRegisterDto userRegisterDto,
-                               BindingResult bindingResult){
-        userService.validateUserRegister(userRegisterDto, bindingResult);
-        if(bindingResult.hasErrors()) {
+    public String handleRegister(
+            @Valid @ModelAttribute("registerDto") UserRegisterDto registerDto,
+            BindingResult bindingResult,
+            HttpSession session,
+            Model model) {
+
+        userService.validateUserRegister(registerDto, bindingResult);
+        if (bindingResult.hasErrors()) {
+            addThemeAndLanguage(session, model);
             return "register-form";
         }
 
-        userService.save(userRegisterDto);
-        return "redirect:/home";
+        userService.save(registerDto);
+        Long userId = userService.getIdByUsernameOrEmail(registerDto.getUsername());
+        UserDto userDto = userService.getById(userId);
+
+        session.setAttribute("loggedInUser", userDto);
+        session.setAttribute("theme", userDto.getTheme());
+        session.setAttribute("language", userDto.getLanguage());
+
+        return "redirect:/home/" + userId;
     }
 
     @GetMapping("/login")
-    public String getLogin(Model model) {
+    public String showLoginForm(HttpSession session, Model model) {
         model.addAttribute("loginDto", new UserLoginDto());
+        addThemeAndLanguage(session, model);
         return "login-form";
     }
 
     @PostMapping("/login")
-    public String postRegister(@Valid @ModelAttribute("loginDto") UserLoginDto userLoginDto,
-                               BindingResult bindingResult){
-        userService.validateUserLogin(userLoginDto, bindingResult);
-        if(bindingResult.hasErrors()) {
+    public String handleLogin(
+            @Valid @ModelAttribute("loginDto") UserLoginDto loginDto,
+            BindingResult bindingResult,
+            HttpSession session,
+            Model model) {
+
+        userService.validateUserLogin(loginDto, bindingResult);
+        if (bindingResult.hasErrors()) {
+            addThemeAndLanguage(session, model);
             return "login-form";
         }
-        return "redirect:/home";
+
+        Long userId = userService.getIdByUsernameOrEmail(loginDto.getUsernameOrEmail());
+        UserDto userDto = userService.getById(userId);
+
+        session.setAttribute("loggedInUser", userDto);
+        session.setAttribute("theme", userDto.getTheme());
+        session.setAttribute("language", userDto.getLanguage());
+
+        return "redirect:/home/" + userId;
+    }
+
+    private void addThemeAndLanguage(HttpSession session, Model model) {
+        String theme = (String) session.getAttribute("theme");
+        String language = (String) session.getAttribute("language");
+        model.addAttribute("theme", theme != null ? theme : "dark");
+        model.addAttribute("language", language != null ? language : "en");
     }
 }

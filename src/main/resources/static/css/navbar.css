@@ -1,5 +1,4 @@
 a {
-    color: rgb(172, 165, 185);
     font-size: 30px;
     text-decoration: none;
 }
@@ -13,12 +12,14 @@ a {
     max-height: 35px;
 }
 
-.navbar{
+.navbar {
+    position: fixed;
+    top: 0;
     width: 100%;
-    background: rgba(11, 14, 19);
-    /*display: flex;*/
+    display: flex;
     padding-left: 8%;
     padding-right: 8%;
+    z-index: 9999;
 }
 
 .navbar-collapse {
@@ -32,7 +33,6 @@ a {
         top: 100%;
         left: 0;
         width: 100%;
-        background-color: rgba(11, 14, 19, 0.85);
         z-index: 9999;
     }
 
@@ -40,7 +40,8 @@ a {
         flex-direction: column;
     }
 
-    .nav-item{
-        padding-left: 8%;
+    .nav-item {
+        padding-left: 8% !important;
+        margin-block-end: 3px !important;
     }
 }

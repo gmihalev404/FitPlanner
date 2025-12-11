@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-
 @Entity
 @Data
 public class User extends BaseEntity{
@@ -27,9 +26,11 @@ public class User extends BaseEntity{
     private String username;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Gender gender;
 
     @Min(10)
@@ -41,6 +42,7 @@ public class User extends BaseEntity{
     private Double weight;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Difficulty experience;
 
     @Email
@@ -59,4 +61,12 @@ public class User extends BaseEntity{
 
     @OneToMany(mappedBy = "user")
     private Set<ExerciseProgress> completedExercises = new HashSet<>();
+
+    private String profileImageUrl;
+
+    @Column(nullable = false)
+    private String theme = "dark";
+
+    @Column(nullable = false)
+    private String language = "en";
 }

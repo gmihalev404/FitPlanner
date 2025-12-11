@@ -1,97 +1,103 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:class="${session.theme != null ? session.theme : 'dark'}"
+      th:lang="${session.language != null ? session.language : 'en'}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Register Form</title>
+    <title th:text="#{register.heading}">Register Page</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/dark-theme.css}">
+    <link rel="stylesheet" th:href="@{/css/light-theme.css}">
     <link rel="stylesheet" th:href="@{/css/button.css}">
     <link rel="stylesheet" th:href="@{/css/dropdown.css}">
-    <link rel="stylesheet" th:href="@{/css/form.css}">
+    <link rel="stylesheet" th:href="@{/css/container.css}">
     <link rel="stylesheet" th:href="@{/css/input.css}">
-    <link rel="stylesheet" th:href="@{/css/navbar.css}">
 </head>
 <body>
 <div th:replace="fragment/navbar.html::navbar"></div>
 <div class="background-section">
     <div class="form-container container">
         <form th:action="@{/register}" th:object="${registerDto}" method="post">
-            <h1 class="container-heading">Register Form</h1>
+            <h1 class="container-heading" th:text="#{register.heading}">Sign up</h1>
             <div class="row mb-3 gy-3">
                 <div class="col-md-6">
-                    <input th:field="*{firstName}" type="text" class="form-control" placeholder="First Name" required>
+                    <input th:field="*{firstName}" type="text" class="form-control" th:placeholder="#{register.firstName}" required>
                     <div th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="text-danger fs-6"></div>
                 </div>
                 <div class="col-md-6">
-                    <input th:field="*{lastName}" type="text" class="form-control" placeholder="Last Name" required>
+                    <input th:field="*{lastName}" type="text" class="form-control" th:placeholder="#{register.lastName}" required>
                     <div th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="text-danger"></div>
                 </div>
             </div>
             <div class="mb-3">
-                <input th:field="*{username}" type="text" class="form-control" placeholder="Username" required>
+                <input th:field="*{username}" type="text" class="form-control" th:placeholder="#{register.username}" required>
                 <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="text-danger"></div>
             </div>
             <div class="mb-3">
-                <input th:field="*{email}" type="email" class="form-control" placeholder="Email" required>
+                <input th:field="*{email}" type="email" class="form-control" th:placeholder="#{register.email}" required>
                 <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></div>
             </div>
             <div class="row mb-3 g-3">
                 <div class="col-6 col-md-6 col-lg-3">
-                    <input th:field="*{age}" type="number" class="form-control" placeholder="Age" min="10" max="120" required>
+                    <input th:field="*{age}" type="number" class="form-control" th:placeholder="#{register.age}" min="10" max="120" required>
                     <div th:if="${#fields.hasErrors('age')}" th:errors="*{age}" class="text-danger"></div>
                 </div>
                 <div class="col-6 col-md-6 col-lg-3">
-                    <input th:field="*{weight}" type="number" class="form-control" placeholder="Weight (kg)" min="20" max="300" step="0.1" required>
+                    <input th:field="*{weight}" type="number" class="form-control" th:placeholder="#{register.weight}" min="20" max="300" step="0.1" required>
                     <div th:if="${#fields.hasErrors('weight')}" th:errors="*{weight}" class="text-danger"></div>
                 </div>
                 <div class="col-6 col-md-6 col-lg-3">
                     <div class="gender-select">
-                        <button type="button" class="gender-button">Gender</button>
+                        <button type="button" class="gender-button" th:text="#{register.gender}">Gender</button>
                         <div class="gender-options">
                             <input th:field="*{gender}" type="radio" id="male" name="gender" value="MALE">
-                            <label for="male">Male</label>
+                            <label for="male" th:text="#{register.male}">Male</label>
                             <input th:field="*{gender}" type="radio" id="female" name="gender" value="FEMALE">
-                            <label for="female">Female</label>
+                            <label for="female" th:text="#{register.female}">Female</label>
                         </div>
                     </div>
                     <div th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}" class="text-danger"></div>
                 </div>
                 <div class="col-6 col-md-6 col-lg-3">
                     <div class="experience-select">
-                        <button type="button" class="experience-button">Experience</button>
+                        <button type="button" class="experience-button" th:text="#{register.experience}">Experience</button>
                         <div class="experience-options">
                             <input th:field="*{experience}" type="radio" id="exp-novice" name="experience" value="NOVICE">
-                            <label for="exp-novice">Novice</label>
+                            <label for="exp-novice" th:text="#{register.novice}">Novice</label>
                             <input th:field="*{experience}" type="radio" id="exp-beginner" name="experience" value="BEGINNER">
-                            <label for="exp-beginner">Beginner</label>
+                            <label for="exp-beginner" th:text="#{register.beginner}">Beginner</label>
                             <input th:field="*{experience}" type="radio" id="exp-medium" name="experience" value="MEDIUM">
-                            <label for="exp-medium">Medium</label>
+                            <label for="exp-medium" th:text="#{register.medium}">Medium</label>
                             <input th:field="*{experience}" type="radio" id="exp-advanced" name="experience" value="ADVANCED">
-                            <label for="exp-advanced">Advanced</label>
+                            <label for="exp-advanced" th:text="#{register.advanced}">Advanced</label>
                             <input th:field="*{experience}" type="radio" id="exp-master" name="experience" value="MASTER">
-                            <label for="exp-master">Master</label>
+                            <label for="exp-master" th:text="#{register.master}">Master</label>
                         </div>
                     </div>
                     <div th:if="${#fields.hasErrors('experience')}" th:errors="*{experience}" class="text-danger"></div>
                 </div>
             </div>
             <div class="mb-3">
-                <input th:field="*{password}" type="password" class="form-control" placeholder="Password" required>
+                <input th:field="*{password}" type="password" class="form-control" th:placeholder="#{register.password}" required>
                 <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></div>
             </div>
             <div class="mb-3">
-                <input th:field="*{confirmPassword}" type="password" class="form-control" placeholder="Confirm Password" required>
+                <input th:field="*{confirmPassword}" type="password" class="form-control" th:placeholder="#{register.confirmPassword}" required>
                 <div th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}" class="text-danger"></div>
             </div>
             <div class="row justify-content-center">
                 <div class="col-md-5">
-                    <button type="submit" class="btn btn-theme w-100">Register</button>
+                    <button type="submit" class="btn w-100" th:text="#{register.submit}">Register</button>
                 </div>
             </div>
         </form>
     </div>
 </div>
+<footer th:replace="fragment/footer.html::footer"></footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/dropdown.js}"></script>
 </body>

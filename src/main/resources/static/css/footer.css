@@ -1,0 +1,12 @@
+footer p {
+    display: inline;
+}
+
+footer * {
+    font-size: 14px;
+}
+
+footer {
+    margin-top: 3%;
+    padding: 2%;
+}

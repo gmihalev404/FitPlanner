@@ -1,16 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <nav th:fragment="navbar" class="navbar navbar-dark navbar-expand-md w-100">
   <div class="container-fluid">
 
     <a href="#" class="navbar-brand">
-      <img th:src="@{'/images/logo.png'}" alt="" class="logo">
+      <img th:src="@{'/images/logo.png'}" class="logo">
     </a>
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
@@ -18,16 +17,38 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarContent">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
-        <li class="nav-item"><a class="nav-link" th:href="@{/login}">Login</a></li>
-        <li class="nav-item"><a class="nav-link" th:href="@{/register}">Register</a></li>
-        <li class="nav-item"><a class="nav-link" th:href="@{/about}">About</a></li>
+
+      <!-- Guest -->
+      <ul th:if="${userDto == null}" class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" th:href="@{/home}" th:text="#{nav.home}"></a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/login}" th:text="#{nav.signin}"></a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/register}" th:text="#{nav.signup}"></a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/about}" th:text="#{nav.about}"></a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/settings}" th:text="#{nav.settings}"></a></li>
+      </ul>
+
+      <!-- Client -->
+      <ul th:if="${userDto != null and userDto.role.name() == 'CLIENT'}" class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" th:href="@{/home/{id}(id=${userDto.id})}" th:text="#{nav.home}"></a></li>
+        <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.create}"></a></li>
+        <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.stats}"></a></li>
+        <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.myworkouts}"></a></li>
+        <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.search}"></a></li>
+        <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.logout}"></a></li>
+        <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.settings}"></a></li>
+      </ul>
+
+      <!-- Trainer -->
+      <ul th:if="${userDto != null and userDto.role.name() == 'TRAINER'}" class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" th:href="@{/home/{id}(id=${userDto.id})}" th:text="#{nav.home}"></a></li>
+        <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.create}"></a></li>
+        <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.trainees}"></a></li>
+        <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.myworkouts}"></a></li>
+        <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.search}"></a></li>
+        <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.updateprofile}"></a></li>
       </ul>
     </div>
-
   </div>
 </nav>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
