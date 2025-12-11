@@ -7,9 +7,11 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
+
 @Component
 @Data
-public class UserRegisterDto {
+public class UserRegisterDto implements Serializable {
     @NotBlank
     @Size(min = 2, message = "First name MUST be at least 2 characters")
     @Size(max = 24, message = "First name MUST be at most 24 characters")

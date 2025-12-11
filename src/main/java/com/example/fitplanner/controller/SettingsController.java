@@ -27,10 +27,33 @@ public class SettingsController {
 
     @GetMapping("/settings")
     public String getSettings(HttpSession session, Model model) {
+        UserDto userDto = (UserDto) session.getAttribute("loggedInUser");
         String theme = (String) session.getAttribute("theme");
         String language = (String) session.getAttribute("language");
+
         model.addAttribute("theme", theme != null ? theme : "dark");
         model.addAttribute("language", language != null ? language : "en");
+        model.addAttribute("userDto", userDto);
+
+        return "settings";
+    }
+
+    @GetMapping("/settings/{id}")
+    public String getSettingsById(@PathVariable Long id, HttpSession session, Model model) {
+        UserDto userDto = userService.getById(id);
+        if (userDto != null) {
+            session.setAttribute("theme", userDto.getTheme() != null ? userDto.getTheme() : "dark");
+            session.setAttribute("language", userDto.getLanguage() != null ? userDto.getLanguage() : "en");
+        } else {
+            session.setAttribute("theme", "dark");
+            session.setAttribute("language", "en");
+        }
+        session.setAttribute("loggedInUser", userDto);
+
+        model.addAttribute("theme", session.getAttribute("theme"));
+        model.addAttribute("language", session.getAttribute("language"));
+        model.addAttribute("userDto", userDto);
+
         return "settings";
     }
 
@@ -54,6 +77,31 @@ public class SettingsController {
         return "redirect:/settings";
     }
 
+    @PostMapping("/settings/language/{id}")
+    public String changeLanguageById(@PathVariable Long id,
+                                     @RequestParam String language,
+                                     HttpSession session,
+                                     HttpServletRequest request,
+                                     HttpServletResponse response) {
+        if (!language.matches("en|bg|es|fr")) language = "en";
+
+        UserDto userDto = userService.getById(id);
+        if (userDto != null) {
+            userDto.setLanguage(language);
+            userService.updateUserSettings(userDto);
+
+            UserDto currentUser = (UserDto) session.getAttribute("loggedInUser");
+            if (currentUser != null && currentUser.getId().equals(id)) {
+                session.setAttribute("language", language);
+                session.setAttribute("loggedInUser", userDto);
+                localeResolver.setLocale(request, response, new Locale(language));
+            }
+        }
+        session.setAttribute("loggedInUser", userDto);
+
+        return "redirect:/settings";
+    }
+
     @PostMapping("/settings/theme")
     public String changeTheme(@RequestParam String theme, HttpSession session) {
         if (!theme.matches("light|dark")) theme = "dark";
@@ -66,6 +114,26 @@ public class SettingsController {
             userService.updateUserSettings(userDto);
             session.setAttribute("loggedInUser", userDto);
         }
+
+        return "redirect:/settings";
+    }
+
+    @PostMapping("/settings/theme/{id}")
+    public String changeThemeById(@PathVariable Long id, @RequestParam String theme, HttpSession session) {
+        if (!theme.matches("light|dark")) theme = "dark";
+
+        UserDto userDto = userService.getById(id);
+        if (userDto != null) {
+            userDto.setTheme(theme);
+            userService.updateUserSettings(userDto);
+
+            UserDto currentUser = (UserDto) session.getAttribute("loggedInUser");
+            if (currentUser != null && currentUser.getId().equals(id)) {
+                session.setAttribute("theme", theme);
+                session.setAttribute("loggedInUser", userDto);
+            }
+        }
+        session.setAttribute("loggedInUser", userDto);
 
         return "redirect:/settings";
     }

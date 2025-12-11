@@ -32,27 +32,28 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleOpen(experienceSelect, experienceButton, !experienceSelect.classList.contains('open'));
     });
 
-    const handleSelection = (labels, button) => {
+    const handleSelection = (labels, button, container) => {
         labels.forEach(label => {
             label.addEventListener('click', (e) => {
                 const inputId = label.htmlFor;
                 const radio = document.getElementById(inputId);
                 if (radio) radio.checked = true;
-
                 button.textContent = label.textContent;
-                toggleOpen(label.closest('.select-container'), button, false);
+                toggleOpen(container, button, false);
             });
         });
     };
 
-    handleSelection(genderLabels, genderButton);
-    handleSelection(experienceLabels, experienceButton);
+    handleSelection(genderLabels, genderButton, genderSelect);
+    handleSelection(experienceLabels, experienceButton, experienceSelect);
+
     const initButtonText = (labels, button) => {
         labels.forEach(label => {
             const input = document.getElementById(label.htmlFor);
             if (input && input.checked) button.textContent = label.textContent;
         });
     };
+
     initButtonText(genderLabels, genderButton);
     initButtonText(experienceLabels, experienceButton);
 });

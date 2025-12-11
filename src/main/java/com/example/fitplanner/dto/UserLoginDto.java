@@ -4,9 +4,11 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
+
 @Component
 @Data
-public class UserLoginDto {
+public class UserLoginDto implements Serializable {
     @NotBlank
     private String usernameOrEmail;
 

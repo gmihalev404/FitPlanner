@@ -35,7 +35,7 @@
         <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.myworkouts}"></a></li>
         <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.search}"></a></li>
         <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.logout}"></a></li>
-        <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.settings}"></a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/settings/{id}(id=${userDto.id})}" th:text="#{nav.settings}"></a></li>
       </ul>
 
       <!-- Trainer -->

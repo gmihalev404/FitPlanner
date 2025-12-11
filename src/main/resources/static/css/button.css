@@ -7,3 +7,7 @@ button {
 button:hover {
     opacity: 0.8;
 }
+
+.experience-button{
+    padding-left: 10%;
+}
