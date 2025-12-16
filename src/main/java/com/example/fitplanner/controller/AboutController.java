@@ -1,5 +1,6 @@
 package com.example.fitplanner.controller;
 
+import com.example.fitplanner.dto.UserDto;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +15,8 @@ public class AboutController {
     @GetMapping("/about")
     public String getAbout(HttpSession session, Model model) {
         addThemeAndLanguage(session, model);
+        UserDto userDto = (UserDto) session.getAttribute("loggedInUser");
+        model.addAttribute("userDto", userDto);
         return "about";
     }
 

@@ -15,13 +15,11 @@ body {
 
 .background-section {
     width: 100%;
-    min-height: 100vh; /* fill viewport */
+    min-height: 100vh;
     display: flex;
-    justify-content: center; /* horizontal centering */
-    align-items: center;     /* vertical centering */
-    padding: 20px;           /* optional padding for small screens */
-
-    /* Background image */
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
     background-image: url('/images/background.png');
     background-size: contain;
     background-position: center;
@@ -48,6 +46,13 @@ body {
     }
     .text {
         font-size: 12px !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .col-xl-day {
+        flex: 0 0 auto;
+        width: 14.2857%;
     }
 }
 

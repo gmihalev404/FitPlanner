@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class AuthenticationController {
-
     private final UserService userService;
 
     @Autowired
@@ -35,21 +34,17 @@ public class AuthenticationController {
             BindingResult bindingResult,
             HttpSession session,
             Model model) {
-
         userService.validateUserRegister(registerDto, bindingResult);
         if (bindingResult.hasErrors()) {
             addThemeAndLanguage(session, model);
             return "register-form";
         }
-
         userService.save(registerDto);
         Long userId = userService.getIdByUsernameOrEmail(registerDto.getUsername());
         UserDto userDto = userService.getById(userId);
-
         session.setAttribute("loggedInUser", userDto);
         session.setAttribute("theme", userDto.getTheme());
         session.setAttribute("language", userDto.getLanguage());
-
         return "redirect:/home/" + userId;
     }
 
@@ -66,21 +61,23 @@ public class AuthenticationController {
             BindingResult bindingResult,
             HttpSession session,
             Model model) {
-
         userService.validateUserLogin(loginDto, bindingResult);
         if (bindingResult.hasErrors()) {
             addThemeAndLanguage(session, model);
             return "login-form";
         }
-
         Long userId = userService.getIdByUsernameOrEmail(loginDto.getUsernameOrEmail());
         UserDto userDto = userService.getById(userId);
-
         session.setAttribute("loggedInUser", userDto);
         session.setAttribute("theme", userDto.getTheme());
         session.setAttribute("language", userDto.getLanguage());
-
         return "redirect:/home/" + userId;
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/login";
     }
 
     private void addThemeAndLanguage(HttpSession session, Model model) {

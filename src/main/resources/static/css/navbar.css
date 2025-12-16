@@ -38,6 +38,7 @@ a {
 
     .navbar-nav {
         flex-direction: column;
+        /*z-index: 10;*/
     }
 
     .nav-item {

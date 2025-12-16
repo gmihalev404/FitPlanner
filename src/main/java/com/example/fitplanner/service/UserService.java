@@ -1,29 +1,36 @@
 package com.example.fitplanner.service;
 
-import com.example.fitplanner.config.UnitValidator;
+import com.example.fitplanner.util.UnitValidator;
 import com.example.fitplanner.dto.UserDto;
 import com.example.fitplanner.dto.UserLoginDto;
 import com.example.fitplanner.dto.UserRegisterDto;
 import com.example.fitplanner.entity.enums.Role;
 import com.example.fitplanner.entity.model.User;
 import com.example.fitplanner.repository.UserRepository;
+import com.example.fitplanner.util.SHA256Hasher;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
+@Transactional
 @Service
 public class UserService {
+    final private UserRepository userRepository;
+    final private ModelMapper modelMapper;
+    final private UnitValidator unitValidator;
+    final private SHA256Hasher hasher;
+
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private ModelMapper modelMapper;
-    @Autowired
-    private UnitValidator unitValidator;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UserService(UserRepository userRepository,
+                       ModelMapper modelMapper,
+                       UnitValidator unitValidator, SHA256Hasher encoder){
+        this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
+        this.unitValidator = unitValidator;
+        this.hasher = encoder;
+    }
 
     public void validateUserRegister(UserRegisterDto userRegisterDto, BindingResult bindingResult){
         if(!unitValidator.isValidUsername(userRegisterDto.getUsername())){
@@ -42,11 +49,11 @@ public class UserService {
 
     public void validateUserLogin(UserLoginDto userLoginDto, BindingResult bindingResult){
         if(unitValidator.isValidEmail(userLoginDto.getUsernameOrEmail())
-                && userRepository.getByEmailAndPassword(userLoginDto.getUsernameOrEmail(), passwordEncoder.encode(userLoginDto.getPassword())).isEmpty()){
+                && userRepository.getByEmailAndPassword(userLoginDto.getUsernameOrEmail(), hasher.hash(userLoginDto.getPassword())).isEmpty()){
             bindingResult.rejectValue("usernameOrEmail", "", "Email and Password do not match");
         }
         if(!unitValidator.isValidEmail(userLoginDto.getUsernameOrEmail())
-        && userRepository.getByUsernameAndPassword(userLoginDto.getUsernameOrEmail(), passwordEncoder.encode(userLoginDto.getPassword())).isEmpty()){
+        && userRepository.getByUsernameAndPassword(userLoginDto.getUsernameOrEmail(), hasher.hash(userLoginDto.getPassword())).isEmpty()){
             bindingResult.rejectValue("usernameOrEmail", "", "Username and Password do not match");
         }
     }
@@ -54,7 +61,7 @@ public class UserService {
     public void save(UserRegisterDto userRegisterDto) {
         User user = modelMapper.map(userRegisterDto, User.class);
         user.setRole(determineRole(user.getUsername()));
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(hasher.hash(user.getPassword()));
         userRepository.save(user);
     }
 
@@ -86,7 +93,6 @@ public class UserService {
         return user.getId();
     }
 
-    @Transactional
     public void updateUserSettings(UserDto userDto) {
         if (userDto == null || userDto.getId() == null) return;
 

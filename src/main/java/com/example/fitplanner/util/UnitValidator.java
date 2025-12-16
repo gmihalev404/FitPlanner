@@ -1,4 +1,4 @@
-package com.example.fitplanner.config;
+package com.example.fitplanner.util;
 
 import org.springframework.stereotype.Component;
 

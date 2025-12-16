@@ -1,4 +1,4 @@
-package com.example.fitplanner.config;
+package com.example.fitplanner.util;
 
 import com.example.fitplanner.entity.enums.Difficulty;
 import com.example.fitplanner.entity.enums.Gender;

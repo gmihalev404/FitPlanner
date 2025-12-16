@@ -30,3 +30,49 @@
 .card-body{
     height: auto;
 }
+
+.create-workout-log{
+    max-width: 900px;
+    padding: 3rem 1rem 4rem 1rem;
+    clip-path: polygon(
+            0 0,
+            100% 0,
+            100% 75%,
+            80% 100%,
+            20% 100%,
+            0 75%
+    );
+}
+
+@media (max-width: 576px) {
+    .create-workout-log {
+        clip-path: polygon(
+                0 0,
+                100% 0,
+                100% 85%,
+                90% 100%,
+                10% 100%,
+                0 85%
+        );
+        padding-bottom: 3rem;
+    }
+}
+
+.card-body > .row {
+    position: relative;
+    z-index: 2;
+}
+
+.day-card {
+    transition: transform 0.1s;
+}
+.day-card:hover {
+    transform: scale(1.02);
+}
+.exercise-item {
+    cursor: pointer;
+    z-index: 2;
+}
+.create-workout-log {
+    padding: 2rem 1rem;
+}

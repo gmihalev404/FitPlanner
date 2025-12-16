@@ -1,7 +1,6 @@
 package com.example.fitplanner.entity.model;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -27,7 +26,7 @@ public class ExerciseProgress extends BaseEntity{
 
     @Min(0)
     @Max(100)
-    private Integer repetitions;
+    private Integer reps;
 
     @Min(0)
     @Max(10)

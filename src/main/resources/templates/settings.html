@@ -21,14 +21,14 @@
 <div th:replace="fragment/navbar.html::navbar"></div>
 <div class="background-section">
     <div class="setting-container container my-5">
-        <h2 class="mb-4 text-light" th:text="#{settings}">Settings</h2>
+        <h2 class="mb-4 text-dark" th:text="#{settings}">Settings</h2>
         <div class="card mb-4 bg-secondary text-light">
             <div class="card-body">
                 <form th:action="@{/settings/language}" method="post" class="row g-3">
                     <div class="col-12 col-md-auto">
                         <label for="languageSelect" class="col-form-label" th:text="#{language}">Language:</label>
                     </div>
-                    <div class="col-8 col-md-3 col-lg-2">
+                    <div class="col-6 col-md-3 col-lg-2">
                         <select id="languageSelect" name="language" class="form-select w-100">
                             <option value="en" th:selected="${language=='en'}" th:text="#{english}">English</option>
                             <option value="bg" th:selected="${language=='bg'}" th:text="#{bulgarian}">Bulgarian</option>
@@ -36,7 +36,7 @@
                             <option value="fr" th:selected="${language=='fr'}" th:text="#{french}">French</option>
                         </select>
                     </div>
-                    <div class="col-4 col-md-auto">
+                    <div class="col-6 col-md-auto">
                         <button type="submit" class="btn w-100" th:text="#{save}">Save</button>
                     </div>
                 </form>
@@ -48,13 +48,31 @@
                     <div class="col-12 col-md-auto">
                         <label for="themeSelect" class="col-form-label" th:text="#{theme}">Theme:</label>
                     </div>
-                    <div class="col-8 col-md-3 col-lg-2">
+                    <div class="col-6 col-md-3 col-lg-2">
                         <select id="themeSelect" name="theme" class="form-select w-100">
                             <option value="light" th:selected="${theme=='light'}" th:text="#{light}">Light</option>
                             <option value="dark" th:selected="${theme=='dark'}" th:text="#{dark}">Dark</option>
                         </select>
                     </div>
-                    <div class="col-4 col-md-auto">
+                    <div class="col-6 col-md-auto">
+                        <button type="submit" class="btn w-100" th:text="#{save}">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card mb-4 bg-secondary text-light">
+            <div class="card-body">
+                <form th:action="@{/settings/units}" method="post" class="row g-3">
+                    <div class="col-12 col-md-auto">
+                        <label for="languageSelect" class="col-form-label" th:text="#{units}">Language:</label>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-2">
+                        <select id="measuring-unit" name="units" class="form-select w-100">
+                            <option value="kg" th:selected="${units=='kg'}">Kg</option>
+                            <option value="lb" th:selected="${units=='lb'}">Lb</option>
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-auto">
                         <button type="submit" class="btn w-100" th:text="#{save}">Save</button>
                     </div>
                 </form>

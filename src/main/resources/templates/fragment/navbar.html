@@ -30,11 +30,11 @@
       <!-- Client -->
       <ul th:if="${userDto != null and userDto.role.name() == 'CLIENT'}" class="navbar-nav ms-auto">
         <li class="nav-item"><a class="nav-link" th:href="@{/home/{id}(id=${userDto.id})}" th:text="#{nav.home}"></a></li>
-        <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.create}"></a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/create/{id}(id=${userDto.id})}" th:text="#{nav.create}"></a></li>
         <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.stats}"></a></li>
         <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.myworkouts}"></a></li>
         <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.search}"></a></li>
-        <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.logout}"></a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/logout}" th:text="#{nav.logout}"></a></li>
         <li class="nav-item"><a class="nav-link" th:href="@{/settings/{id}(id=${userDto.id})}" th:text="#{nav.settings}"></a></li>
       </ul>
 

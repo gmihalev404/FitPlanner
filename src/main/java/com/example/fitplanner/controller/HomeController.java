@@ -42,4 +42,12 @@ public class HomeController {
         model.addAttribute("language", session.getAttribute("language") != null ? session.getAttribute("language") : "en");
         return "home";
     }
+
+    @GetMapping("/")
+    public String get(HttpSession session, Model model) {
+        model.addAttribute("userDto", null);
+        model.addAttribute("theme", session.getAttribute("theme") != null ? session.getAttribute("theme") : "dark");
+        model.addAttribute("language", session.getAttribute("language") != null ? session.getAttribute("language") : "en");
+        return "home";
+    }
 }

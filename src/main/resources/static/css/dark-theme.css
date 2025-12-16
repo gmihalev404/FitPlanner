@@ -32,13 +32,24 @@ html.dark .btn-theme:active {
 /* ---------- Container ---------- */
 html.dark .form-container,
 html.dark .text-container div,
-html.dark .setting-container {
+html.dark .setting-container,
+html.dark .create-workout-log {
     color: #ffffff;
     background-color: rgba(74, 78, 78, 0.9);
 }
 
 html.dark .container-heading {
     color: aliceblue;
+}
+
+html.dark .days-container div{
+    background: rgba(102, 102, 102) !important;
+    color: #a29595;
+}
+
+html.dark .coffee-container img{
+    filter: invert(60%);
+    border: none;
 }
 
 /* ---------- Dropdown ---------- */
@@ -95,7 +106,7 @@ html.dark .form-control::placeholder {
 /* ---------- Navbar ---------- */
 html.dark .navbar,
 html.dark .navbar-collapse {
-    background-color: rgba(11, 14, 19, 0.95);
+    background-color: rgba(11, 14, 19, 0.75);
 }
 
 html.dark .navbar .nav-link {
@@ -112,7 +123,7 @@ html.dark .navbar-brand .logo {
 
 html.dark .navbar .nav-link,
 html.dark .navbar div {
-    background: transparent;
+    border-color: rgb(127, 135, 135);
 }
 
 /* ---------- Body  ---------- */
@@ -120,3 +131,4 @@ html.dark body {
     background-color: #111;
     color: #ffffff;
 }
+
