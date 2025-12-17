@@ -1,7 +1,9 @@
 package com.example.fitplanner.controller;
-
 import com.example.fitplanner.dto.UserDto;
+import com.example.fitplanner.service.SessionModelService;
+import com.example.fitplanner.util.Settings;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,21 +11,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class AboutController {
 
-    private static final String DEFAULT_LANGUAGE = "en";
-    private static final String DEFAULT_THEME = "dark";
+    private final SessionModelService sessionModelService;
+
+    @Autowired
+    public AboutController(SessionModelService sessionModelService) {
+        this.sessionModelService = sessionModelService;
+    }
 
     @GetMapping("/about")
     public String getAbout(HttpSession session, Model model) {
-        addThemeAndLanguage(session, model);
-        UserDto userDto = (UserDto) session.getAttribute("loggedUser");
-        model.addAttribute("userDto", userDto);
+        sessionModelService.populateModel(session, model);
         return "about";
-    }
-
-    private void addThemeAndLanguage(HttpSession session, Model model) {
-        String theme = (String) session.getAttribute("theme");
-        String language = (String) session.getAttribute("language");
-        model.addAttribute("theme", theme != null ? theme : DEFAULT_THEME);
-        model.addAttribute("language", language != null ? language : DEFAULT_LANGUAGE);
     }
 }

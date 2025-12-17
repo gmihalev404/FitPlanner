@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:class="${session.theme != null ? session.theme : 'dark'}"
-      th:lang="${session.language != null ? session.language : 'en'}">
+      th:class="${theme != null ? theme : 'dark'}"
+      th:lang="${language != null ? language : 'en'}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,7 +21,7 @@
 <body>
 <div th:replace="fragment/navbar.html::navbar"></div>
 <div class="background-section py-4">
-    <form th:action="@{/create-full-workout/{id}(id=${userDto.id})}" method="post">
+    <form th:action="@{/create-full-workout}" method="post">
 
         <div class="background-section py-4">
             <div class="create-workout-log container">
@@ -37,7 +37,7 @@
                          class="days-container col-6 col-md-4 col-lg-3 mb-3">
 
                         <!-- DAY CARD -->
-                        <form th:action="@{/add-exercise/{day}/{id}(day=${dayWorkout.day},id=${userDto.id})}" method="post">
+                        <form th:action="@{/add-exercise/{day}(day=${dayWorkout.day})}" method="post">
                             <button type="submit" class="card h-100 text-center day-card p-0">
                                 <div class="card-body">
                                     <h6 th:text="${#messages.msg(dayWorkout.day.toLowerCase())}"></h6>

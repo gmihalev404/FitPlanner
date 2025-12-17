@@ -23,7 +23,6 @@ public class AppConfig {
         return mapper;
     }
 
-
     @Bean
     public MessageSource messageSource() {
         ResourceBundleMessageSource source = new ResourceBundleMessageSource();

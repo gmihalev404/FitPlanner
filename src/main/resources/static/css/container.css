@@ -102,8 +102,22 @@
     padding-right: 0.5rem;
 }
 
+.show-container {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    width: min(80vw, 600px);
+    max-width: 90vw;
+    margin: 0 auto;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+}
 
-
+.close-form {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
 
 /* --- scrollbars --- */
 .scrollable-container {
@@ -117,15 +131,15 @@
 }
 
 .scrollable-container::-webkit-scrollbar-button {
-    display: none; /* remove arrows */
+    display: none;
 }
 
 .scrollable-container::-webkit-scrollbar-track {
-    background: transparent; /* optional track styling */
+    background: transparent;
 }
 
 .scrollable-container::-webkit-scrollbar-thumb {
-    background: rgba(0,0,0,0.2); /* keep thumb visible */
+    background: rgba(0,0,0,0.2);
     border-radius: 3px;
 }
 
@@ -133,8 +147,7 @@
     background: rgba(0,0,0,0.3);
 }
 
-/* Firefox */
 .scrollable-container {
-    scrollbar-width: thin; /* thin scrollbar */
-    scrollbar-color: rgba(0,0,0,0.2) transparent; /* thumb and track */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,0,0,0.2) transparent;
 }

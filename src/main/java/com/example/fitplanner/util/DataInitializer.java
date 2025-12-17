@@ -69,7 +69,7 @@ public class DataInitializer {
                         types[i % types.length],
                         equipments[i % equipments.length],
                         "icons/bench-press by Leremy from Flaticon.png",
-                        "video"
+                        "icons/bench-press by Leremy from Flaticon.png"
                 ));
             }
             exerciseRepository.saveAll(exercises);

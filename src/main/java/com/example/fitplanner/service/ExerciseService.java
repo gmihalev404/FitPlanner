@@ -35,4 +35,10 @@ public class ExerciseService {
         System.out.println("service" + exerciseDtos.stream().map(ExerciseDto::toString).collect(Collectors.joining(", ")));
         return exerciseDtos;
     }
+
+    public ExerciseDto getById(Long id) {
+        Exercise exercise = exerciseRepository.getById(id);
+        ExerciseDto exerciseDto = modelMapper.map(exercise, ExerciseDto.class);
+        return exerciseDto;
+    }
 }

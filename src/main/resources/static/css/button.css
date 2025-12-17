@@ -31,3 +31,20 @@ button:hover {
     z-index: 1;
 }
 
+.close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
+    border: none;
+    color: white;
+    font-size: 18px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    /*background: rgba(0, 0, 0, 0.8);*/
+}
