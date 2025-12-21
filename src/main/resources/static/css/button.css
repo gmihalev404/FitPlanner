@@ -31,20 +31,35 @@ button:hover {
     z-index: 1;
 }
 
+.card-overlay-btn {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
 .close-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.9);
     border: none;
     color: white;
     font-size: 18px;
     width: 36px;
     height: 36px;
-    border-radius: 50%;
+    border-radius: 0 12px 0 0 !important;
     cursor: pointer;
 }
 
 .close-btn:hover {
-    /*background: rgba(0, 0, 0, 0.8);*/
+
 }
+
+/*.close-btn:hover {*/
+/*    background: rgba(0, 0, 0, 0.8);
+/*}*/

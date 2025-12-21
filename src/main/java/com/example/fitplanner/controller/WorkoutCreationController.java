@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -40,15 +39,11 @@ public class WorkoutCreationController {
     @GetMapping("/create")
     public String createWorkout(HttpSession session, Model model) {
         UserDto sessionUser = (UserDto) session.getAttribute("loggedUser");
-        if (sessionUser == null) {
-            return "redirect:/login";
-        }
-
+        if (sessionUser == null) return "redirect:/login";
         sessionModelService.populateModel(session, model);
-
-        Set<DayWorkout> weekDays = (Set<DayWorkout>) session.getAttribute("weekDays");
+        List<DayWorkout> weekDays = (List<DayWorkout>) session.getAttribute("weekDays");
         if (weekDays == null) {
-            weekDays = new LinkedHashSet<>();
+            weekDays = new ArrayList<>();
             LocalDate startOfWeek = LocalDate.now().with(DayOfWeek.MONDAY);
             for (int i = 0; i < 7; i++) {
                 String dayKey = startOfWeek.plusDays(i).getDayOfWeek().name().toLowerCase();
@@ -63,10 +58,8 @@ public class WorkoutCreationController {
     @PostMapping("/add-exercise/{day}")
     public String addExerciseToDay(@PathVariable String day, HttpSession session) {
         session.setAttribute("currentDay", day);
-        sessionModelService.populateModel(session, null);
         return "redirect:/exercise-log";
     }
-
     @PostMapping("/edit-exercise/{day}/{exerciseId}")
     public String editExercise(@PathVariable String day,
                                @PathVariable Long exerciseId,
@@ -80,6 +73,7 @@ public class WorkoutCreationController {
     @GetMapping("/exercise-log")
     public String showExerciseLog(HttpSession session, Model model){
         sessionModelService.populateModel(session, model);
+        if (session.getAttribute("loggedUser") == null) return "redirect:/login";
         Set<ExerciseDto> exercises = exerciseService.getAll();
         model.addAttribute("exercises", exercises);
         return "exercises-log";

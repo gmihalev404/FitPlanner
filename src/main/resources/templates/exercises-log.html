@@ -2,62 +2,114 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:class="${theme != null ? theme : 'dark'}"
       th:lang="${language != null ? language : 'en'}">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Exercises</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <link rel="stylesheet" th:href="@{/css/common.css}">
     <link rel="stylesheet" th:href="@{/css/navbar.css}">
     <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/container.css}">
+
+    <link rel="stylesheet" th:href="@{/css/button.css}">
     <link rel="stylesheet" th:href="@{/css/dark-theme.css}">
     <link rel="stylesheet" th:href="@{/css/light-theme.css}">
-    <link rel="stylesheet" th:href="@{/css/container.css}"> <link rel="stylesheet" th:href="@{/css/button.css}">
     <link rel="stylesheet" th:href="@{/css/exercise-log.css}">
 </head>
+
 <body>
 <div th:replace="fragment/navbar.html::navbar"></div>
 <div class="background-section py-4">
-    <div class="container log-container"> <!-- Search input -->
-        <div class="col-12 mb-3">
-            <div class="input-group">
-                <span class="input-group-text">
-                    <img th:src="@{/images/search.jfif}" alt="Search" class="search-icon">
-                </span>
-                <input type="search"
-                       id="exerciseSearch"
-                       class="form-control"
-                       placeholder="Search exercises">
+    <div class="container log-container">
+        <!-- ================= SEARCH ================= -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <img th:src="@{/images/search.jfif}" alt="Search" class="search-icon">
+                    </span>
+                    <input type="search"
+                           id="exerciseSearch"
+                           class="form-control"
+                           placeholder="Search exercises">
+                </div>
             </div>
         </div>
-        <!-- Exercises grid -->
+
+        <!-- ================= FILTERS ================= -->
+        <div class="row mb-4">
+            <div class="col-md-4 mb-2">
+                <select id="categoryFilter" class="form-select">
+                    <option value="">All Categories</option>
+                    <option value="legs">Legs</option>
+                    <option value="core">Core</option>
+                    <option value="back">Back</option>
+                    <option value="biceps">Biceps</option>
+                    <option value="triceps">Triceps</option>
+                    <option value="chest">Chest</option>
+                </select>
+            </div>
+            <div class="col-md-4 mb-2">
+                <select id="difficultyFilter" class="form-select">
+                    <option value="">All Difficulties</option>
+                    <option value="novice">Novice</option>
+                    <option value="beginner">Beginner</option>
+                    <option value="medium">Medium</option>
+                    <option value="advanced">Advanced</option>
+                    <option value="master">Master</option>
+                </select>
+            </div>
+            <div class="col-md-4 mb-2">
+                <select id="equipmentFilter" class="form-select">
+                    <option value="">All Equipment</option>
+                    <option value="body_weight">Body weight</option>
+                    <option value="weighted">Weighted</option>
+                    <option value="machine">Machine</option>
+                    <option value="cardio">Cardio</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- ================= EXERCISES GRID ================= -->
         <div class="exercise-grid-container scrollable-container">
             <div class="row g-4 justify-content-start">
                 <div th:each="ex : ${exercises}"
                      class="col-4 col-md-3 col-lg-2 exercise-item"
-                     th:attr="data-name=${#strings.toLowerCase(ex.name)}">
-                    <form th:action="@{/select-exercise}" th:method="post"
-                          class="exercise-card">
-                        <input type="hidden" th:name="exerciseId" th:value="${ex.id}">
-                        <button type="submit" class="card exercise-card p-0">
+                     th:attr="
+                        data-name=${#strings.toLowerCase(ex.name)},
+                        data-category=${#strings.toLowerCase(ex.category)},
+                        data-difficulty=${#strings.toLowerCase(ex.difficulty)},
+                        data-equipment=${#strings.toLowerCase(ex.equipmentType)}
+                     ">
+                    <form th:action="@{/select-exercise}" method="post" class="exercise-card">
+                        <input type="hidden" name="exerciseId" th:value="${ex.id}">
+                        <button type="submit" class="card exercise-card p-0 w-100">
                             <div class="exercise-image-container">
                                 <img th:src="${ex.imageUrl}" class="exercise-image" alt="">
-                                <div class="exercise-name-overlay text-size-12" th:text="${ex.name}"></div>
+                                <div class="exercise-name-overlay text-size-12"
+                                     th:text="${ex.name}">
+                                </div>
                             </div>
                         </button>
                     </form>
-                    <form th:action="@{/show/{id}(id=${ex.id})}" method="post">
-                        <button type="submit" class="bg-success col-12">
+                    <form th:action="@{/show/{id}(id=${ex.id})}" method="post" class="mt-1">
+                        <button type="submit" class="btn bg-success w-100">
                             Show
                         </button>
                     </form>
+                </div>
+                <div id="noResults"
+                     class="col-12 text-center p-3"
+                     style="display: none;">
+                    No results
                 </div>
             </div>
         </div>
     </div>
 </div>
 <footer th:replace="fragment/footer.html::footer"></footer>
+<script th:src="@{/js/filters.js}"></script>
 <script th:src="@{/js/search-bar.js}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

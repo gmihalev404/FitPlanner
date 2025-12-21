@@ -61,15 +61,14 @@ public class DataInitializer {
             Category[] categories = Category.values();
             ExerciseType[] types = ExerciseType.values();
             EquipmentType[] equipments = EquipmentType.values();
-
             for (int i = 1; i <= 60; i++) {
                 exercises.add(new Exercise(
                         "Exercise " + i,
                         categories[i % categories.length],
                         types[i % types.length],
                         equipments[i % equipments.length],
-                        "icons/bench-press by Leremy from Flaticon.png",
-                        "icons/bench-press by Leremy from Flaticon.png"
+                        "/icons/bench-press by Leremy from Flaticon.png",
+                         "/videos/push-ups.mp4"
                 ));
             }
             exerciseRepository.saveAll(exercises);

@@ -1,3 +1,56 @@
-.day-card{
-    cursor: pointer;
+.day-card {
+    position: relative;
+    transition: transform 0.1s;
+}
+
+.day-card:hover {
+    transform: scale(1.02);
+}
+
+.day-card .card-body {
+    position: relative;
+    z-index: 1;
+}
+
+.card-overlay-form{
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    margin: 0;
+}
+
+.exercise-video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 5%;
+    border: 3px solid black;
+}
+
+.close-form {
+    position: absolute;
+    top: 0.4%;
+    right: 0.4%;
+    border-top-right-radius: 15% !important;
+}
+
+.exercise-video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border: 3px solid black;
+    border-radius: inherit;
+}
+
+html.show body {
+    overflow: hidden !important;
+    padding: 0;
+    margin: 0;
+    /*height: 0;*/
+}
+
+html.show .background-section {
+    height: 100vh;
+    padding: 0;
+    margin: 0;
 }

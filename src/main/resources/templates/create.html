@@ -21,46 +21,64 @@
 <body>
 <div th:replace="fragment/navbar.html::navbar"></div>
 <div class="background-section py-4">
-    <form th:action="@{/create-full-workout}" method="post">
+    <div class="create-workout-log container">
 
-        <div class="background-section py-4">
-            <div class="create-workout-log container">
-                <h2 th:text="#{create.workout}"
-                    class="w-100 text-center text-dark mb-4">
-                    Create Workout
-                </h2>
-                <div class="row g-3 justify-content-center">
-                    <div class="mb-3">
-                        <input type="text" class="form-control" th:placeholder="#{name}" required>
+        <h2 th:text="#{create.workout}"
+            class="w-100 text-center text-dark mb-4">
+            Create Workout
+        </h2>
+
+        <!-- Workout name -->
+        <div class="mb-3">
+            <input type="text"
+                   class="form-control"
+                   th:placeholder="#{name}"
+                   name="workoutName"
+                   form="createWorkoutForm">
+        </div>
+
+        <!-- DAYS GRID -->
+        <div class="row g-3 justify-content-center">
+            <div th:each="dayWorkout : ${weekDays}"
+                 class="days-container col-6 col-md-4 col-lg-3 mb-3">
+
+                <div class="card h-100 text-center day-card p-0 position-relative">
+
+                    <!-- CONTENT -->
+                    <div class="card-body position-relative">
+                        <h6 th:text="${#messages.msg(dayWorkout.day.toLowerCase())}"></h6>
+
+                        <div class="coffee-container"
+                             th:if="${dayWorkout.exercises.isEmpty()}">
+                            <img th:src="@{/images/coffee.jpg}"
+                                 class="img-fluid rounded">
+                        </div>
                     </div>
-                    <div th:each="dayWorkout : ${weekDays}"
-                         class="days-container col-6 col-md-4 col-lg-3 mb-3">
 
-                        <!-- DAY CARD -->
-                        <form th:action="@{/add-exercise/{day}(day=${dayWorkout.day})}" method="post">
-                            <button type="submit" class="card h-100 text-center day-card p-0">
-                                <div class="card-body">
-                                    <h6 th:text="${#messages.msg(dayWorkout.day.toLowerCase())}"></h6>
-                                    <div class="coffee-container" th:if="${dayWorkout.exercises.isEmpty()}">
-                                        <img th:src="@{/images/coffee.jpg}" class="img-fluid rounded">
-                                    </div>
-                                </div>
-                            </button>
-                        </form>
-                    </div>
-                </div>
+                    <!-- CLICK OVERLAY -->
+                    <form th:action="@{/add-exercise/{day}(day=${dayWorkout.day})}"
+                          method="post"
+                          class="card-overlay-form">
+                        <button type="submit"
+                                class="card-overlay-btn"></button>
+                    </form>
 
-                <!-- CREATE -->
-                <div class="text-center mt-6">
-                    <button type="submit"
-                            class="col-4 create-exercise-button btn btn-success btn-lg"
-                            th:text="#{create}">
-                        Create
-                    </button>
                 </div>
             </div>
         </div>
-    </form>
+        <!-- CREATE WORKOUT BUTTON -->
+        <form id="createWorkoutForm"
+              th:action="@{/create-full-workout}"
+              method="post">
+            <div class="text-center mt-4">
+                <button type="submit"
+                        class="col-4 create-exercise-button btn btn-success btn-lg"
+                        th:text="#{create}">
+                    Create
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 <footer th:replace="fragment/footer.html::footer"></footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

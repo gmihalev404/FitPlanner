@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       th:class="${theme != null ? theme : 'dark'}"
+      th:classappend="show"
       th:lang="${language != null ? language : 'en'}">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,12 +15,18 @@
     <link rel="stylesheet" th:href="@{/css/dark-theme.css}">
     <link rel="stylesheet" th:href="@{/css/light-theme.css}">
     <link rel="stylesheet" th:href="@{/css/container.css}"> <link rel="stylesheet" th:href="@{/css/button.css}">
-    <link rel="stylesheet" th:href="@{/css/exercise-log.css}">
+    <link rel="stylesheet" th:href="@{/css/workouts.css}">
 </head>
 <body>
 <div class="background-section py-4">
     <div class="show-container exercise-image-container">
-        <img th:src="${src}" alt="" class="show-image">
+        <video class="exercise-video"
+               autoplay
+               loop
+               muted
+               playsinline>
+            <source th:src="${src}" type="video/mp4">
+        </video>
         <form th:action="@{/close-show}" method="post" class="close-form">
             <button type="submit" class="close-btn">✕</button>
         </form>

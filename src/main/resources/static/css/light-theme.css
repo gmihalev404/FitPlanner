@@ -13,8 +13,12 @@ html.light body {
     color: #111;
 }
 
-html.light .background-section{
+html.light .background-section {
     filter: invert(20%);
+}
+
+html.light .exercise-image {
+    filter: invert(100%);
 }
 
 /* ---------- Buttons ---------- */

@@ -47,7 +47,7 @@ public class AuthenticationController {
         UserDto userDto = userService.getById(userId);
         session.setAttribute("loggedUser", userDto);
         sessionModelService.populateModel(session, model);
-        return "redirect:/home/" + userId;
+        return "redirect:/home";
     }
 
     @GetMapping("/login")
@@ -72,7 +72,7 @@ public class AuthenticationController {
         UserDto userDto = userService.getById(userId);
         session.setAttribute("loggedUser", userDto);
         sessionModelService.populateModel(session, model);
-        return "redirect:/home/" + userId;
+        return "redirect:/home";
     }
 
     @GetMapping("/logout")

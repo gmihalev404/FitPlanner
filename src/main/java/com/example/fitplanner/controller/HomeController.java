@@ -18,9 +18,7 @@ public class HomeController {
     @GetMapping("/home")
     public String getHome(HttpSession session, Model model) {
         sessionModelService.populateModel(session, model);
-        if (model.getAttribute("userDto") == null) {
-            return "redirect:/login";
-        }
+//        if (model.getAttribute("userDto") == null) return "redirect:/login";
         return "home";
     }
 
