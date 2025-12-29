@@ -118,7 +118,7 @@ html.dark .form-control::placeholder {
 /* ---------- Navbar ---------- */
 html.dark .navbar,
 html.dark .navbar-collapse {
-    background-color: rgba(11, 14, 19, 0.75);
+    background-color: rgba(11, 14, 19);
 }
 
 html.dark .navbar .nav-link {
@@ -165,37 +165,43 @@ html.dark .card-footer {
     background-color: rgba(0, 0, 0, 0.15);
 }
 
-/* 3. Exercise Row Items - FIX APPLIED HERE */
+html.dark .max-vh-25 {
+    background-color: rgb(76, 76, 76);          /* main surface */
+    color: #f2f2f2;                              /* readable text */
+}
+
 html.dark .exercise-item {
-    /* Set background to transparent so the outer container doesn't show green/gray */
-    background-color: transparent !important;
-    /* Removed the green border-left that was leaking to the outside */
-    border-left: none !important;
+    background-color: rgb(90, 90, 90);           /* slightly lighter for card contrast */
+    border-left-color: #4caf50 !important;        /* keep success color visible */
+    color: #e6e6e6;
+}
+
+html.dark .exercise-item {
+    background-color: rgb(105, 105, 105) !important;
+}
+
+html.dark .max-vh-25::-webkit-scrollbar-thumb {
+    background: #5e5e5e;                          /* darker scrollbar */
+}
+
+html.dark .coffee-img {
+    opacity: 0.9;
+    border-radius: 8px;
+}
+
+/* optional: subtle borders & card polish */
+html.dark .exercise-item,
+html.dark .max-vh-25 {
+    border-radius: 6px;
 }
 
 html.dark .exercise-item:hover {
-    /* Applying hover to the card specifically, not the wrapper */
-    background-color: transparent !important;
-}
-
-/* 4. Text inside Exercise Items */
-html.dark .exercise-item .text-dark {
-    color: #ffffff !important;
-}
-
-html.dark .exercise-item .text-muted {
-    color: #cccccc !important;
-}
-
-/* 5. Scrollbar (Blending with the gray) */
-html.dark .max-vh-25::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
+    transition: background-color 0.2s;
 }
 
 /* 6. Navigation Arrows */
 html.dark .nav-arrow {
-    background: rgba(76, 76, 76, 0.8);
+    background: rgba(100, 100, 100, 0.8);
     color: #ffffff;
     border: 1px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(5px);

@@ -136,3 +136,36 @@ button {
 button:hover {
     filter: brightness(0.85);
 }
+
+/* --- UNIVERSAL SCROLLABLE CONTAINER --- */
+.scrollable-container {
+    display: flex;
+    flex-direction: column;   /* Stack items vertically */
+    overflow-y: auto;         /* Enable vertical scroll */
+    overflow-x: hidden;       /* Prevent horizontal wiggle */
+
+    /* Firefox Support */
+    scrollbar-width: thin;
+    scrollbar-color: #28a745 #f1f1f1;
+}
+
+/* Chrome, Edge, Safari Scrollbar Styling */
+.scrollable-container::-webkit-scrollbar {
+    width: 6px;  /* Width for vertical scrollbars */
+    height: 6px; /* Height for horizontal scrollbars */
+}
+
+.scrollable-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.scrollable-container::-webkit-scrollbar-thumb {
+    background: #28a745; /* Success Green */
+    border-radius: 10px;
+    transition: background 0.2s ease;
+}
+
+.scrollable-container::-webkit-scrollbar-thumb:hover {
+    background: #218838; /* Darker Green on hover */
+}

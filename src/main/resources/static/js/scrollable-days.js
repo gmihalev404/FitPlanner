@@ -10,9 +10,17 @@ document.addEventListener('DOMContentLoaded', function() {
             return item ? item.offsetWidth + gap : 300;
         }
 
-        leftBtn.onclick = () => container.scrollBy({ left: -getScrollValue(), behavior: 'smooth' });
-        rightBtn.onclick = () => container.scrollBy({ left: getScrollValue(), behavior: 'smooth' });
+        leftBtn.onclick = () => {
+            const cardWidth = container.querySelector('.scroll-snap-item').offsetWidth;
+            const gap = 20;
+            container.scrollBy({ left: -(cardWidth + gap), behavior: 'smooth' });
+        };
 
+        rightBtn.onclick = () => {
+            const cardWidth = container.querySelector('.scroll-snap-item').offsetWidth;
+            const gap = 20;
+            container.scrollBy({ left: (cardWidth + gap), behavior: 'smooth' });
+        };
         container.scrollLeft = 0;
     }
 });

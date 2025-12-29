@@ -9,7 +9,10 @@
     padding-top: 60px !important;
 }
 
-/* Ensure the container fills the button entirely */
+.exercise-grid-container {
+    max-height: 500px;
+}
+
 .exercise-image-container {
     position: relative;
     width: 100%;

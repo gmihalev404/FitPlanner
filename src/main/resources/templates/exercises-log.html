@@ -5,23 +5,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exercises</title>
+    <title th:text="#{exercise.all_categories}">Exercises</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/common.css}">
     <link rel="stylesheet" th:href="@{/css/navbar.css}">
     <link rel="stylesheet" th:href="@{/css/footer.css}">
     <link rel="stylesheet" th:href="@{/css/dark-theme.css}">
     <link rel="stylesheet" th:href="@{/css/light-theme.css}">
-
     <link rel="stylesheet" th:href="@{/css/exercise-log.css}">
 </head>
-
 <body>
-<div th:replace="fragment/navbar.html::navbar"></div>
+<div th:replace="~{fragment/navbar.html::navbar}"></div>
 <div class="background-section py-4">
     <div class="container log-container">
         <form th:action="@{/close-log}" method="post" class="close-form">
-            <button type="submit" class="close-btn bg-danger">✕</button>
+            <button type="submit" class="close-btn bg-danger" th:title="#{exercise.close}">✕</button>
         </form>
         <!-- ================= SEARCH ================= -->
         <div class="row mb-3">
@@ -33,45 +31,43 @@
                     <input type="search"
                            id="exerciseSearch"
                            class="form-control"
-                           placeholder="Search exercises">
+                           th:placeholder="#{exercise.search_placeholder}">
                 </div>
             </div>
         </div>
-
         <!-- ================= FILTERS ================= -->
         <div class="row mb-4">
             <div class="col-md-4 mb-2">
                 <select id="categoryFilter" class="form-select">
-                    <option value="">All Categories</option>
-                    <option value="legs">Legs</option>
-                    <option value="core">Core</option>
-                    <option value="back">Back</option>
-                    <option value="biceps">Biceps</option>
-                    <option value="triceps">Triceps</option>
-                    <option value="chest">Chest</option>
+                    <option value="" th:text="#{exercise.all_categories}">All Categories</option>
+                    <option value="legs" th:text="#{cat.legs}">Legs</option>
+                    <option value="core" th:text="#{cat.core}">Core</option>
+                    <option value="back" th:text="#{cat.back}">Back</option>
+                    <option value="biceps" th:text="#{cat.biceps}">Biceps</option>
+                    <option value="triceps" th:text="#{cat.triceps}">Triceps</option>
+                    <option value="chest" th:text="#{cat.chest}">Chest</option>
                 </select>
             </div>
             <div class="col-md-4 mb-2">
                 <select id="difficultyFilter" class="form-select">
-                    <option value="">All Difficulties</option>
-                    <option value="novice">Novice</option>
-                    <option value="beginner">Beginner</option>
-                    <option value="medium">Medium</option>
-                    <option value="advanced">Advanced</option>
-                    <option value="master">Master</option>
+                    <option value="" th:text="#{exercise.all_difficulties}">All Difficulties</option>
+                    <option value="novice" th:text="#{diff.novice}">Novice</option>
+                    <option value="beginner" th:text="#{diff.beginner}">Beginner</option>
+                    <option value="medium" th:text="#{diff.medium}">Medium</option>
+                    <option value="advanced" th:text="#{diff.advanced}">Advanced</option>
+                    <option value="master" th:text="#{diff.master}">Master</option>
                 </select>
             </div>
             <div class="col-md-4 mb-2">
                 <select id="equipmentFilter" class="form-select">
-                    <option value="">All Equipment</option>
-                    <option value="body_weight">Body weight</option>
-                    <option value="weighted">Weighted</option>
-                    <option value="machine">Machine</option>
-                    <option value="cardio">Cardio</option>
+                    <option value="" th:text="#{exercise.all_equipment}">All Equipment</option>
+                    <option value="body_weight" th:text="#{eq.body_weight}">Body weight</option>
+                    <option value="weighted" th:text="#{eq.weighted}">Weighted</option>
+                    <option value="machine" th:text="#{eq.machine}">Machine</option>
+                    <option value="cardio" th:text="#{eq.cardio}">Cardio</option>
                 </select>
             </div>
         </div>
-
         <!-- ================= EXERCISES GRID ================= -->
         <div class="exercise-grid-container scrollable-container">
             <div class="row g-4 justify-content-start">
@@ -95,21 +91,22 @@
                         </button>
                     </form>
                     <form th:action="@{/show/{id}(id=${ex.id})}" method="post" class="mt-1">
-                        <button type="submit" class="btn bg-success w-100">
+                        <button type="submit" class="btn bg-success w-100" th:text="#{exercise.btn_show}">
                             Show
                         </button>
                     </form>
                 </div>
                 <div id="noResults"
                      class="col-12 text-center p-3"
-                     style="display: none;">
+                     style="display: none;"
+                     th:text="#{exercise.no_results}">
                     No results
                 </div>
             </div>
         </div>
     </div>
 </div>
-<footer th:replace="fragment/footer.html::footer"></footer>
+<footer th:replace="~{fragment/footer.html::footer}"></footer>
 <script th:src="@{/js/filters.js}"></script>
 <script th:src="@{/js/search-bar.js}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

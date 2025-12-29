@@ -60,7 +60,6 @@ public class WorkoutCreationController {
             weekDays.sort(Comparator.comparingInt(day ->
                     order.indexOf(day.getDay().toUpperCase())));
         }
-
         model.addAttribute("weekDays", weekDays);
         return "create";
     }
@@ -79,28 +78,29 @@ public class WorkoutCreationController {
 
     @GetMapping("/edit-exercise")
     public String showEditPage(@RequestParam String day,
-                               @RequestParam Long exerciseId,
+                               @RequestParam Long id,
                                HttpSession session,
                                Model model) {
         sessionModelService.populateModel(session, model);
         session.setAttribute("currentDay", day);
-        session.setAttribute("currentExerciseId", exerciseId);
-        ExerciseDto exerciseDto = exerciseService.getById(exerciseId);
-        session.setAttribute("exercise", exerciseDto);
-        model.addAttribute("exercise", exerciseDto);
+        session.setAttribute("exerciseId", id);
         List<DayWorkout> weekDays = (List<DayWorkout>) session.getAttribute("weekDays");
+        ExerciseProgressDto foundDto = null;
         if (weekDays != null) {
             for (DayWorkout dw : weekDays) {
-                if (dw.getDay().equals(day)) {
+                if (dw.getDay().equalsIgnoreCase(day)) {
                     for (ExerciseProgressDto ep : dw.getExercises()) {
-                        if (ep.getExerciseId().equals(exerciseId)) {
-                            model.addAttribute("dto", ep);
+                        if (ep.getId().equals(id)) {
+                            foundDto = ep;
                             break;
                         }
                     }
                 }
             }
         }
+        if (foundDto == null) return "redirect:/create";
+        model.addAttribute("dto", foundDto);
+        model.addAttribute("exercise", exerciseService.getById(foundDto.getExerciseId()));
         return "set-exercise";
     }
 
@@ -108,23 +108,27 @@ public class WorkoutCreationController {
     public String editExercise(@ModelAttribute("dto") ExerciseProgressDto dto,
                                HttpSession session) {
         String day = (String) session.getAttribute("currentDay");
-        Long exerciseId = (Long) session.getAttribute("currentExerciseId");
-        if (day == null || exerciseId == null) return "redirect:/create";
         List<DayWorkout> weekDays = (List<DayWorkout>) session.getAttribute("weekDays");
-        if (weekDays != null) {
+        if (weekDays != null && day != null && dto.getId() != null) {
             for (DayWorkout dw : weekDays) {
-                if (dw.getDay().equals(day)) {
-                    List<ExerciseProgressDto> exercises = dw.getExercises();
-                    for (int i = 0; i < exercises.size(); i++) {
-                        ExerciseProgressDto existing = exercises.get(i);
-                        if (existing.getExerciseId().equals(exerciseId)) {
+                if (dw.getDay().equalsIgnoreCase(day)) {
+                    for (ExerciseProgressDto existing : dw.getExercises()) {
+                        if (existing.getId().equals(dto.getId())) {
+                            System.out.println("BEFORE UPDATE -> reps=" + existing.getReps() +
+                                    " sets=" + existing.getSets() +
+                                    " weight=" + existing.getWeight());
+
                             existing.setSets(dto.getSets());
                             existing.setReps(dto.getReps());
                             existing.setWeight(dto.getWeight());
-                            existing.setName(existing.getName());
+
+                            System.out.println("AFTER UPDATE -> reps=" + existing.getReps() +
+                                    " sets=" + existing.getSets() +
+                                    " weight=" + existing.getWeight());
                             break;
                         }
                     }
+                    break;
                 }
             }
         }
@@ -147,54 +151,37 @@ public class WorkoutCreationController {
 
     @PostMapping("/add-exercise")
     public String addExercise(@ModelAttribute("dto") ExerciseProgressDto dto,
-                              HttpSession session,
-                              Model model) {
-        sessionModelService.populateModel(session, model);
+                              HttpSession session) {
         ExerciseDto exerciseDto = (ExerciseDto) session.getAttribute("exercise");
         String currentDay = (String) session.getAttribute("currentDay");
         if (exerciseDto == null || currentDay == null) return "redirect:/create";
-        dto.setExerciseId(exerciseDto.getId());
-        dto.setName(exerciseDto.getName());
+        ExerciseProgressDto entry = new ExerciseProgressDto(
+                exerciseDto.getId(),
+                exerciseDto.getName(),
+                dto.getReps(),
+                dto.getSets(),
+                dto.getWeight()
+        );
         List<DayWorkout> weekDays = (List<DayWorkout>) session.getAttribute("weekDays");
-        if (weekDays == null) {
-            weekDays = new ArrayList<>();
-            session.setAttribute("weekDays", weekDays);
-        }
-        boolean added = false;
         for (DayWorkout dayWorkout : weekDays) {
             if (dayWorkout.getDay().equals(currentDay)) {
-                if (dayWorkout.getExercises() == null) {
-                    dayWorkout.setExercises(new ArrayList<>());
-                }
-                dayWorkout.getExercises().add(dto);
-                added = true;
+                dayWorkout.getExercises().add(entry);
                 break;
             }
         }
-        if (!added) {
-            DayWorkout newDay = new DayWorkout(currentDay, new ArrayList<>());
-            newDay.getExercises().add(dto);
-            weekDays.add(newDay);
-        }
         session.setAttribute("weekDays", weekDays);
-        List<ExerciseProgressDto> exerciseList = (List<ExerciseProgressDto>) session.getAttribute("exercise-list");
-        if (exerciseList == null) {
-            exerciseList = new ArrayList<>();
-            session.setAttribute("exercise-list", exerciseList);
-        }
-        exerciseList.add(dto);
         return "redirect:/create";
     }
 
     @PostMapping("/remove-exercise")
-    public String removeExercise(@RequestParam String day,
-                                 @RequestParam Long exerciseId,
+    public String removeExercise(@RequestParam("day") String day,
+                                 @RequestParam("id") Long id,
                                  HttpSession session) {
         List<DayWorkout> weekDays = (List<DayWorkout>) session.getAttribute("weekDays");
-        if (weekDays != null) {
+        if (weekDays != null && day != null && id != null) {
             for (DayWorkout dw : weekDays) {
-                if (dw.getDay().equals(day)) {
-                    dw.getExercises().removeIf(ep -> ep.getExerciseId().equals(exerciseId));
+                if (dw.getDay().equalsIgnoreCase(day)) {
+                    dw.getExercises().removeIf(ep -> id.equals(ep.getId()));
                     break;
                 }
             }
@@ -226,6 +213,11 @@ public class WorkoutCreationController {
         return "redirect:/exercise-log";
     }
 
+    @PostMapping("/close-log")
+    public String closeLog() {
+        return "redirect:/create";
+    }
+
     @PostMapping("/create-full-workout")
     public String createFullWorkout(@ModelAttribute("programForm") CreatedProgramDto dto,
                                     HttpSession session) {
@@ -235,11 +227,6 @@ public class WorkoutCreationController {
         programService.createProgram(dto, userDto);
         sessionModelService.clearSession(session);
         return "redirect:/home";
-    }
-
-    @PostMapping("/close-log")
-    public String closeLog() {
-        return "redirect:/create";
     }
 
     @PostMapping("/update-program-session")
@@ -255,7 +242,5 @@ public class WorkoutCreationController {
         sessionProgramForm.setNotifications(programFormInput.getNotifications());
         sessionProgramForm.setIsPublic(programFormInput.getIsPublic());
         session.setAttribute("programForm", sessionProgramForm);
-        CreatedProgramDto sessionProgramForm1 = (CreatedProgramDto) session.getAttribute("programForm");
-        System.out.println();
     }
 }

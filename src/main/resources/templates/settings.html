@@ -24,13 +24,15 @@
         <div class="card setting-card">
             <div class="card-body">
                 <form th:action="@{/settings/language}" method="post" class="row align-items-center g-2">
-                    <label for="languageSelect" class="col-12 col-md-2 col-form-label form-label">Language:</label>
+                    <label th:text="#{language}"
+                           for="languageSelect"
+                           class="col-12 col-md-2 col-form-label form-label">Language:</label>
                     <div class="col-6 col-md-4">
                         <select id="languageSelect" name="language" class="form-select select-input">
-                            <option value="en" th:selected="${language=='en'}" th:text="#{english}">English</option>
-                            <option value="bg" th:selected="${language=='bg'}" th:text="#{bulgarian}">Bulgarian</option>
-                            <option value="es" th:selected="${language=='es'}" th:text="#{spanish}">Spanish</option>
-                            <option value="fr" th:selected="${language=='fr'}" th:text="#{french}">French</option>
+                            <option value="en" th:selected="${language=='en'}">English</option>
+                            <option value="bg" th:selected="${language=='bg'}">Български</option>
+                            <option value="es" th:selected="${language=='es'}">Español</option>
+                            <option value="fr" th:selected="${language=='fr'}">Français</option>
                         </select>
                     </div>
                     <div class="col-6 col-md-2">
@@ -44,7 +46,9 @@
         <div class="card setting-card">
             <div class="card-body">
                 <form th:action="@{/settings/theme}" method="post" class="row align-items-center g-2">
-                    <label for="themeSelect" class="col-12 col-md-2 col-form-label form-label">Theme:</label>
+                    <label th:text="#{theme}"
+                           for="themeSelect"
+                           class="col-12 col-md-2 col-form-label form-label">Theme:</label>
                     <div class="col-6 col-md-4">
                         <select id="themeSelect" name="theme" class="form-select select-input">
                             <option value="light" th:selected="${theme=='light'}" th:text="#{light}">Light</option>
@@ -62,7 +66,9 @@
         <div class="card setting-card">
             <div class="card-body">
                 <form th:action="@{/settings/units}" method="post" class="row align-items-center g-2">
-                    <label for="measuring-unit" class="col-12 col-md-2 col-form-label form-label">Units:</label>
+                    <label th:text="#{units}"
+                           for="measuring-unit"
+                           class="col-12 col-md-2 col-form-label form-label">Units:</label>
                     <div class="col-6 col-md-4">
                         <select id="measuring-unit" name="units" class="form-select select-input">
                             <option value="kg" th:selected="${units=='kg'}">Kg</option>

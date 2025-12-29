@@ -109,19 +109,31 @@
     #daysContainer {
         display: flex !important;
         flex-wrap: nowrap !important;
-        flex-direction: row !important;
         overflow-x: auto !important;
         scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        padding: 20px 10% !important;
-        justify-content: flex-start !important;
+        scroll-padding: 0 7.5%;
+        padding: 20px 0 !important;
         gap: 15px;
+        justify-content: flex-start !important;
     }
-    #daysContainer::-webkit-scrollbar { display: none; }
-    #daysContainer { -ms-overflow-style: none; scrollbar-width: none; }
+
+    #daysContainer::before,
+    #daysContainer::after {
+        content: '';
+        flex: 0 0 7.5%;
+    }
+
+    #daysContainer::-webkit-scrollbar {
+        display: none;
+    }
+
+    #daysContainer {
+        -ms-overflow-style: none; scrollbar-width: none;
+    }
 
     .scroll-snap-item {
-        flex: 0 0 80% !important;
+        flex: 0 0 85% !important;
+        min-width: 85% !important;
         scroll-snap-align: center;
         scroll-snap-stop: always;
     }
