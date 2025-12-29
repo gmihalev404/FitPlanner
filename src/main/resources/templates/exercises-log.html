@@ -10,11 +10,9 @@
     <link rel="stylesheet" th:href="@{/css/common.css}">
     <link rel="stylesheet" th:href="@{/css/navbar.css}">
     <link rel="stylesheet" th:href="@{/css/footer.css}">
-    <link rel="stylesheet" th:href="@{/css/container.css}">
-
-    <link rel="stylesheet" th:href="@{/css/button.css}">
     <link rel="stylesheet" th:href="@{/css/dark-theme.css}">
     <link rel="stylesheet" th:href="@{/css/light-theme.css}">
+
     <link rel="stylesheet" th:href="@{/css/exercise-log.css}">
 </head>
 
@@ -22,6 +20,9 @@
 <div th:replace="fragment/navbar.html::navbar"></div>
 <div class="background-section py-4">
     <div class="container log-container">
+        <form th:action="@{/close-log}" method="post" class="close-form">
+            <button type="submit" class="close-btn bg-danger">✕</button>
+        </form>
         <!-- ================= SEARCH ================= -->
         <div class="row mb-3">
             <div class="col-12">
@@ -82,7 +83,7 @@
                         data-difficulty=${#strings.toLowerCase(ex.difficulty)},
                         data-equipment=${#strings.toLowerCase(ex.equipmentType)}
                      ">
-                    <form th:action="@{/select-exercise}" method="post" class="exercise-card">
+                    <form th:action="@{/set-exercise}" method="get" class="exercise-card">
                         <input type="hidden" name="exerciseId" th:value="${ex.id}">
                         <button type="submit" class="card exercise-card p-0 w-100">
                             <div class="exercise-image-container">

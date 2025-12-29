@@ -1,0 +1,30 @@
+.scrollable-container {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.scrollable-container::-webkit-scrollbar {
+    width: 7px;
+}
+
+.scrollable-container::-webkit-scrollbar-button {
+    display: none;
+}
+
+.scrollable-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scrollable-container::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.2);
+    border-radius: 3px;
+}
+
+.scrollable-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(0,0,0,0.3);
+}
+
+.scrollable-container {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,0,0,0.2) transparent;
+}

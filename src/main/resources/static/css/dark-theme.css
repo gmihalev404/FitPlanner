@@ -8,12 +8,22 @@ html.dark a {
     color: rgb(172, 165, 185);
 }
 
+@media (max-width: 880px) {
+    html.dark .background-section {
+        background: radial-gradient(at 0% 0%, rgba(45, 45, 45, 1) 0%, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(76, 76, 76, 0.4) 0%, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(20, 20, 20, 1) 0%, transparent 50%),
+        #121212; /* Fallback base color */
+        background-attachment: fixed;
+    }
+}
+
 /* ---------- Buttons ---------- */
-html.dark .btn-theme,
-html.dark .btn-theme:hover,
-html.dark .btn-theme:focus,
-html.dark .btn-theme:focus-visible,
-html.dark .btn-theme:active {
+html.dark .btn,
+html.dark .btn:hover,
+html.dark .btn:focus,
+html.dark .btn:focus-visible,
+html.dark .btn:active{
     background-color: #2c343c;
     border-color: #2c343c;
     color: whitesmoke;
@@ -24,7 +34,7 @@ html.dark .btn:hover {
     border-color: #454c56;
 }
 
-html.dark .btn-theme:active {
+html.dark .btn:active {
     background-color: #484e55;
     border-color: #484e55;
 }
@@ -34,7 +44,8 @@ html.dark .form-container,
 html.dark .text-container div,
 html.dark .setting-container,
 html.dark .create-workout-log,
-html.dark .log-container {
+html.dark .log-container,
+html.dark .set-exercise-container{
     color: #ffffff;
     background-color: rgba(74, 78, 78, 0.9);
 }
@@ -48,8 +59,8 @@ html.dark .days-container div{
     color: #a29595;
 }
 
-html.dark .coffee-container img{
-    filter: invert(60%);
+html.dark .coffee-img{
+    filter: invert(70%);
     border: none;
 }
 
@@ -133,3 +144,59 @@ html.dark body {
     color: #ffffff;
 }
 
+html.dark .background-section {
+    background-color: rgb(45, 45, 45);
+}
+
+html.dark .create-workout-log h2,
+html.dark .create-workout-log .form-label {
+    color: #efefef !important;
+}
+
+/* 2. Card Surface (Matching your target rgba 76, 76, 76) */
+html.dark .create-workout-log .card {
+    background-color: rgba(76, 76, 76, 1);
+    border: 1px solid rgba(100, 100, 100, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+html.dark .card-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+/* 3. Exercise Row Items - FIX APPLIED HERE */
+html.dark .exercise-item {
+    /* Set background to transparent so the outer container doesn't show green/gray */
+    background-color: transparent !important;
+    /* Removed the green border-left that was leaking to the outside */
+    border-left: none !important;
+}
+
+html.dark .exercise-item:hover {
+    /* Applying hover to the card specifically, not the wrapper */
+    background-color: transparent !important;
+}
+
+/* 4. Text inside Exercise Items */
+html.dark .exercise-item .text-dark {
+    color: #ffffff !important;
+}
+
+html.dark .exercise-item .text-muted {
+    color: #cccccc !important;
+}
+
+/* 5. Scrollbar (Blending with the gray) */
+html.dark .max-vh-25::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+/* 6. Navigation Arrows */
+html.dark .nav-arrow {
+    background: rgba(76, 76, 76, 0.8);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+}

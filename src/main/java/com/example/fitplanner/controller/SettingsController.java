@@ -30,6 +30,7 @@ public class SettingsController {
     @GetMapping
     public String getSettings(HttpSession session, Model model) {
         sessionModelService.populateModel(session, model);
+        sessionModelService.clearSession(session);
         return "settings";
     }
 

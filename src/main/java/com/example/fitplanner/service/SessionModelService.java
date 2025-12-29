@@ -10,9 +10,24 @@ import org.springframework.ui.Model;
 public class SessionModelService {
 
     public void populateModel(HttpSession session, Model model) {
-        model.addAttribute("userDto", (UserDto) session.getAttribute("loggedUser"));
-        model.addAttribute("theme", session.getAttribute("theme") != null ? session.getAttribute("theme") : Settings.DEFAULT_THEME);
-        model.addAttribute("language", session.getAttribute("language") != null ? session.getAttribute("language") : Settings.DEFAULT_LANGUAGE);
-        model.addAttribute("units", session.getAttribute("units") != null ? session.getAttribute("units") : Settings.DEFAULT_UNITS);
+        UserDto userDto = (UserDto) session.getAttribute("loggedUser");
+        model.addAttribute("userDto", userDto);
+        if(userDto == null) {
+            model.addAttribute("theme", session.getAttribute("theme") != null ? session.getAttribute("theme") : Settings.DEFAULT_THEME);
+            model.addAttribute("language", session.getAttribute("language") != null ? session.getAttribute("language") : Settings.DEFAULT_LANGUAGE);
+            model.addAttribute("units", session.getAttribute("units") != null ? session.getAttribute("units") : Settings.DEFAULT_UNITS);
+        }
+        else{
+            model.addAttribute("theme", userDto.getTheme());
+            model.addAttribute("language", userDto.getLanguage());
+            model.addAttribute("units", userDto.getMeasuringUnits());
+        }
+    }
+
+    public void clearSession(HttpSession session) {
+        session.removeAttribute("exercise-list");
+        session.removeAttribute("weekDays");
+        session.removeAttribute("currentDay");
+        session.removeAttribute("exercise");
     }
 }

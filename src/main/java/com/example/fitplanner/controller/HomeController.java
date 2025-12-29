@@ -18,6 +18,7 @@ public class HomeController {
     @GetMapping("/home")
     public String getHome(HttpSession session, Model model) {
         sessionModelService.populateModel(session, model);
+        sessionModelService.clearSession(session);
 //        if (model.getAttribute("userDto") == null) return "redirect:/login";
         return "home";
     }

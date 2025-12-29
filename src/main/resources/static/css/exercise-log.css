@@ -1,35 +1,51 @@
 .search-icon {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    display: block;
 }
 
-.exercise-card {
-    width: 100%;
-    aspect-ratio: 1 / 1;
+.log-container {
+    padding-top: 60px !important;
+}
+
+/* Ensure the container fills the button entirely */
+.exercise-image-container {
     position: relative;
+    width: 100%;
+    height: 100%;
 }
 
 .exercise-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
 }
 
+/* The Fixed Overlay */
 .exercise-name-overlay {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 2px 4px;
-    font-size: 10px;
+    /* This background is crucial for visibility */
+    background: rgba(0, 0, 0, 0.7);
+    color: #ffffff !important;
+    padding: 5px 2px;
+    font-size: 11px;
+    text-align: center;
+    font-weight: bold;
+    /* Prevents long names from disappearing */
+    white-space: normal;
+    line-height: 1.1;
+    z-index: 5;
 }
 
-.exercise-card {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    position: relative;
-    border: 3px solid black;
-    border-radius: 15%;
-    overflow: hidden;
+/* Reset the button styles that might be hiding the overlay */
+button.exercise-card {
+    border: none !important;
+    padding: 0 !important;
+    display: block;
+    overflow: hidden; /* Keeps the overlay inside the rounded corners */
 }
-

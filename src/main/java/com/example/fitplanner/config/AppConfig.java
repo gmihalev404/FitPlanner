@@ -1,6 +1,7 @@
 package com.example.fitplanner.config;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,5 +44,12 @@ public class AppConfig {
         resolver.setCookieName("fitplannerLanguage");
         resolver.setCookieMaxAge(60 * 60 * 24 * 30);
         return resolver;
+    }
+
+    @Bean
+    public ServletContextInitializer initializer() {
+        return servletContext -> {
+            servletContext.setSessionTimeout(30); // minutes
+        };
     }
 }

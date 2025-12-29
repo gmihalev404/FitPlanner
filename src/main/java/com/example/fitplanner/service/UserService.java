@@ -99,7 +99,6 @@ public class UserService {
     public void updateUserSettings(UserDto userDto) {
         User user = userRepository.findById(userDto.getId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
-
         user.updatePreferences(userDto.getTheme(), userDto.getLanguage(),  userDto.getMeasuringUnits());
     }
 }

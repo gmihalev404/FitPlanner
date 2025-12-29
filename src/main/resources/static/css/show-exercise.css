@@ -1,0 +1,34 @@
+html.show body {
+    overflow: hidden !important;
+    padding: 0;
+    margin: 0;
+}
+
+html.show .background-section {
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+}
+
+.show-container {
+    position: relative;
+    padding: 0 !important;
+    aspect-ratio: 1 / 1;
+    width: min(80vw, 600px);
+    max-width: 90vw;
+    margin: 0 auto;
+    border-radius: 12px;
+    overflow: hidden;
+    background: transparent;
+    height: auto;
+    border: none;
+}
+
+.exercise-video {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    border: none;
+    border-radius: 0;
+}

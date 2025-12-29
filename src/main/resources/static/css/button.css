@@ -1,14 +1,4 @@
-button {
-    padding: 5px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-button:hover {
-    opacity: 0.8;
-}
-
-.experience-button{
+.experience-button {
     padding-left: 10%;
 }
 
@@ -19,47 +9,22 @@ button:hover {
     z-index: -1;
 }
 
-.day-button-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
+
+.exercise-edit-form button {
+    position: relative;
+    z-index: 3;
+    text-align: left;
+}
+
+.add-exercise-bnt {
+    position: static;
     width: 100%;
-    height: 100%;
-    border: none;
-    background: none;
-    cursor: pointer;
-    z-index: 1;
+    height: auto;
+    z-index: auto;
 }
 
-.card-overlay-btn {
-    background-color: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    appearance: none;
-    -webkit-appearance: none;
+.add-exercise-bnt button {
     width: 100%;
-    height: 100%;
-    cursor: pointer;
+    padding: 0.5rem 0;
+    font-weight: bold;
 }
-
-.close-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.9);
-    border: none;
-    color: white;
-    font-size: 18px;
-    width: 36px;
-    height: 36px;
-    border-radius: 0 12px 0 0 !important;
-    cursor: pointer;
-}
-
-.close-btn:hover {
-
-}
-
-/*.close-btn:hover {*/
-/*    background: rgba(0, 0, 0, 0.8);
-/*}*/

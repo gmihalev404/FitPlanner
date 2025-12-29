@@ -1,15 +1,41 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    * {
+        font-size: 1rem;
+    }
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
 html {
     overflow-y: scroll;
 }
 
+.background-section div.container {
+    position: relative;
+    padding: 1%;
+    border-radius: 10px;
+}
+
 body {
     padding-top: 50px;
-    margin: 0;
     height: 100vh;
-    /*display: flex;*/
     justify-content: center;
     align-items: center;
-    font-family: Bahnschrift;
+    font-family: Bahnschrift, serif;
 }
 
 
@@ -27,10 +53,6 @@ body {
 }
 
 @media (max-width: 880px) {
-    .background-section {
-        background-image: none;
-    }
-
     .text {
         font-size: 15px !important;
     }
@@ -64,4 +86,53 @@ input:focus {
     outline: none;
     box-shadow: none !important;
     border-color: inherit;
+}
+
+/* ---------- Close Button ---------- */
+
+.close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: red;
+    border: none;
+    color: white;
+    font-size: 18px;
+    width: 36px;
+    height: 36px;
+    border-radius: 0 12px 0 0 !important;
+    cursor: pointer;
+}
+
+.close-form {
+    height: 35px;
+    width: 35px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1;
+    color: white;
+    border: none;
+    padding: 0.5rem 0.75rem;
+    border-radius: inherit;
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.close-form button.close-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #dc3545;
+}
+
+button {
+    padding: 5px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    filter: brightness(0.85);
 }

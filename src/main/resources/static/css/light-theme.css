@@ -21,6 +21,17 @@ html.light .exercise-image {
     filter: invert(100%);
 }
 
+@media (max-width: 880px) {
+    html.light .background-section {
+        /* Soft mesh gradient: Cream, sand, and a hint of warm latte */
+        background: radial-gradient(at 0% 0%, rgba(245, 235, 224, 1) 0%, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(230, 215, 200, 0.6) 0%, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(255, 255, 255, 1) 0%, transparent 50%),
+        #faf7f2;
+        background-attachment: fixed;
+    }
+}
+
 /* ---------- Buttons ---------- */
 html.light .btn,
 html.light .btn:focus,
@@ -45,7 +56,8 @@ html.light .form-container,
 html.light .text-container div,
 html.light .setting-container,
 html.light .create-workout-log ,
-html.light .log-container{
+html.light .log-container,
+html.light .set-exercise-container {
     color: #111;
     background-color: rgba(220, 220, 220, 0.9);
 }
@@ -128,5 +140,4 @@ html.light .navbar .nav-link:hover {
 
 html.light .navbar-brand .logo {
     filter: invert(85%);
-    /*opacity: 0.95;*/
 }

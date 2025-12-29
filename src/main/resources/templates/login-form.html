@@ -12,14 +12,16 @@
     <link rel="stylesheet" th:href="@{/css/footer.css}">
     <link rel="stylesheet" th:href="@{/css/dark-theme.css}">
     <link rel="stylesheet" th:href="@{/css/light-theme.css}">
-    <link rel="stylesheet" th:href="@{/css/container.css}">
-    <link rel="stylesheet" th:href="@{/css/input.css}">
+
+    <link rel="stylesheet" th:href="@{/css/login-register-form.css}">
 </head>
 <body>
 <div th:replace="fragment/navbar.html::navbar"></div>
 <div class="background-section">
     <div class="container form-container">
-        <form th:action="@{/login}" th:object="${loginDto}" method="post">
+        <form th:action="@{/login}"
+              th:object="${loginDto}"
+              method="post">
             <h1 class="container-heading" th:text="#{login.heading}">Sign in</h1>
             <div class="mb-3">
                 <input th:field="*{usernameOrEmail}" type="text" class="form-control" th:placeholder="#{login.usernameOrEmail}" required>

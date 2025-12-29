@@ -1,0 +1,34 @@
+.set-exercise-container {
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.exercise-name {
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.form-grid {
+    padding: 1rem;
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.submit-btn {
+    width: 100%;
+}
+
+.row.text-center {
+    margin-bottom: 1.5rem;
+}
+
+.btn-success {
+    background-color: #28a745;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+}

@@ -3,46 +3,58 @@ package com.example.fitplanner.entity.model;
 import com.example.fitplanner.entity.enums.Category;
 import com.example.fitplanner.entity.enums.ExerciseType;
 import com.example.fitplanner.entity.enums.EquipmentType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Entity
 @Getter
-@NoArgsConstructor
-@RequiredArgsConstructor
 @ToString
-public class Exercise extends BaseEntity{
-    @NonNull
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Exercise extends BaseEntity {
     @NotBlank
     @Size(min = 3, max = 32)
+    @Column(nullable = false)
     private String name;
 
     @Size(max = 500)
     private String description;
 
-    @NonNull
-    @Enumerated(value = EnumType.STRING)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @NotNull
     private Category category;
 
-    @NonNull
-    @Enumerated(value = EnumType.STRING)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @NotNull
     private ExerciseType exerciseType;
 
-    @NonNull
-    @Enumerated(value = EnumType.STRING)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @NotNull
     private EquipmentType equipmentType;
 
-    @NonNull
     @NotBlank
-//    @Size(max = 32)
+    @Column(nullable = false)
     private String imageUrl;
 
-    @NonNull
     @NotBlank
-//    @Size(max = 32)
+    @Column(nullable = false)
     private String videoUrl;
+
+    public Exercise(String name, Category category, ExerciseType exerciseType,
+                    EquipmentType equipmentType, String imageUrl, String videoUrl) {
+        this.name = name;
+        this.category = category;
+        this.exerciseType = exerciseType;
+        this.equipmentType = equipmentType;
+        this.imageUrl = imageUrl;
+        this.videoUrl = videoUrl;
+    }
 }
