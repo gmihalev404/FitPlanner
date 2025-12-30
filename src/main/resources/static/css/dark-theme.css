@@ -40,12 +40,7 @@ html.dark .btn:active {
 }
 
 /* ---------- Container ---------- */
-html.dark .form-container,
-html.dark .text-container div,
-html.dark .setting-container,
-html.dark .create-workout-log,
-html.dark .log-container,
-html.dark .set-exercise-container{
+html.dark .container {
     color: #ffffff;
     background-color: rgba(74, 78, 78, 0.9);
 }

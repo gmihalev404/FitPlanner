@@ -15,7 +15,6 @@ import java.util.*;
 
 @Controller
 public class WorkoutCreationController {
-
     private final UserService userService;
     private final ProgramService programService;
     private final ExerciseService exerciseService;
@@ -114,17 +113,6 @@ public class WorkoutCreationController {
                 if (dw.getDay().equalsIgnoreCase(day)) {
                     for (ExerciseProgressDto existing : dw.getExercises()) {
                         if (existing.getId().equals(dto.getId())) {
-                            System.out.println("BEFORE UPDATE -> reps=" + existing.getReps() +
-                                    " sets=" + existing.getSets() +
-                                    " weight=" + existing.getWeight());
-
-                            existing.setSets(dto.getSets());
-                            existing.setReps(dto.getReps());
-                            existing.setWeight(dto.getWeight());
-
-                            System.out.println("AFTER UPDATE -> reps=" + existing.getReps() +
-                                    " sets=" + existing.getSets() +
-                                    " weight=" + existing.getWeight());
                             break;
                         }
                     }
@@ -224,7 +212,7 @@ public class WorkoutCreationController {
         UserDto userDto = (UserDto) session.getAttribute("loggedUser");
         List<DayWorkout> weekDays = (List<DayWorkout>) session.getAttribute("weekDays");
         dto.setWeekDays(weekDays);
-        programService.createProgram(dto, userDto);
+        programService.createProgram(dto, userDto, userDto.getMeasuringUnits().equals("lb"));
         sessionModelService.clearSession(session);
         return "redirect:/home";
     }

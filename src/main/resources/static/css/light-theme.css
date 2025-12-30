@@ -52,12 +52,7 @@ html.light .btn-theme:active {
 }
 
 /* ---------- Container ---------- */
-html.light .form-container,
-html.light .text-container div,
-html.light .setting-container,
-html.light .create-workout-log ,
-html.light .log-container,
-html.light .set-exercise-container {
+html.light .container {
     color: #111;
     background-color: rgba(220, 220, 220, 0.9);
 }

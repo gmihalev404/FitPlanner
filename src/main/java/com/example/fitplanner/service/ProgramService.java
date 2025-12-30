@@ -1,12 +1,10 @@
 package com.example.fitplanner.service;
 
-import com.example.fitplanner.dto.CreatedProgramDto;
-import com.example.fitplanner.dto.DayWorkout;
-import com.example.fitplanner.dto.ExerciseProgressDto;
-import com.example.fitplanner.dto.UserDto;
+import com.example.fitplanner.dto.*;
 import com.example.fitplanner.entity.model.*;
 import com.example.fitplanner.repository.*;
 import jakarta.transaction.Transactional;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -25,23 +24,41 @@ public class ProgramService {
     private final ExerciseProgressRepository exerciseProgressRepository;
     private final ExerciseRepository exerciseRepository;
     private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
+
+    private final double LB_TO_KG = 0.45359237;
+    private final double KG_TO_LB = 2.20462262;
 
     @Autowired
-    public ProgramService(ProgramRepository programRepository, WorkoutSessionRepository workoutSessionRepository, ExerciseProgressRepository exerciseProgressRepository, ExerciseRepository exerciseRepository, UserRepository userRepository) {
+    public ProgramService(ProgramRepository programRepository, WorkoutSessionRepository workoutSessionRepository, ExerciseProgressRepository exerciseProgressRepository, ExerciseRepository exerciseRepository, UserRepository userRepository, ModelMapper modelMapper) {
         this.programRepository = programRepository;
         this.workoutSessionRepository = workoutSessionRepository;
         this.exerciseProgressRepository = exerciseProgressRepository;
         this.exerciseRepository = exerciseRepository;
         this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
     }
 
-    public List<Program> getProgramsByUserId(Long userId) {
-        return programRepository.getByUserId(userId);
+    public List<ProgramDto> getProgramsByUserId(Long userId) {
+        List<Program> programs = programRepository.getByUserId(userId);
+        List<ProgramDto> programDtos = new ArrayList<>();
+        for (Program p : programs) {
+            ProgramDto programDto = modelMapper.map(p, ProgramDto.class);
+            for (WorkoutSession ws : p.getSessions()) {
+                List<ExerciseProgressDto> dtos = ws.getExercises()
+                        .stream()
+                        .map(e -> modelMapper.map(e, ExerciseProgressDto.class))
+                        .toList();
+                programDto.getWorkouts().add(new DateWorkout(ws.getScheduledFor(), dtos));
+            }
+            programDtos.add(programDto);
+        }
+        return programDtos;
     }
 
-    public Program getCurrentProgram() {
-        return programRepository.findFirstByOrderByCreatedAtDesc().orElse(null);
-    }
+//    public Program getCurrentProgram() {
+//        return programRepository.findFirstByOrderByCreatedAtDesc().orElse(null);
+//    }
 
     public Program getProgramById(Long id) {
         return programRepository.findById(id).orElse(null);
@@ -55,33 +72,22 @@ public class ProgramService {
         programRepository.deleteById(id);
     }
 
-    public void createProgram(CreatedProgramDto dto, UserDto userDto) {
+    public void createProgram(CreatedProgramDto dto, UserDto userDto, boolean isInLbUnits) {
         User user = userRepository.findById(userDto.getId())
                 .orElseThrow(() -> new IllegalArgumentException(
                         "User not found with id: " + userDto.getId()));
-
         Program program = new Program(dto.getName(), user);
         program = programRepository.save(program);
-
         LocalDate today = LocalDate.now();
-
-        // Determine total weeks to schedule
         int totalWeeks;
-        if (!dto.getRepeats() || dto.getScheduleMonths() == 0) totalWeeks = 1; // Only schedule once
-        else totalWeeks = dto.getScheduleMonths() * 4; // Approximate 4 weeks per month
-
+        if (!dto.getRepeats() || dto.getScheduleMonths() == 0) totalWeeks = 1;
+        else totalWeeks = dto.getScheduleMonths() * 4;
         for (int weekOffset = 0; weekOffset < totalWeeks; weekOffset++) {
-            // Start of the target week
             LocalDate targetWeekStart = today.plusWeeks(weekOffset);
-
             for (DayWorkout dayWorkout : dto.getWeekDays()) {
                 if (dayWorkout.getExercises() == null || dayWorkout.getExercises().isEmpty()) continue;
                 DayOfWeek dayOfWeek = DayOfWeek.valueOf(dayWorkout.getDay().toUpperCase());
-
-                // Calculate session date
                 LocalDate sessionDate = targetWeekStart.with(dayOfWeek);
-
-                // Ensure session date is not in the past
                 if (!dto.getRepeats() && sessionDate.isBefore(today)) {
                     sessionDate = sessionDate.plusWeeks(1);
                 } else if (dto.getRepeats() && sessionDate.isBefore(today)) {
@@ -90,13 +96,9 @@ public class ProgramService {
                         sessionDate = sessionDate.plusWeeks(1);
                     }
                 }
-
-                // Create WorkoutSession
                 WorkoutSession session = new WorkoutSession(program, sessionDate);
                 program.addSession(session);
                 workoutSessionRepository.save(session);
-
-                // Add exercises to session
                 for (ExerciseProgressDto epDto : dayWorkout.getExercises()) {
                     Exercise exercise = exerciseRepository.findById(epDto.getExerciseId())
                             .orElseThrow(() -> new IllegalArgumentException(
@@ -107,7 +109,7 @@ public class ProgramService {
                             user,
                             epDto.getReps(),
                             epDto.getSets(),
-                            epDto.getWeight(),
+                            isInLbUnits ? epDto.getWeight() * LB_TO_KG : epDto.getWeight(),
                             sessionDate
                     );
                     session.addExercise(progress);

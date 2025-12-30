@@ -13,11 +13,6 @@ public class DayWorkout implements Serializable {
     private String day;
     private List<ExerciseProgressDto> exercises = new ArrayList<>();
 
-    public DayWorkout(String day) {
-        this.day = day;
-        this.exercises = new ArrayList<>();
-    }
-
     public DayWorkout(String day, List<ExerciseProgressDto> exercises) {
         this.day = day;
         this.exercises = exercises != null ? exercises : new ArrayList<>();

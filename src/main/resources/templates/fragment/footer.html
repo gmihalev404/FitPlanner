@@ -6,34 +6,32 @@
 </head>
 <body>
 <footer class="pt-5 pb-4">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6 mb-4">
-                <h3 th:text="#{aboutFitPlanner}">About FitPlanner</h3>
-                <p th:text="#{aboutDescription}">
-                    FitPlanner helps you build healthier habits, stay motivated, and reach your fitness goals.
-                    Create personalized workout programs or follow ready-made routines from experienced trainers.
-                </p>
-                <p>
-                    <a href="/about" class="text-white text-decoration-underline" th:text="#{readMore}">Read more</a>
-                </p>
+    <div class="row">
+        <div class="col-md-9 mb-4">
+            <h3 th:text="#{aboutFitPlanner}">About FitPlanner</h3>
+            <p th:text="#{aboutDescription}">
+                FitPlanner helps you build healthier habits, stay motivated, and reach your fitness goals.
+                Create personalized workout programs or follow ready-made routines from experienced trainers.
+            </p>
+            <p>
+                <a href="/about" class="text-white text-decoration-underline" th:text="#{readMore}">Read more</a>
+            </p>
+        </div>
+        <div class="col-md-3 mb-4">
+            <h3 th:text="#{contact}">Contact</h3>
+            <div class="mb-2">
+                <strong th:text="#{email}">Email:</strong> <br>
+                <a href="mailto:support@fitplanner.com" class="text-white">support@fitplanner.com</a>
             </div>
-            <div class="col-md-6 mb-4">
-                <h3 th:text="#{contact}">Contact</h3>
-                <div class="mb-2">
-                    <strong th:text="#{email}">Email:</strong> <br>
-                    <a href="mailto:support@fitplanner.com" class="text-white">support@fitplanner.com</a>
-                </div>
-                <div class="mb-2">
-                    <strong th:text="#{phone}">Phone:</strong> <br>
-                    <a href="tel:+1234567890" class="text-white">+1 234 567 890</a>
-                </div>
+            <div class="mb-2">
+                <strong th:text="#{phone}">Phone:</strong> <br>
+                <a href="tel:+1234567890" class="text-white">+1 234 567 890</a>
             </div>
         </div>
-        <div class="row mt-3">
-            <div class="col text-center">
-                <p class="mb-0" th:text="#{copyright}">© 2025 FitPlanner. All rights reserved.</p>
-            </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col text-center">
+            <p class="mb-0" th:text="#{copyright}">© 2025 FitPlanner. All rights reserved.</p>
         </div>
     </div>
 </footer>

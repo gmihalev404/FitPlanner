@@ -64,7 +64,9 @@
                                     <div class="flex-grow-1 overflow-hidden">
                                         <div class="fw-bold small text-dark text-truncate" th:text="${exercise.name}"></div>
                                         <div class="text-muted" style="font-size: 0.7rem;"
-                                             th:text="${exercise.sets + ' ' + #messages.msg('create.sets') + ' - ' + exercise.reps + ' x ' + exercise.weight + 'kg'}"></div>
+                                             th:text="${exercise.sets + ' ' + #messages.msg('create.sets') + ' - ' + exercise.reps + ' x '
+                                             + exercise.weight + ' ' + (userDto.measuringUnits == 'kg' ? 'kg' : 'lb')}">
+                                        </div>
                                     </div>
                                     <div class="d-flex align-items-center ms-2">
                                         <form th:action="@{/edit-exercise}" method="get" class="me-1">

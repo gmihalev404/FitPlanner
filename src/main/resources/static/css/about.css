@@ -3,6 +3,7 @@
     line-height: 1.7;
     color: #333;
     padding: 15px 0;
+    background: transparent !important;
 }
 
 .delimiter {

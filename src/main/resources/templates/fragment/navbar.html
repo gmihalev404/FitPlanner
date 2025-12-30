@@ -1,4 +1,4 @@
-<nav th:fragment="navbar" class="navbar navbar-dark navbar-expand-md w-100">
+<nav th:fragment="navbar" class="navbar navbar-dark navbar-expand-lg w-100">
   <div class="container-fluid">
 
     <a href="#" class="navbar-brand">
@@ -25,7 +25,7 @@
         <li class="nav-item"><a class="nav-link" th:href="@{/home}" th:text="#{nav.home}"></a></li>
         <li class="nav-item"><a class="nav-link" th:href="@{/create}" th:text="#{nav.create-workout}"></a></li>
         <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.stats}"></a></li>
-        <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.my-workouts}"></a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/my-workouts}" th:text="#{nav.my-workouts}"></a></li>
         <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.search}"></a></li>
         <li class="nav-item"><a class="nav-link" th:href="@{/settings}" th:text="#{nav.settings}"></a></li>
         <li class="nav-item"><a class="nav-link" th:href="@{/logout}" th:text="#{nav.log-out}"></a></li>

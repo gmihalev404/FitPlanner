@@ -12,37 +12,36 @@
     <link rel="stylesheet" th:href="@{/css/footer.css}">
     <link rel="stylesheet" th:href="@{/css/dark-theme.css}">
     <link rel="stylesheet" th:href="@{/css/light-theme.css}">
+
     <link rel="stylesheet" th:href="@{/css/about.css}">
 </head>
 <body>
 <div th:replace="fragment/navbar.html::navbar"></div>
 <div class="background-section">
-    <div class="container text-container row justify-content-center w-100">
-        <div class="col-10 col-md-8 pt-2 p-4">
-            <h1 class="container-heading" th:text="#{about.heading}">About</h1>
-            <div class="about-section" th:text="#{about.welcome1}">
-                Welcome to FitPlanner — your personal space for building healthier habits...
-            </div>
-            <div class="delimiter"></div>
-            <div class="about-section" th:text="#{about.welcome2}">
-                With FitPlanner, you’re in control...
-            </div>
-            <div class="delimiter"></div>
-            <div class="about-section" th:text="#{about.welcome3}">
-                If you’d rather start with something prepared...
-            </div>
-            <div class="delimiter"></div>
-            <div class="about-section" th:text="#{about.welcome4}">
-                FitPlanner is designed to grow with you...
-            </div>
-            <div class="delimiter"></div>
-            <div class="about-section" th:text="#{about.welcome5}">
-                At FitPlanner, our mission is simple...
-            </div>
-            <div class="delimiter"></div>
-            <div class="about-section" th:text="#{about.welcome6}">
-                Welcome to the future of personalized training.
-            </div>
+    <div class="container text-container row justify-content-center w-100 col-10 col-md-8 pt-2 p-4">
+        <h1 class="container-heading" th:text="#{about.heading}">About</h1>
+        <div class="container about-section" th:text="#{about.welcome1}">
+            Welcome to FitPlanner — your personal space for building healthier habits...
+        </div>
+        <div class="delimiter"></div>
+        <div class="container about-section" th:text="#{about.welcome2}">
+            With FitPlanner, you’re in control...
+        </div>
+        <div class="delimiter"></div>
+        <div class="container about-section" th:text="#{about.welcome3}">
+            If you’d rather start with something prepared...
+        </div>
+        <div class="delimiter"></div>
+        <div class="container about-section" th:text="#{about.welcome4}">
+            FitPlanner is designed to grow with you...
+        </div>
+        <div class="delimiter"></div>
+        <div class="container about-section" th:text="#{about.welcome5}">
+            At FitPlanner, our mission is simple...
+        </div>
+        <div class="delimiter"></div>
+        <div class="container about-section" th:text="#{about.welcome6}">
+            Welcome to the future of personalized training.
         </div>
     </div>
 </div>

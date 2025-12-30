@@ -18,7 +18,7 @@ import java.util.Set;
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class Program extends BaseEntity {
 
-    @Size(min = 2, max = 64)
+//    @Size(min = 2, max = 64)
     @Column(nullable = false)
     private String name;
 

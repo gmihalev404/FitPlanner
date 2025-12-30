@@ -92,7 +92,7 @@
 }
 
 /* --- CORE RESPONSIVE STRUCTURE --- */
-@media (min-width: 767px) {
+@media (min-width: 768px) {
     #daysContainer {
         display: flex !important;
         flex-wrap: wrap !important;
@@ -105,7 +105,7 @@
     }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
     #daysContainer {
         display: flex !important;
         flex-wrap: nowrap !important;
