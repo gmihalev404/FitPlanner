@@ -4,6 +4,8 @@ import lombok.Data;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +14,9 @@ import java.util.List;
 public class ProgramDto implements Serializable {
     private Long id;
     private String name;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime lastChanged;
 
     private List<DateWorkout> workouts = new ArrayList<>();
 }

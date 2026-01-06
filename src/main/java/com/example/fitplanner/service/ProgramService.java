@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
@@ -124,34 +125,28 @@ public class ProgramService {
         Program program = programRepository.findById(programId)
                 .orElseThrow(() -> new IllegalArgumentException("Program not found: " + programId));
 
-        // 1. Update Metadata
         program.setName(dto.getName());
         program.setScheduleMonths(dto.getScheduleMonths());
         program.setNotifications(dto.getNotifications());
         program.setIsPublic(dto.getIsPublic());
+        program.setLastChanged(LocalDateTime.now());
         programRepository.save(program);
 
         LocalDate today = LocalDate.now();
 
-        // 2. Clear Future Sessions
         List<WorkoutSession> futureSessions = workoutSessionRepository.findAllByProgramAndSessionDateAfter(program, today.minusDays(1));
         workoutSessionRepository.deleteAll(futureSessions);
 
-        // IMPORTANT: Flush ensures the delete is finished before we try to insert
         workoutSessionRepository.flush();
 
-        // 3. Validate the DTO Data
         if (dto.getWeekDays() == null || dto.getWeekDays().isEmpty()) {
-            // If this logs, your Session/Controller isn't passing the exercises correctly
             System.out.println("DEBUG: No weekdays found in DTO!");
             return;
         }
 
         int totalWeeks = (!dto.getRepeats() || dto.getScheduleMonths() == 0) ? 1 : dto.getScheduleMonths() * 4;
 
-        // 4. Re-generation
         for (int weekOffset = 0; weekOffset < totalWeeks; weekOffset++) {
-            // We calculate the start of the "target" week
             LocalDate referenceDate = today.plusWeeks(weekOffset);
 
             for (DayWorkout dayWorkout : dto.getWeekDays()) {
@@ -160,7 +155,6 @@ public class ProgramService {
                 DayOfWeek dayOfWeek = DayOfWeek.valueOf(dayWorkout.getDay().toUpperCase());
                 LocalDate sessionDate = referenceDate.with(TemporalAdjusters.nextOrSame(dayOfWeek));
 
-                // Avoid double-scheduling the same day in week 0
                 if (sessionDate.isBefore(today)) continue;
 
                 WorkoutSession session = new WorkoutSession(program, sessionDate);
@@ -172,7 +166,6 @@ public class ProgramService {
 
                     double weight = "lb".equals(units) ? epDto.getWeight() * 0.453592 : epDto.getWeight();
 
-                    // Create a clean NEW progress record
                     ExerciseProgress progress = new ExerciseProgress(
                             savedSession,
                             exercise,

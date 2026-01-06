@@ -13,7 +13,6 @@ import java.util.Locale;
 @Controller
 @RequestMapping("/settings")
 public class SettingsController {
-
     private final UserService userService;
     private final LocaleResolver localeResolver;
     public SettingsController(UserService userService,

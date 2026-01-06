@@ -7,6 +7,7 @@ import com.example.fitplanner.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
@@ -75,6 +76,8 @@ public class WorkoutCreationController {
                                @RequestParam Long id,
                                HttpSession session,
                                Model model) {
+        UserDto userDto = (UserDto) session.getAttribute("loggedUser");
+        if(userDto == null) return "redirect:/login";
         session.setAttribute("currentDay", day);
         session.setAttribute("exerciseId", id);
         List<DayWorkout> weekDays = (List<DayWorkout>) session.getAttribute("weekDays");

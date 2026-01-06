@@ -33,27 +33,51 @@
                     <input type="checkbox" id="selectAllPrograms" onclick="toggleAllPrograms(this)">
                 </div>
 
-                <div class="programs scrollable-container overflow-auto border rounded p-2">
-                    <div th:each="program : ${programs}"
-                         class="d-flex w-100 justify-content-between align-items-center py-1">
-                        <span th:text="${program.name}" class="col-8 col-md-10 text-truncate"></span>
-                        <div class="d-flex align-items-center gap-2">
-                            <form th:action="@{/edit-program}" method="get" class="me-2">
-                                <input type="hidden" name="programId" th:value="${program.id}">
-                                <button type="submit" class="btn text-primary fs-4 p-0 px-1" title="Edit">&#9998;</button>
-                            </form>
-                            <form th:action="@{/remove-program}" method="post" onsubmit="return confirm('Remove this exercise?')">
-                                <input type="hidden" name="programId" th:value="${program.id}">
-                                <button type="submit" class="btn text-danger fs-4 p-0 px-1" title="Remove">✕</button>
-                            </form>
-                            <input type="checkbox" class="program-checkbox"
-                                   th:data-id="${program.id}"
-                                   th:data-dates="${program.workouts != null ? #strings.listJoin(program.workouts.![date], ',') : ''}"
-                                   onchange="updateCalendar()">
+                <div th:each="program : ${programs}" class="d-flex w-100 justify-content-between align-items-center py-3 border-bottom">
+
+                    <div class="row flex-grow-1 align-items-center g-0">
+
+                        <div class="col-12 col-lg-4 pe-lg-3">
+                            <span th:text="${program.name}" class="fw-bold text-truncate d-block" style="max-width: 100%;"></span>
+                        </div>
+
+                        <div class="col-12 col-lg-8">
+                            <div class="row g-0 mt-2 mt-lg-0">
+                                <div class="col-12 col-sm-6 mb-1 mb-sm-0">
+            <span class="small text-muted d-flex align-items-center">
+                <i class="bi bi-calendar-plus me-2"></i>
+                <span class="me-1">Created:</span>
+                <span th:text="${#temporals.format(program.createdAt, 'dd MMM HH:mm')}"></span>
+            </span>
+                                </div>
+                                <div class="col-12 col-sm-6">
+            <span class="small text-muted d-flex align-items-center">
+                <i class="bi bi-arrow-repeat me-2"></i>
+                <span class="me-1">Updated:</span>
+                <span th:text="${#temporals.format(program.lastChanged, 'dd MMM HH:mm')}"></span>
+            </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
+
+                    <div class="d-flex align-items-center gap-3 ms-3 ps-2 border-start">
+                        <form th:action="@{/edit-program}" method="get" class="m-0">
+                            <input type="hidden" name="programId" th:value="${program.id}">
+                            <button type="submit" class="btn text-primary fs-5 p-0" title="Edit"
+                                    style="width: 2rem; height: 2rem; padding: 0;">&#9998;</button>
+                        </form>
+                        <form th:action="@{/remove-program}" method="post" class="m-0" onsubmit="return confirm('Remove this program?')">
+                            <input type="hidden" name="programId" th:value="${program.id}">
+                            <button type="submit" class="btn text-danger fs-5 p-0" title="Remove"
+                                    style="width: 2rem; height: 2rem; padding: 0;">✕</button>
+                        </form>
+                        <input type="checkbox" class="program-checkbox"
+                               th:data-id="${program.id}"
+                               th:data-dates="${program.workouts != null ? #strings.listJoin(program.workouts.![date], ',') : ''}"
+                               onchange="updateCalendar()">
+                    </div>
+                </div>            </div>
 
             <div class="d-none d-lg-flex align-items-stretch justify-content-center col-auto">
                 <div class="delimiter"></div>
