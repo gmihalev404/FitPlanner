@@ -7,7 +7,6 @@ import com.example.fitplanner.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
@@ -28,8 +27,9 @@ public class WorkoutCreationController {
 
     @GetMapping("/create")
     public String createWorkout(HttpSession session, Model model) {
-        UserDto sessionUser = (UserDto) session.getAttribute("loggedUser");
-        if (sessionUser == null) return "redirect:/login";
+        UserDto userDto = (UserDto) session.getAttribute("loggedUser");
+        if (userDto == null) return "redirect:/login";
+        ProgramsUserDto programsUserDto = userService.getById(userDto.getId(), ProgramsUserDto.class);
         CreatedProgramDto programForm = (CreatedProgramDto) session.getAttribute("programForm");
         if (programForm == null) {
             programForm = new CreatedProgramDto();
@@ -57,6 +57,8 @@ public class WorkoutCreationController {
         model.addAttribute("weekDays", weekDays);
         Long programId = (Long) session.getAttribute("programId");
         model.addAttribute("programId", programId);
+        model.addAttribute("userDto", userDto);
+        model.addAttribute("programsUserDto", programsUserDto);
         return "create";
     }
 
@@ -64,10 +66,14 @@ public class WorkoutCreationController {
     public String showExerciseLog(@RequestParam(required = false) String day,
                                   HttpSession session,
                                   Model model){
-        if (session.getAttribute("loggedUser") == null) return "redirect:/login";
+        UserDto userDto = (UserDto) session.getAttribute("loggedUser");
+        if (userDto == null) return "redirect:/login";
+        ProgramsUserDto programsUserDto = userService.getById(userDto.getId(), ProgramsUserDto.class);
         if(day != null) session.setAttribute("currentDay", day);
         Set<ExerciseDto> exercises = exerciseService.getAll();
         model.addAttribute("exercises", exercises);
+        model.addAttribute("userDto", userDto);
+        model.addAttribute("programsUserDto", programsUserDto);
         return "exercises-log";
     }
 
@@ -78,6 +84,7 @@ public class WorkoutCreationController {
                                Model model) {
         UserDto userDto = (UserDto) session.getAttribute("loggedUser");
         if(userDto == null) return "redirect:/login";
+        ProgramsUserDto programsUserDto = userService.getById(userDto.getId(), ProgramsUserDto.class);
         session.setAttribute("currentDay", day);
         session.setAttribute("exerciseId", id);
         List<DayWorkout> weekDays = (List<DayWorkout>) session.getAttribute("weekDays");
@@ -97,6 +104,8 @@ public class WorkoutCreationController {
         if (foundDto == null) return "redirect:/create";
         model.addAttribute("dto", foundDto);
         model.addAttribute("exercise", exerciseService.getById(foundDto.getExerciseId()));
+        model.addAttribute("userDto", userDto);
+        model.addAttribute("programsUserDto", programsUserDto);
         return "set-exercise";
     }
 
@@ -130,11 +139,16 @@ public class WorkoutCreationController {
     public String showSelectedExercise(@RequestParam Long exerciseId,
                                        HttpSession session,
                                        Model model) {
+        UserDto userDto = (UserDto) session.getAttribute("loggedUser");
+        if (userDto == null) return "redirect:/login";
+        ProgramsUserDto programsUserDto = userService.getById(userDto.getId(), ProgramsUserDto.class);
         ExerciseDto exerciseDto = exerciseService.getById(exerciseId);
         session.removeAttribute("exercise");
         session.setAttribute("exercise", exerciseDto);
         model.addAttribute("exercise", exerciseDto);
         model.addAttribute("dto", new ExerciseProgressDto());
+        model.addAttribute("userDto", userDto);
+        model.addAttribute("programsUserDto", programsUserDto);
         return "set-exercise";
     }
 
@@ -210,10 +224,11 @@ public class WorkoutCreationController {
     public String createFullWorkout(@ModelAttribute("programForm") CreatedProgramDto dto,
                                     HttpSession session) {
         UserDto userDto = (UserDto) session.getAttribute("loggedUser");
+        ProgramsUserDto programsUserDto = userService.getById(userDto.getId(), ProgramsUserDto.class);
         List<DayWorkout> weekDays = (List<DayWorkout>) session.getAttribute("weekDays");
         if (weekDays == null) weekDays = new ArrayList<>();
         dto.setWeekDays(weekDays);
-        programService.createProgram(dto, userDto, userDto.getMeasuringUnits());
+        programService.createProgram(dto, programsUserDto, programsUserDto.getMeasuringUnits());
         return "redirect:/home";
     }
 

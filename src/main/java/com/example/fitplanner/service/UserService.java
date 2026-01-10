@@ -1,14 +1,13 @@
 package com.example.fitplanner.service;
 
+import com.example.fitplanner.dto.ProfileUserDto;
 import com.example.fitplanner.util.UnitValidator;
-import com.example.fitplanner.dto.UserDto;
 import com.example.fitplanner.dto.UserLoginDto;
 import com.example.fitplanner.dto.UserRegisterDto;
 import com.example.fitplanner.entity.enums.Role;
 import com.example.fitplanner.entity.model.User;
 import com.example.fitplanner.repository.UserRepository;
 import com.example.fitplanner.util.SHA256Hasher;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,9 +76,11 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public UserDto getById(Long id){
-        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid ID"));
-        return modelMapper.map(user, UserDto.class);
+    public <T> T getById(Long id, Class<T> dtoType) {
+        User user = getById(id);
+        System.out.println(user);
+        System.out.println(modelMapper.map(user, dtoType));
+        return modelMapper.map(user, dtoType);
     }
 
 
@@ -94,9 +95,33 @@ public class UserService {
         return user.getId();
     }
 
-    public void updateUserSettings(UserDto userDto) {
-        User user = userRepository.findById(userDto.getId())
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-        user.updatePreferences(userDto.getTheme(), userDto.getLanguage(),  userDto.getMeasuringUnits());
+//    public void updateUserSettings(UserDto userDto) {
+//        User user = userRepository.findById(userDto.getId())
+//                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+//        user.setTheme(userDto.getTheme());
+//        user.setLanguage(userDto.getLanguage());
+//        user.setMeasuringUnits(userDto.getMeasuringUnits());
+//    }
+
+    private User getById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid ID"));
+    }
+
+    public void updateProfile(ProfileUserDto profileDto) {
+        User user = userRepository.findById(profileDto.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid ID"));
+        user.setFirstName(profileDto.getFirstName());
+        user.setLastName(profileDto.getLastName());
+
+        user.setProfileImageUrl(profileDto.getProfileImageUrl());
+
+        user.setAge(profileDto.getAge());
+        user.setWeight(profileDto.getWeight());
+
+        user.setTheme(profileDto.getTheme());
+        user.setLanguage(profileDto.getLanguage());
+        user.setMeasuringUnits(profileDto.getMeasuringUnits());
+        userRepository.save(user);
     }
 }

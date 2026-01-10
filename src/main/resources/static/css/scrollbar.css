@@ -1,31 +1,40 @@
+:root {
+    /* Brand Greens (Constant) */
+    --brand-green: #28a745;
+    --brand-green-hover: #218838;
+}
+
 .scrollable-container {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
     overflow-x: hidden;
 
+    /* Firefox Support */
     scrollbar-width: thin;
-    scrollbar-color: #28a745 #f1f1f1;
+    scrollbar-color: var(--brand-green) var(--scroll-track);
 }
 
+/* Chrome, Edge, Safari, and Opera Support */
 .scrollable-container::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
 
 .scrollable-container::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: var(--scroll-track);
     border-radius: 10px;
 }
 
 .scrollable-container::-webkit-scrollbar-thumb {
-    background: #28a745;
+    background: var(--brand-green);
     border-radius: 20px;
-    border: 1px solid #f1f1f1;
+    /* This creates a small padding effect around the green bar */
+    border: 1px solid var(--scroll-track);
 }
 
 .scrollable-container::-webkit-scrollbar-thumb:hover {
-    background: #218838;
+    background: var(--brand-green-hover);
 }
 
 @media (max-width: 768px) {

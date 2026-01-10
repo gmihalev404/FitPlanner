@@ -1,42 +1,39 @@
+:root {
+    --btn-danger-bg: #dc3545;
+    --btn-primary-text: #ffffff;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-@media (max-width: 768px) {
-    div {
-        font-size: 1rem;
-    }
-}
-
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-input[type=number] {
-    -moz-appearance: textfield;
-}
+/* ---------- Root / Page ---------- */
 
 html {
     overflow-y: scroll;
     overflow-x: hidden;
-}
-
-.background-section div.container {
-    position: relative;
-    padding: 1%;
-    border-radius: 10px;
+    background-color: var(--bg-app);
+    color: var(--text-main);
 }
 
 body {
     padding-top: 50px;
-    height: 100vh;
+    min-height: 100vh;
     justify-content: center;
     align-items: center;
     font-family: Bahnschrift, serif;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+}
+
+body, html {
+    overflow-x: hidden;
+    overflow-y: auto;
+    font-family: 'Bahnschrift', sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-main);
 }
 
 @media (max-width: 992px) {
@@ -45,18 +42,16 @@ body {
     }
 }
 
+/* ---------- Typography ---------- */
 
-.background-section {
-    width: 100%;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    background-image: url('/images/background.png');
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
+a {
+    color: var(--text-link);
+}
+
+@media (max-width: 768px) {
+    div {
+        font-size: 1rem;
+    }
 }
 
 @media (max-width: 880px) {
@@ -66,6 +61,7 @@ body {
 
     h1 {
         font-size: 24px !important;
+        color: var(--text-main);
     }
 }
 
@@ -78,6 +74,33 @@ body {
     }
 }
 
+/* ---------- Layout ---------- */
+
+.background-section {
+    width: 100%;
+    min-height: calc(100vh - 50px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: var(--bg-section);
+    background-image: url('/images/background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: visible;
+}
+
+.background-section div.container {
+    position: relative;
+    padding: 1%;
+    border-radius: 10px;
+    background-color: var(--bg-container);
+    color: var(--text-main);
+}
+
+/* ---------- Grid ---------- */
+
 @media (min-width: 1200px) {
     .col-xl-day {
         flex: 0 0 auto;
@@ -85,8 +108,22 @@ body {
     }
 }
 
+/* ---------- Inputs ---------- */
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
 input:-webkit-autofill {
     transition: background-color 5000s;
+    background-color: var(--bg-input);
+    color: var(--text-input);
 }
 
 input:focus {
@@ -95,15 +132,90 @@ input:focus {
     border-color: inherit;
 }
 
+input[type=text],
+input[type=number],
+input[type=password],
+input[type=email],
+textarea,
+select{
+    background-color: var(--bg-input) !important;
+    color: var(--text-input);
+    border: 1px solid var(--border-input) !important;
+    border-radius: 4px;
+    padding: 0.4rem 0.6rem;
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--text-placeholder);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--border-input);
+    box-shadow: 0 0 0 2px rgba(127, 135, 135, 0.3);
+}
+
+select option:hover,
+select option:focus {
+    background-color: var(--bg-option-hover);
+    border: 1px solid var(--bg-option-hover);
+    color: var(--text-option-hover);
+}
+
+
+.input-group-text {
+    background-color: var(--search-bg);
+    color: var(--search-text);
+    border: 1px solid var(--search-bg);
+}
+
+input:-webkit-autofill {
+    background-color: var(--bg-input) !important;
+    color: var(--text-input) !important;
+}
+
+input:disabled,
+textarea:disabled,
+select:disabled {
+    background-color: rgba(127, 135, 135, 0.6);
+    color: #555;
+}
+
+input, textarea, select {
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+/* ---------- Buttons ---------- */
+
+button, .btn {
+    padding: 5px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: var(--btn-bg);
+    border: 1px solid var(--btn-bg);
+    color: var(--btn-text);
+}
+
+button:hover, .btn:hover {
+    background-color: var(--btn-bg-hover);
+    border-color: var(--btn-bg-hover);
+    filter: brightness(0.95);
+}
+
 /* ---------- Close Button ---------- */
 
 .close-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: red;
+    background: var(--btn-danger-bg);
     border: none;
-    color: white;
+    color: var(--btn-primary-text);
     font-size: 18px;
     width: 36px;
     height: 36px;
@@ -118,7 +230,7 @@ input:focus {
     top: 0;
     right: 0;
     z-index: 1;
-    color: white;
+    color: var(--btn-primary-text);
     border: none;
     padding: 0.5rem 0.75rem;
     border-radius: inherit;
@@ -131,15 +243,5 @@ input:focus {
     position: absolute;
     top: 0;
     right: 0;
-    background-color: #dc3545;
-}
-
-button {
-    padding: 5px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-button:hover {
-    filter: brightness(0.85);
+    background-color: var(--btn-danger-bg);
 }

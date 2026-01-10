@@ -1,0 +1,22 @@
+.session-container {
+    min-height: 100px;
+    max-height: 600px;
+    /* Theme Integration */
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius);
+    padding: 15px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Ensure the text inside matches the theme color */
+.session-exercises div {
+    color: var(--text-main);
+}
+
+@media (max-width: 676px) {
+    .session-exercises div {
+        font-size: 0.8rem;
+    }
+}

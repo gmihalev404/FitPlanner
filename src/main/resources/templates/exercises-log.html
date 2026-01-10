@@ -7,12 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="#{exercise.all_categories}">Exercises</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/common.css}">
-    <link rel="stylesheet" th:href="@{/css/navbar.css}">
-    <link rel="stylesheet" th:href="@{/css/footer.css}">
     <link rel="stylesheet" th:href="@{/css/dark-theme.css}">
     <link rel="stylesheet" th:href="@{/css/light-theme.css}">
     <link rel="stylesheet" th:href="@{/css/search-bar.css}">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
 
     <link rel="stylesheet" th:href="@{/css/scrollbar.css}">
     <link rel="stylesheet" th:href="@{/css/exercise-log.css}">
@@ -22,10 +22,10 @@
 <div class="background-section py-4">
     <div class="container log-container">
         <form th:action="@{/close-log}" method="post" class="close-form">
-            <button type="submit" class="close-btn bg-danger" th:title="#{exercise.close}">✕</button>
+            <button type="submit" class="close-btn" th:title="#{exercise.close}">✕</button>
         </form>
         <!-- ================= SEARCH ================= -->
-        <div th:replace="fragment/search-bar.html :: search-bar('exerciseSearch', #{exercise.search_placeholder})"></div>
+        <div th:replace="fragment/search-bar.html::search-bar('exerciseSearch', #{exercise.search_placeholder})"></div>
         <!-- ================= FILTERS ================= -->
         <div class="row mb-4 mt-3">
             <div class="col-md-4 mb-2">

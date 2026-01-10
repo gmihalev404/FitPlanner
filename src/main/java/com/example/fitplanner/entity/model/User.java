@@ -3,13 +3,9 @@ package com.example.fitplanner.entity.model;
 import com.example.fitplanner.entity.enums.Difficulty;
 import com.example.fitplanner.entity.enums.Gender;
 import com.example.fitplanner.entity.enums.Role;
-import com.example.fitplanner.entity.model.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -17,6 +13,7 @@ import java.util.Set;
 
 @Entity
 @Getter
+@Setter
 @ToString(exclude = {"programs", "completedExercises"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
@@ -90,6 +87,9 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String measuringUnits = "kg";
 
+    //trainer only todo
+    // private Set<User> trainees = new HashSet<>();
+
     public User(String firstName, String lastName, String username, Role role, Gender gender,
                 Integer age, Double weight, Difficulty experience, String email, String password) {
         this.firstName = firstName;
@@ -102,11 +102,5 @@ public class User extends BaseEntity {
         this.experience = experience;
         this.email = email;
         this.password = password;
-    }
-
-    public void updatePreferences(String theme, String language, String units) {
-        this.theme = theme;
-        this.language = language;
-        this.measuringUnits = units;
     }
 }

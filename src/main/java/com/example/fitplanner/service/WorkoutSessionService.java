@@ -26,7 +26,7 @@ public class WorkoutSessionService {
         this.modelMapper = modelMapper;
     }
 
-    public List<ExerciseProgressDto> getWorkoutByProgramIdsAndDate(List<Long> programIds, LocalDate date, String units){
+    public List<ExerciseProgressDto> getWorkoutsByProgramIdsAndDate(List<Long> programIds, LocalDate date, String units){
         if(programIds == null || programIds.isEmpty()) return new ArrayList<>();
         System.out.println(date +" " + programIds.stream().map(String::valueOf).collect(Collectors.joining(" ")));
         List<WorkoutSession> sessions = workoutSessionRepository.getByProgramIdsAndDate(programIds, date);
@@ -37,7 +37,7 @@ public class WorkoutSessionService {
         for (DateWorkout dw : dtos) {
             exerciseProgressDtos.addAll(dw.getExercises());
         }
-        if(units.equals("lb")){
+        if(units.equals("lbs")){
             for (ExerciseProgressDto dto : exerciseProgressDtos) {
                 dto.setWeight(dto.getWeight() * KG_TO_LB);
             }

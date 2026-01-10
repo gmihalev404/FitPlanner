@@ -1,34 +1,48 @@
 .set-exercise-container {
-    border-radius: 12px;
+    /* Standardized Card Look */
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-card);
+    color: var(--text-main);
+    border-radius: var(--radius); /* Uses your 12px or variable radius */
     padding: 2rem;
 }
 
 .exercise-name {
     font-weight: bold;
     margin-bottom: 1rem;
+    color: var(--text-main);
 }
 
 .form-grid {
     padding: 1rem;
+    background-color: var(--bg-container); /* Subtle contrast for the inner grid */
+    border-radius: var(--radius-sm, 6px);
 }
 
 .form-label {
     font-weight: 500;
     margin-bottom: 0.5rem;
+    color: var(--text-muted); /* Softer label look */
 }
 
+/* Button Integration */
 .submit-btn {
     width: 100%;
+    background-color: var(--btn-bg);
+    color: var(--btn-text);
+    border: none;
+    padding: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-radius: var(--radius-sm, 6px);
+    transition: filter 0.2s;
+}
+
+.submit-btn:hover {
+    filter: brightness(0.9);
 }
 
 .row.text-center {
     margin-bottom: 1.5rem;
-}
-
-.btn-success {
-    background-color: #28a745;
-}
-
-.btn-warning {
-    background-color: #ffc107;
+    color: var(--text-main);
 }

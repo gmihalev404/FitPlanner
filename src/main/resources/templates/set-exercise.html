@@ -36,7 +36,10 @@
 
             <div class="col-12 col-sm-6 col-lg-3">
                 <label class="form-label" th:text="#{set.weight}">Weight</label>
-                <input th:field="*{weight}" type="number" class="form-control"
+                <input th:field="*{weight}"
+                       th:placeholder="${programsUserDto.measuringUnits == 'kg' ? 'kg' : 'lbs'}"
+                       type="number"
+                       class="form-control"
                        min="1" max="500" step="0.1" required>
             </div>
 
@@ -55,7 +58,8 @@
                         th:text="${dto.id != null} ? #{set.save_changes} : #{set.add_exercise}">
                 </button>
             </div>
-        </form>        <form th:action="${dto.exerciseId != null} ? @{/close-log} : @{/close-set}" method="post" class="close-form">
+        </form>
+        <form th:action="${dto.exerciseId != null} ? @{/close-log} : @{/close-set}" method="post" class="close-form">
             <button type="submit" class="close-btn">✕</button>
         </form>
     </div>

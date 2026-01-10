@@ -56,24 +56,12 @@ public class ProgramService {
         return programDtos;
     }
 
-    public ProgramDto getProgramById(Long id) {
-        Program program = programRepository.findById(id).orElse(null);
-        return modelMapper.map(program, ProgramDto.class);
+    public <T> T getById(Long id, Class<T> dtoType) {
+        Program program = getById(id);
+        return modelMapper.map(program, dtoType);
     }
 
-    public CreatedProgramDto getCreatedProgramById(Long id) {
-        Program program = programRepository.findById(id).orElse(null);
-        System.out.println(program);
-        System.out.println(modelMapper.map(program, CreatedProgramDto.class));
-        return modelMapper.map(program, CreatedProgramDto.class);
-
-    }
-
-    public void saveProgram(ProgramDto program) {
-        programRepository.save(modelMapper.map(program, Program.class));
-    }
-
-    public void createProgram(CreatedProgramDto dto, UserDto userDto, String units) {
+    public void createProgram(CreatedProgramDto dto, ProgramsUserDto userDto, String units) {
         User user = userRepository.findById(userDto.getId())
                 .orElseThrow(() -> new IllegalArgumentException(
                         "User not found with id: " + userDto.getId()));
@@ -110,7 +98,7 @@ public class ProgramService {
                             user,
                             epDto.getReps(),
                             epDto.getSets(),
-                            units.equals("lb") ? epDto.getWeight() * LB_TO_KG : epDto.getWeight(),
+                            units.equals("lbs") ? epDto.getWeight() * LB_TO_KG : epDto.getWeight(),
                             sessionDate
                     );
                     session.addExercise(progress);
@@ -120,7 +108,6 @@ public class ProgramService {
         }
     }
 
-    @Transactional
     public void updateProgram(Long programId, CreatedProgramDto dto, String units) {
         Program program = programRepository.findById(programId)
                 .orElseThrow(() -> new IllegalArgumentException("Program not found: " + programId));
@@ -164,7 +151,7 @@ public class ProgramService {
                     Exercise exercise = exerciseRepository.findById(epDto.getExerciseId())
                             .orElseThrow(() -> new IllegalArgumentException("Exercise not found"));
 
-                    double weight = "lb".equals(units) ? epDto.getWeight() * 0.453592 : epDto.getWeight();
+                    double weight = "lbs".equals(units) ? epDto.getWeight() * 0.453592 : epDto.getWeight();
 
                     ExerciseProgress progress = new ExerciseProgress(
                             savedSession,
@@ -184,4 +171,7 @@ public class ProgramService {
         programRepository.deleteById(programId);
     }
 
+    private Program getById(Long id) {
+        return programRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid ID"));
+    }
 }

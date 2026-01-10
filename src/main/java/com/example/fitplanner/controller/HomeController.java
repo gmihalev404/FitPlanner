@@ -1,5 +1,6 @@
 package com.example.fitplanner.controller;
 
+import com.example.fitplanner.dto.UserDto;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,7 +15,9 @@ public class HomeController {
     @GetMapping("/home")
     public String getHome(HttpSession session, Model model) {
         session.removeAttribute("programForm");
-        if (model.getAttribute("userDto") == null) return "redirect:/login";
+        UserDto userDto = (UserDto) session.getAttribute("loggedUser");
+        model.addAttribute("userDto", userDto);
+//        if (model.getAttribute("userDto") == null) return "redirect:/login";
         return "home";
     }
 

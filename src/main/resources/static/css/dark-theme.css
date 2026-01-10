@@ -1,11 +1,67 @@
-/* ---------- Common ---------- */
 html.dark {
-    background-color: #121212;
-    color: #ffffff;
-}
+    /* ---------- Base ---------- */
+    --bg-app: #121212;
+    --bg-body: #111;
+    --bg-section: rgb(45, 45, 45);
 
-html.dark a {
-    color: rgb(172, 165, 185);
+    --text-main: #ffffff;
+    --text-muted: #efefef;
+    --text-soft: #a29595;
+    --text-link: rgb(172, 165, 185);
+
+    /* ---------- Containers ---------- */
+    --bg-container: rgba(74, 78, 78, 0.9);
+    --bg-days-item: rgba(102, 102, 102);
+
+    --bg-card: rgba(76, 76, 76, 1);
+    --bg-card-footer: rgba(0, 0, 0, 0.15);
+
+    --border-card: rgba(100, 100, 100, 0.3);
+    --border-soft: rgba(255, 255, 255, 0.1);
+
+    /* ---------- Buttons ---------- */
+    --btn-bg: #2c343c;
+    --btn-bg-hover: #454c56;
+    --btn-bg-active: #484e55;
+    --btn-text: whitesmoke;
+
+    /* ---------- Inputs / Dropdowns ---------- */
+    --bg-input: rgb(127, 135, 135);
+    --border-input: rgb(127, 135, 135);
+    --text-input: #000;
+    --text-placeholder: #aaa;
+
+    --bg-option-hover: #888;
+    --text-option-hover: #ffffff;
+
+    --search-bg: rgb(127, 135, 135);
+    --search-text: #000;
+
+    /* ---------- Navbar ---------- */
+    --bg-navbar: rgba(11, 14, 19);
+    --text-navbar: #ffffff;
+    --text-navbar-hover: #ccc;
+
+    /* ---------- Lists / Exercise ---------- */
+    --bg-list: rgb(76, 76, 76);
+    --bg-item: rgb(105, 105, 105);
+    --text-item: #e6e6e6;
+
+    --scroll-thumb: #5e5e5e;
+
+    /* ---------- States ---------- */
+    --hover-light: rgba(245, 245, 245, 0.14);
+    --border-today: #ffffff;
+    --success-accent: #4caf50;
+
+    /* ---------- Navigation Arrows ---------- */
+    --bg-nav-arrow: rgba(100, 100, 100, 0.8);
+    --border-nav-arrow: rgba(255, 255, 255, 0.2);
+
+    /* ---------- Effects ---------- */
+    --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+    --scroll-track: #000
 }
 
 @media (max-width: 880px) {
@@ -18,195 +74,7 @@ html.dark a {
     }
 }
 
-/* ---------- Buttons ---------- */
-html.dark .btn,
-html.dark .btn:hover,
-html.dark .btn:focus,
-html.dark .btn:focus-visible,
-html.dark .btn:active{
-    background-color: #2c343c;
-    border-color: #2c343c;
-    color: whitesmoke;
-}
-
-html.dark .btn:hover {
-    background-color: #454c56;
-    border-color: #454c56;
-}
-
-html.dark .btn:active {
-    background-color: #484e55;
-    border-color: #484e55;
-}
-
-html.dark .day:hover:not(.empty, .workout-day),
-html.dark .nav-btn:hover {
-    background-color: rgba(245, 245, 245, 0.14);
-}
-
-html.dark .day.today {
-    border: 5px solid #333333
-}
-
-/* ---------- Container ---------- */
-html.dark .container {
-    color: #ffffff;
-    background-color: rgba(74, 78, 78, 0.9);
-}
-
-html.dark .container-heading {
-    color: aliceblue;
-}
-
-html.dark .days-container div{
-    background: rgba(102, 102, 102) !important;
-    color: #a29595;
-}
-
 html.dark .coffee-img{
     filter: invert(70%);
     border: none;
-}
-
-/* ---------- Dropdown ---------- */
-html.dark select,
-html.dark button,
-html.dark .gender-button,
-html.dark .experience-button,
-html.dark .gender-options,
-html.dark .experience-options {
-    background-color: rgb(127, 135, 135);
-    color: #000;
-    border: 1px solid rgb(127, 135, 135);
-}
-
-html.dark .gender-options label,
-html.dark .experience-options label {
-    color: #000;
-}
-
-html.dark .gender-options label:hover,
-html.dark .gender-options label:focus,
-html.dark .experience-options label:hover,
-html.dark .experience-options label:focus {
-    background-color: #888;
-    color: white;
-}
-
-/* ---------- Footer ---------- */
-html.dark footer {
-    color: #fff;
-}
-
-/* ---------- Input Fields ---------- */
-html.dark input:-webkit-autofill {
-    background-color: rgb(127, 135, 135);
-    color: #000;
-}
-
-html.dark .form-control {
-    background-color: rgb(127, 135, 135);
-    border-color: rgb(127, 135, 135);
-    color: #000;
-}
-
-html.dark .form-control:focus {
-    background-color: rgb(127, 135, 135);
-    border-color: rgb(127, 135, 135);
-}
-
-html.dark .form-control::placeholder {
-    color: #aaa;
-}
-
-/* ---------- Navbar ---------- */
-html.dark .navbar,
-html.dark .navbar-collapse {
-    background-color: rgba(11, 14, 19);
-}
-
-html.dark .navbar .nav-link {
-    color: #fff;
-}
-
-html.dark .navbar .nav-link:hover {
-    color: #ccc;
-}
-
-html.dark .navbar-brand .logo {
-    filter: invert(0%);
-}
-
-html.dark .navbar .nav-link,
-html.dark .navbar div {
-    border-color: rgb(127, 135, 135);
-}
-
-/* ---------- Body  ---------- */
-html.dark body {
-    background-color: #111;
-    color: #ffffff;
-}
-
-html.dark .background-section {
-    background-color: rgb(45, 45, 45);
-}
-
-html.dark .create-workout-log h2,
-html.dark .create-workout-log .form-label {
-    color: #efefef !important;
-}
-
-/* 2. Card Surface (Matching your target rgba 76, 76, 76) */
-html.dark .create-workout-log .card {
-    background-color: rgba(76, 76, 76, 1);
-    border: 1px solid rgba(100, 100, 100, 0.3);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-}
-
-html.dark .card-footer {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    background-color: rgba(0, 0, 0, 0.15);
-}
-
-html.dark .max-vh-25 {
-    background-color: rgb(76, 76, 76);          /* main surface */
-    color: #f2f2f2;                              /* readable text */
-}
-
-html.dark .exercise-item {
-    background-color: rgb(90, 90, 90);           /* slightly lighter for card contrast */
-    border-left-color: #4caf50 !important;        /* keep success color visible */
-    color: #e6e6e6;
-}
-
-html.dark .exercise-item {
-    background-color: rgb(105, 105, 105) !important;
-}
-
-html.dark .max-vh-25::-webkit-scrollbar-thumb {
-    background: #5e5e5e;                          /* darker scrollbar */
-}
-
-html.dark .coffee-img {
-    opacity: 0.9;
-    border-radius: 8px;
-}
-
-/* optional: subtle borders & card polish */
-html.dark .exercise-item,
-html.dark .max-vh-25 {
-    border-radius: 6px;
-}
-
-html.dark .exercise-item:hover {
-    transition: background-color 0.2s;
-}
-
-/* 6. Navigation Arrows */
-html.dark .nav-arrow {
-    background: rgba(100, 100, 100, 0.8);
-    color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(5px);
 }

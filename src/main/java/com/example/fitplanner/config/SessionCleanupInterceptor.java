@@ -19,12 +19,15 @@ public class SessionCleanupInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+
         String uri = request.getRequestURI();
 
+        // skip static resources
         if (uri.contains(".") || uri.startsWith("/css") || uri.startsWith("/js") || uri.startsWith("/webjars")) {
             return true;
         }
 
+        // workflow pages that should keep session
         List<String> safeZone = List.of(
                 "/create", "/exercise-log", "/edit-exercise", "/set-exercise",
                 "/add-exercise", "/remove-exercise", "/show", "/update-program-session",
@@ -33,11 +36,22 @@ public class SessionCleanupInterceptor implements HandlerInterceptor {
 
         boolean isInsideFlow = safeZone.stream().anyMatch(uri::startsWith);
 
+        // exit pages where session is normally cleared
         List<String> exitPoints = List.of("/home", "/my-workouts", "/profile", "/statistics", "/settings");
+
         boolean isExitPoint = exitPoints.stream().anyMatch(uri::startsWith);
 
-        if (isExitPoint) {
-            sessionModelService.clearSession(request.getSession());
+        // --- New logic for /create ---
+        if (uri.startsWith("/create")) {
+            String newProgramParam = request.getParameter("newProgram");
+            if ("true".equals(newProgramParam)) {
+                // only clear session if starting a new program intentionally
+                sessionModelService.clearProgramCreationSession(request.getSession());
+            }
+        }
+        else if (isExitPoint) {
+            // normal session cleanup for other exit pages
+            sessionModelService.clearProgramCreationSession(request.getSession());
         }
 
         return true;

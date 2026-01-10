@@ -17,31 +17,30 @@
     height: 100%;
     object-fit: cover;
     display: block;
+    background-color: var(--bg-section);
 }
 
-/* The Fixed Overlay */
 .exercise-name-overlay {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    /* This background is crucial for visibility */
-    background: rgba(0, 0, 0, 0.7);
-    color: #ffffff !important;
+    background: var(--bg-card-footer) !important;
+    color: var(--text-main) !important;
     padding: 5px 2px;
     font-size: 11px;
     text-align: center;
     font-weight: bold;
-    /* Prevents long names from disappearing */
     white-space: normal;
     line-height: 1.1;
     z-index: 5;
 }
 
-/* Reset the button styles that might be hiding the overlay */
 button.exercise-card {
     border: none !important;
     padding: 0 !important;
     display: block;
-    overflow: hidden; /* Keeps the overlay inside the rounded corners */
+    overflow: hidden;
+    background: none;
+    color: var(--text-main);
 }

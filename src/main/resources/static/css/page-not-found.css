@@ -1,0 +1,48 @@
+.error-container {
+    /* Uses the card background but keeps it centered for the error page */
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+
+    padding: 3rem;
+    text-align: center;
+    max-width: 600px;
+    width: 90%;
+
+    /* Removed heavy shadows and glass blurs for the flat design consistency */
+    box-shadow: none;
+}
+
+.error-container h1 {
+    font-family: 'Bahnschrift', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+    color: var(--text-main);
+}
+
+.error-container p {
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+}
+
+/* --- THE THEME-AWARE OUTLINE BUTTON --- */
+.btn-fit-outline {
+    background-color: transparent;
+    color: var(--text-main);
+    border: 2px solid var(--text-main);
+    padding: 10px 30px;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.btn-fit-outline:hover {
+    /* Inverts based on theme:
+       Dark mode: White background with dark text
+       Light mode: Dark background with white text */
+    background-color: var(--text-main);
+    color: var(--bg-card);
+}

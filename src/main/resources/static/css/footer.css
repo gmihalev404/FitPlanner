@@ -1,18 +1,26 @@
+/* ---------- Footer Styling ---------- */
+
+footer {
+    /*margin-top: 3%;*/
+    padding: 2%;
+    background-color: var(--bg-body); /* matches container bg */
+    color: var(--text-main);
+    font-family: inherit;
+}
+
 footer p {
     display: inline;
+    color: var(--text-main);
 }
 
 footer * {
     font-size: 14px;
+    color: var(--text-main);
 }
 
-footer {
-    margin-top: 3%;
-    padding: 2%;
-}
-
+/* Responsive Footer */
 @media (max-width: 676px) {
     footer {
-        padding: 4%
+        padding: 4%;
     }
 }

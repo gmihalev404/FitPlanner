@@ -1,7 +1,7 @@
 .about-section {
     font-size: 1.1rem;
     line-height: 1.7;
-    color: #333;
+    color: var(--text-muted);
     padding: 15px 0;
     background: transparent !important;
 }
@@ -9,7 +9,7 @@
 .delimiter {
     width: 100%;
     height: 3px;
-    background: rgb(162, 149, 149) !important;
+    background: var(--border-contrast) !important;
     border-radius: 5px;
     margin: 15px 0;
 }
@@ -19,5 +19,5 @@
     font-weight: bold;
     margin-bottom: 20px;
     text-align: center;
-    color: #222;
+    color: var(--text-main);
 }

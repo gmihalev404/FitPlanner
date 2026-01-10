@@ -1,24 +1,67 @@
-/* ---------- Common ---------- */
 html.light {
-    background-color: #f5f5f5;
-    color: #111;
-}
+    /* ---------- Base ---------- */
+    --bg-app: #e0e0e0;             /* Page background */
+    --bg-body: #d6d6d6;            /* Main body background */
+    --bg-section: #c8c8c8;         /* Sections background */
 
-html.light a {
-    color: #111 !important;
-}
+    --text-main: #1a1a1a;          /* Primary text */
+    --text-muted: #555555;         /* Muted text */
+    --text-soft: #777777;          /* Soft text */
+    --text-link: #0056b3;          /* Links color */
 
-html.light body {
-    background-color: #f5f5f5 !important;
-    color: #111;
-}
+    /* ---------- Containers ---------- */
+    --bg-container: rgba(220, 220, 220, 0.95);  /* Inner containers */
+    --bg-days-item: rgba(200, 200, 200, 1);
 
-html.light .background-section {
-    filter: invert(20%);
-}
+    --bg-card: rgba(210, 210, 210, 1);          /* Card surface */
+    --bg-card-footer: rgba(200, 200, 200, 0.7);
 
-html.light .exercise-image {
-    filter: invert(100%);
+    --border-card: rgba(160, 160, 160, 0.5);
+    --border-soft: rgba(180, 180, 180, 0.3);
+
+    /* ---------- Buttons ---------- */
+    --btn-bg: #c0c0c0;
+    --btn-bg-hover: #b0b0b0;
+    --btn-bg-active: #a8a8a8;
+    --btn-text: #1a1a1a;
+
+    /* ---------- Inputs / Dropdowns ---------- */
+    --bg-input: #d0d0d0;
+    --border-input: #b8b8b8;
+    --text-input: #1a1a1a;
+    --text-placeholder: #666666;
+
+    --bg-option-hover: #bdbdbd;
+    --text-option-hover: #1a1a1a;
+
+    --search-bg: #d0d0d0;
+    --search-text: #1a1a1a;
+
+    /* ---------- Navbar ---------- */
+    --bg-navbar: #cfcfcf;
+    --text-navbar: #1a1a1a;
+    --text-navbar-hover: #333333;
+
+    /* ---------- Lists / Exercise ---------- */
+    --bg-list: #dcdcdc;
+    --bg-item: #cfcfcf;
+    --text-item: #1a1a1a;
+
+    --scroll-thumb: #999999;
+
+    /* ---------- States ---------- */
+    --hover-light: rgba(0,0,0,0.08);
+    --border-today: #555555;
+    --success-accent: #4caf50;  /* Keep green for success/accent */
+
+    /* ---------- Navigation Arrows ---------- */
+    --bg-nav-arrow: rgba(160, 160, 160, 0.8);
+    --border-nav-arrow: rgba(200, 200, 200, 0.4);
+
+    /* ---------- Effects ---------- */
+    --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.2);
+
+    --scroll-track: #d0d0d0;
 }
 
 @media (max-width: 880px) {
@@ -32,116 +75,19 @@ html.light .exercise-image {
     }
 }
 
-/* ---------- Buttons ---------- */
-html.light .btn,
-html.light .btn:focus,
-html.light .btn:focus-visible{
-    background-color: #d3d3d3;
-    border-color: #c0c0c0;
-    color: #111;
-}
-
-html.light .btn:hover {
-    background-color: #c8c8c8;
-    border-color: #b8b8b8;
-}
-
-html.light .btn-theme:active {
-    background-color: #bfbfbf;
-    border-color: #b0b0b0;
-}
-
-html.light .day:hover:not(.empty, .workout-day),
-html.light .nav-btn:hover {
-    background-color: rgb(255, 255, 255);
-}
-
-html.light .day.today {
-    border: 5px solid #eeeeee
-}
-
-/* ---------- Container ---------- */
-html.light .container {
-    color: #111;
-    background-color: rgba(220, 220, 220, 0.9);
-}
-
-html.light .container-heading {
-    color: #222;
-}
-
-html.light .days-container div{
-    background: #ffffff;
-}
-
-/* ---------- Dropdown ---------- */
-html.light select,
-html.light button,
-html.light .gender-button,
-html.light .experience-button,
-html.light .gender-options,
-html.light .experience-options {
-    background-color: #d3d3d3;
-    color: #111;
-    border: 1px solid #c0c0c0;
-}
-
-html.light .gender-options label,
-html.light .experience-options label {
-    color: #111;
-}
-
-html.light .gender-options label:hover,
-html.light .gender-options label:focus,
-html.light .experience-options label:hover,
-html.light .experience-options label:focus {
-    background-color: #e0e0e0;
-    color: black;
-}
-
-/* ---------- Footer ---------- */
-html.light footer {
-    color: #333;
-    background-color: #e0e0e0;
-}
-
-/* ---------- Input Fields ---------- */
-html.light input:-webkit-autofill {
-    background-color: #d3d3d3;
-    color: #111;
-}
-
-html.light .form-control {
-    background-color: #d3d3d3;
-    border-color: #c0c0c0;
-    color: #111;
-}
-
-html.light .form-control:focus {
-    background-color: #d3d3d3;
-    border-color: #b8b8b8;
-}
-
-html.light .form-control::placeholder {
-    color: #666;
-}
-
-/* ---------- Navbar ---------- */
-html.light .navbar,
-html.light .navbar-collapse {
-    background-color: rgba(209, 207, 203);
-    opacity: 0.85;
-}
-
-html.light .navbar .nav-link {
-    color: #111;
-}
-
-html.light .navbar .nav-link:hover {
-    color: #000;
-    opacity: 0.85;
-}
-
 html.light .navbar-brand .logo {
     filter: invert(85%);
+}
+
+html.light .background-section {
+    filter: invert(20%);
+}
+
+html.light .exercise-image {
+    filter: invert(0%);
+}
+
+html.light .coffee-img{
+    filter: invert(18%);
+    border: none;
 }

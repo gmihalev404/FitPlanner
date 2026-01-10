@@ -15,7 +15,7 @@
     <link rel="stylesheet" th:href="@{/css/search-bar.css}">
     <link rel="stylesheet" th:href="@{/css/scrollbar.css}">
 
-    <link rel="stylesheet" th:href="@{/css/session-day.css}">
+    <link rel="stylesheet" th:href="@{/css/workout-day.css}">
 </head>
 <body>
 <div th:replace="fragment/navbar.html::navbar"></div>
@@ -61,7 +61,7 @@
             </form>
         </div>
         <form th:action="@{/close-day-session}" method="post" class="close-form">
-            <button type="submit" class="close-btn bg-danger" th:title="#{exercise.close}">✕</button>
+            <button type="submit" class="close-btn" th:title="#{exercise.close}">✕</button>
         </form>
     </div>
 </div>

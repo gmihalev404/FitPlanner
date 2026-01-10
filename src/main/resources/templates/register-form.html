@@ -53,33 +53,23 @@
                     <div th:if="${#fields.hasErrors('weight')}" th:errors="*{weight}" class="text-danger"></div>
                 </div>
                 <div class="col-6 col-md-6 col-lg-3">
-                    <div class="gender-select">
-                        <button type="button" class="gender-button" th:text="#{register.gender}">Gender</button>
-                        <div class="gender-options">
-                            <input th:field="*{gender}" type="radio" id="male" name="gender" value="MALE">
-                            <label for="male" th:text="#{register.male}">Male</label>
-                            <input th:field="*{gender}" type="radio" id="female" name="gender" value="FEMALE">
-                            <label for="female" th:text="#{register.female}">Female</label>
-                        </div>
-                    </div>
+                    <select th:field="*{gender}" class="form-select" required>
+<!--                        <option value="" disabled selected th:text="#{register.gender}">Gender</option>-->
+                        <option value="MALE" th:text="#{register.male}">Male</option>
+                        <option value="FEMALE" th:text="#{register.female}">Female</option>
+                    </select>
                     <div th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}" class="text-danger"></div>
                 </div>
+
                 <div class="col-6 col-md-6 col-lg-3">
-                    <div class="experience-select">
-                        <button type="button" class="experience-button" th:text="#{register.experience}">Experience</button>
-                        <div class="experience-options">
-                            <input th:field="*{experience}" type="radio" id="exp-novice" name="experience" value="NOVICE">
-                            <label for="exp-novice" th:text="#{register.novice}">Novice</label>
-                            <input th:field="*{experience}" type="radio" id="exp-beginner" name="experience" value="BEGINNER">
-                            <label for="exp-beginner" th:text="#{register.beginner}">Beginner</label>
-                            <input th:field="*{experience}" type="radio" id="exp-medium" name="experience" value="MEDIUM">
-                            <label for="exp-medium" th:text="#{register.medium}">Medium</label>
-                            <input th:field="*{experience}" type="radio" id="exp-advanced" name="experience" value="ADVANCED">
-                            <label for="exp-advanced" th:text="#{register.advanced}">Advanced</label>
-                            <input th:field="*{experience}" type="radio" id="exp-master" name="experience" value="MASTER">
-                            <label for="exp-master" th:text="#{register.master}">Master</label>
-                        </div>
-                    </div>
+                    <select th:field="*{experience}" class="form-select" required>
+<!--                        <option value="" disabled selected th:text="#{register.experience}">Experience</option>-->
+                        <option value="NOVICE" th:text="#{register.novice}">Novice</option>
+                        <option value="BEGINNER" th:text="#{register.beginner}">Beginner</option>
+                        <option value="MEDIUM" th:text="#{register.medium}">Medium</option>
+                        <option value="ADVANCED" th:text="#{register.advanced}">Advanced</option>
+                        <option value="MASTER" th:text="#{register.master}">Master</option>
+                    </select>
                     <div th:if="${#fields.hasErrors('experience')}" th:errors="*{experience}" class="text-danger"></div>
                 </div>
             </div>
@@ -101,6 +91,5 @@
 </div>
 <footer th:replace="fragment/footer.html::footer"></footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script th:src="@{/js/dropdown.js}"></script>
 </body>
 </html>

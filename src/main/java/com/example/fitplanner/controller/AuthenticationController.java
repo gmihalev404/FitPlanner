@@ -1,8 +1,9 @@
 package com.example.fitplanner.controller;
 
+import com.example.fitplanner.dto.UserDto;
 import com.example.fitplanner.dto.UserLoginDto;
 import com.example.fitplanner.dto.UserRegisterDto;
-import com.example.fitplanner.dto.UserDto;
+import com.example.fitplanner.dto.ProgramsUserDto;
 import com.example.fitplanner.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -38,7 +39,7 @@ public class AuthenticationController {
         }
         userService.save(registerDto);
         Long userId = userService.getIdByUsernameOrEmail(registerDto.getUsername());
-        UserDto userDto = userService.getById(userId);
+        UserDto userDto = userService.getById(userId, UserDto.class);
         session.setAttribute("loggedUser", userDto);
         return "redirect:/home";
     }
@@ -60,7 +61,7 @@ public class AuthenticationController {
             return "login-form";
         }
         Long userId = userService.getIdByUsernameOrEmail(loginDto.getUsernameOrEmail());
-        UserDto userDto = userService.getById(userId);
+        UserDto userDto = userService.getById(userId, UserDto.class);
         session.setAttribute("loggedUser", userDto);
         return "redirect:/home";
     }

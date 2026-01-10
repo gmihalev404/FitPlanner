@@ -2,6 +2,7 @@ package com.example.fitplanner.controller;
 
 import com.example.fitplanner.dto.*;
 import com.example.fitplanner.service.ProgramService;
+import com.example.fitplanner.service.UserService;
 import com.example.fitplanner.service.WorkoutSessionService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,20 +17,23 @@ import java.util.List;
 public class WorkoutProgramScheduleController {
     private final ProgramService programService;
     private final WorkoutSessionService workoutSessionService;
+    private final UserService userService;
 
     @Autowired
     public WorkoutProgramScheduleController(ProgramService programService,
-                                            WorkoutSessionService workoutSessionService) {
+                                            WorkoutSessionService workoutSessionService, UserService userService) {
         this.programService = programService;
         this.workoutSessionService = workoutSessionService;
+        this.userService = userService;
     }
 
 
     @GetMapping("my-workouts")
     public String showWorkouts(HttpSession session, Model model) {
-        UserDto sessionUser = (UserDto) session.getAttribute("loggedUser");
-        if (sessionUser == null) return "redirect:/login";
-        List<ProgramDto> programDtos = programService.getProgramsByUserId(sessionUser.getId());
+        UserDto userDto = (UserDto) session.getAttribute("loggedUser");
+        if (userDto == null) return "redirect:/login";
+        ProgramsUserDto programsUserDto = userService.getById(userDto.getId(), ProgramsUserDto.class);
+        List<ProgramDto> programDtos = programService.getProgramsByUserId(userDto.getId());
         model.addAttribute("programs", programDtos);
         return "my-workouts";
     }
@@ -42,19 +46,20 @@ public class WorkoutProgramScheduleController {
                                   Model model, HttpSession session){
         UserDto userDto = (UserDto) session.getAttribute("loggedUser");
         if(userDto == null) return "redirect:/login";
+        ProgramsUserDto programsUserDto = userService.getById(userDto.getId(), ProgramsUserDto.class);
         LocalDate date = LocalDate.of(year, month, day);
-        List<ExerciseProgressDto> exercises = workoutSessionService.getWorkoutByProgramIdsAndDate(programIds, date,
-                userDto.getMeasuringUnits());
+        List<ExerciseProgressDto> exercises = workoutSessionService.getWorkoutsByProgramIdsAndDate(programIds, date,
+                programsUserDto.getMeasuringUnits());
         model.addAttribute("exercises", exercises);
         model.addAttribute("date", date);
         model.addAttribute("isToday", LocalDate.now().equals(date));
+        model.addAttribute("units", programsUserDto.getMeasuringUnits());
         return "workout-day";
     }
 
     @GetMapping("edit-program")
     public String showEditForm(@RequestParam Long programId, HttpSession session){
-        CreatedProgramDto programDto = programService.getCreatedProgramById(programId);
-        System.out.println("here:" + programDto);
+        CreatedProgramDto programDto = programService.getById(programId, CreatedProgramDto.class);
         session.setAttribute("programForm", programDto);
         session.setAttribute("weekDays", programDto.getWeekDays());
         session.setAttribute("programId", programId);
@@ -65,12 +70,12 @@ public class WorkoutProgramScheduleController {
     public String editProgram(@ModelAttribute CreatedProgramDto createdProgramDto,
                               HttpSession session) {
         Long programId = (Long) session.getAttribute("programId");
-        UserDto user = (UserDto) session.getAttribute("loggedUser");
-
+        UserDto userDto = (UserDto) session.getAttribute("loggedUser");
+        ProgramsUserDto programsUserDto = userService.getById(userDto.getId(), ProgramsUserDto.class);
         List<DayWorkout> sessionDays = (List<DayWorkout>) session.getAttribute("weekDays");
         createdProgramDto.setWeekDays(sessionDays);
 
-        programService.updateProgram(programId, createdProgramDto, user.getMeasuringUnits());
+        programService.updateProgram(programId, createdProgramDto, programsUserDto.getMeasuringUnits());
         return "redirect:/my-workouts";
     }
 
