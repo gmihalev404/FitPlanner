@@ -47,4 +47,9 @@ public class WebConfig implements WebMvcConfigurer {
 //        // Optional: map /favicon.ico to a default empty icon to avoid exceptions
 //        registry.addViewController("/favicon.ico").setViewName("forward:/icons/default-favicon.ico");
 //    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new UserLocaleInterceptor());
+    }
 }
