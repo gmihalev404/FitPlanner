@@ -14,5 +14,5 @@ public class UserDto implements Serializable {
     private Role role;
     private String theme = "dark";
     private String language = "en";
-//    private String measuringUnits = "kg";
+    private String profileImageUrl;
 }

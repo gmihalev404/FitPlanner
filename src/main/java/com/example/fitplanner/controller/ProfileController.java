@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -54,32 +55,49 @@ public class ProfileController {
             @RequestParam Map<String, String> settings,
             HttpSession session,
             HttpServletRequest request,
-            HttpServletResponse response
-    ) {
+            HttpServletResponse response,
+            RedirectAttributes redirectAttributes) {
+
         UserDto loggedUser = (UserDto) session.getAttribute("loggedUser");
         if (loggedUser == null) return "redirect:/login";
 
         ProfileUserDto existing = userService.getById(profileDto.getId(), ProfileUserDto.class);
 
-        // Upload profile image if provided
         if (profileImage != null && !profileImage.isEmpty()) {
+
+            // --- Check file size (max 2MB) ---
+//            long maxSize = 2 * 1024 * 1024;
+//            if (profileImage.getSize() > maxSize) {
+//                redirectAttributes.addFlashAttribute("errorMessage", "The file is too big. Maximum size is 2MB.");
+//                return "redirect:/profile";
+//            }
+
+            // --- Remove previous image if exists ---
+            if (existing.getProfileImageUrl() != null && !existing.getProfileImageUrl().isBlank()) {
+                Path oldImagePath = Paths.get("uploads/", Paths.get(existing.getProfileImageUrl()).getFileName().toString());
+                try {
+                    Files.deleteIfExists(oldImagePath);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // --- Upload new image ---
             String profileImageUrl = uploadImage(profileImage);
             profileDto.setProfileImageUrl(profileImageUrl);
+
         } else {
             profileDto.setProfileImageUrl(existing.getProfileImageUrl());
         }
 
-        // Update DB
         userService.updateProfile(profileDto);
-
-        // Update session user
         session.setAttribute("loggedUser", userService.getById(profileDto.getId(), UserDto.class));
-
-        // Update session-based settings
         updateUserSettings(settings, session, request, response);
 
         return "redirect:/profile";
     }
+
+
 
     private String uploadImage(MultipartFile profileImage) {
         String uploadDir = "uploads/";

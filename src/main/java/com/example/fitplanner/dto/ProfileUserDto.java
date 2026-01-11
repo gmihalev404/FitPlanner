@@ -22,7 +22,6 @@ public class ProfileUserDto implements Serializable {
 
 //    private String password;
 
-    //no change
     private Role role;
 
     //in settings
@@ -30,15 +29,12 @@ public class ProfileUserDto implements Serializable {
     private String language = "en";
     private String measuringUnits = "kg";
 
-    //no change here
     private Gender gender;
 
-    //no change here
     private Integer age;
 
     private Double weight;
 
-    //no change here
     private Difficulty experience;
 
     //no change here (?)

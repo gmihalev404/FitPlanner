@@ -35,6 +35,12 @@
             <input type="hidden" th:field="*{email}">
 
             <div class="profile-sidebar">
+
+                <!-- Error message above avatar -->
+                <div th:if="${errorMessage}" class="error-message text-danger">
+                    <p th:text="${errorMessage}"></p>
+                </div>
+
                 <div class="avatar-wrapper" onclick="document.getElementById('imageInput').click()">
                     <img id="profileDisplay"
                          th:src="${profileForm.profileImageUrl != null ? profileForm.profileImageUrl : '/images/default-user-image.webp'}"

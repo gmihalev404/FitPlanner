@@ -24,7 +24,14 @@
       </ul>
 
       <ul th:if="${userDto != null and userDto.role.name() == 'CLIENT'}" class="navbar-nav ms-auto w-100-mobile">
-        <li class="nav-item"><a class="nav-link" th:href="@{/profile}" th:text="#{nav.profile}">Profile</a></li>
+        <li class="nav-item">
+          <a class="nav-link p-0" th:href="@{/profile}">
+            <img th:src="${userDto.profileImageUrl != null ? userDto.profileImageUrl : '/images/default-user-image.webp'}"
+                 alt="Profile"
+                 class="rounded-circle"
+                 style="width: 40px; height: 40px; object-fit: cover;">
+          </a>
+        </li>
         <li class="nav-item"><a class="nav-link" th:href="@{/home}" th:text="#{nav.home}"></a></li>
         <li class="nav-item"><a class="nav-link" th:href="@{/create?newProgram=true}" th:text="#{nav.create-workout}"></a></li>
         <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.stats}"></a></li>
