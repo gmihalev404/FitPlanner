@@ -35,6 +35,10 @@
     color: var(--text-main);
 }
 
+.card-header {
+    background: var(--bg-card-footer);
+}
+
 .chart-container {
     position: relative;
     height: 550px;

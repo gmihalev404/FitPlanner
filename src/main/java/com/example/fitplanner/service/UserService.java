@@ -126,7 +126,12 @@ public class UserService {
         user.setProfileImageUrl(profileDto.getProfileImageUrl());
 
         user.setAge(profileDto.getAge());
-        user.setWeight(profileDto.getWeight());
+        double weightToSave = profileDto.getWeight();
+        if ("lbs".equals(profileDto.getMeasuringUnits())) {
+            weightToSave = weightToSave / KG_TO_LB;
+        }
+
+        user.setWeight(weightToSave);
 
         user.setTheme(profileDto.getTheme());
         user.setLanguage(profileDto.getLanguage());
