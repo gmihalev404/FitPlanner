@@ -1,49 +1,66 @@
 <nav th:fragment="navbar" class="navbar navbar-dark navbar-expand-lg w-100">
   <div class="container-fluid d-flex align-items-center flex-wrap">
 
+    <!-- Brand / Logo -->
     <a href="#" class="navbar-brand">
       <img th:src="@{'/images/logo.png'}" class="logo" alt="Logo">
     </a>
 
-    <div class="navbar-search-wrapper flex-grow-1 mx-2 mx-md-4">
-      <div th:replace="fragment/search-bar.html :: search-bar('navbarSearch', 'Search')"></div>
+    <!-- Profile + Notifications (only visible if userDto is not null) -->
+    <div th:if="${userDto != null}" class="d-flex align-items-center gap-5 ms-auto">
+      <a class="nav-link p-2" th:href="@{/profile}">
+        <img th:if="${userDto.profileImageUrl != null}" th:src="${userDto.profileImageUrl}"
+             alt="Profile"
+             class="rounded-circle"
+             style="width: 40px; height: 40px; object-fit: cover;">
+        <img th:unless="${userDto.profileImageUrl != null}" th:src="@{/images/default-user-image.webp}"
+             alt="Profile"
+             class="rounded-circle"
+             style="width: 40px; height: 40px; object-fit: cover;">
+      </a>
+      <a class="nav-link position-relative p-2 bell" th:href="@{/notifications}">
+        <i class="bi bi-bell-fill"></i>
+        <span th:if="${#lists.size(userDto.notifications.?[!checked]) > 0}"
+              th:text="${#lists.size(userDto.notifications.?[!checked])}"
+              class="badge rounded-pill bg-danger d-flex justify-content-center align-items-center">
+        </span>
+      </a>
     </div>
 
+    <!-- Toggler for collapse -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
       <span class="navbar-toggler-icon"></span>
     </button>
 
+    <!-- Collapsible menu -->
     <div class="collapse navbar-collapse" id="navbarContent">
 
-      <ul th:if="${userDto == null}" class="navbar-nav ms-auto w-100-mobile">
+      <!-- For not logged in users -->
+      <ul th:if="${userDto == null}" class="navbar-nav ms-auto w-100-mobile gap-5">
         <li class="nav-item"><a class="nav-link" th:href="@{/home}" th:text="#{nav.home}"></a></li>
         <li class="nav-item"><a class="nav-link" th:href="@{/login}" th:text="#{nav.sign-in}"></a></li>
         <li class="nav-item"><a class="nav-link" th:href="@{/register}" th:text="#{nav.sign-up}"></a></li>
         <li class="nav-item"><a class="nav-link" th:href="@{/settings}" th:text="#{nav.settings}"></a></li>
         <li class="nav-item"><a class="nav-link" th:href="@{/about}" th:text="#{nav.about}"></a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/search}" th:text="#{nav.search}"></a></li>
       </ul>
 
-      <ul th:if="${userDto != null and userDto.role.name() == 'CLIENT'}" class="navbar-nav ms-auto w-100-mobile">
-        <li class="nav-item">
-          <a class="nav-link p-0" th:href="@{/profile}">
-            <img th:src="${userDto.profileImageUrl != null ? userDto.profileImageUrl : '/images/default-user-image.webp'}"
-                 alt="Profile"
-                 class="rounded-circle"
-                 style="width: 40px; height: 40px; object-fit: cover;">
-          </a>
-        </li>
+      <!-- For CLIENT users -->
+      <ul th:if="${userDto != null and userDto.role.name() == 'CLIENT'}" class="navbar-nav ms-auto w-100-mobile gap-5">
         <li class="nav-item"><a class="nav-link" th:href="@{/home}" th:text="#{nav.home}"></a></li>
         <li class="nav-item"><a class="nav-link" th:href="@{/create?newProgram=true}" th:text="#{nav.create-workout}"></a></li>
         <li class="nav-item"><a class="nav-link" th:href="@{/stats}" th:text="#{nav.stats}"></a></li>
         <li class="nav-item"><a class="nav-link" th:href="@{/my-workouts}" th:text="#{nav.my-workouts}"></a></li>
-<!--        <li class="nav-item"><a class="nav-link" th:href="@{/settings}" th:text="#{nav.settings}"></a></li>-->
+        <li class="nav-item"><a class="nav-link" th:href="@{/search}" th:text="#{nav.search}"></a></li>
         <li class="nav-item"><a class="nav-link" th:href="@{/logout}" th:text="#{nav.log-out}"></a></li>
       </ul>
 
-      <ul th:if="${userDto != null and userDto.role.name() == 'TRAINER'}" class="navbar-nav ms-auto w-100-mobile">
+      <!-- For TRAINER users -->
+      <ul th:if="${userDto != null and userDto.role.name() == 'TRAINER'}" class="navbar-nav ms-auto w-100-mobile gap-5">
         <li class="nav-item"><a class="nav-link" th:href="@{/home}" th:text="#{nav.home}"></a></li>
         <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.create-workout}"></a></li>
         <li class="nav-item"><a class="nav-link" href="#" th:text="#{nav.trainees}"></a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/search}" th:text="#{nav.search}"></a></li>
         <li class="nav-item"><a class="nav-link" th:href="@{/logout}" th:text="#{nav.log-out}"></a></li>
       </ul>
 

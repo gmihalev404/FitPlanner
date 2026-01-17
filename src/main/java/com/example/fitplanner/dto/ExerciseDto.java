@@ -22,8 +22,6 @@ public class ExerciseDto implements Serializable {
 
     private Category category;
 
-    private Difficulty difficulty;
-
     private ExerciseType exerciseType;
 
     private EquipmentType equipmentType;

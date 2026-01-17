@@ -8,10 +8,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -73,10 +70,10 @@ public class User extends BaseEntity {
     private LocalDate lastUpdated = LocalDate.now();
 
     @OneToMany(mappedBy = "user")
-    private Set<Program> programs = new HashSet<>();
+    private Set<Program> programs = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "user")
-    private Set<ExerciseProgress> completedExercises = new HashSet<>();
+    private Set<ExerciseProgress> completedExercises = new LinkedHashSet<>();
 
     @Column
     private String profileImageUrl;
@@ -94,6 +91,9 @@ public class User extends BaseEntity {
     @CollectionTable(name = "user_weight_entries", joinColumns = @JoinColumn(name = "user_id"))
     @OrderColumn(name = "entry_order")
     private List<WeightEntry> weightChanges = new ArrayList<>();
+
+    @OneToMany(mappedBy = "observer", cascade = CascadeType.ALL)
+    private Set<Notification> notifications = new HashSet<>();
 
     //trainer only todo
     // private Set<User> trainees = new HashSet<>();
@@ -122,5 +122,15 @@ public class User extends BaseEntity {
     public void setWeight(Double weight, LocalDate date){
         this.weight = weight;
         weightChanges.add(new WeightEntry(weight, date));
+    }
+
+    public void addNotification(Notification notification) {
+        notifications.add(notification);
+        notification.setObserver(this);
+    }
+
+    public void removeNotification(Notification notification) {
+        notifications.remove(notification);
+        notification.setObserver(null);
     }
 }

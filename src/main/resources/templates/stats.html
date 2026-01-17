@@ -8,70 +8,73 @@
     <title>Statistics</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
-    <link rel="stylesheet" th:href="@{/css/common.css?t=1}">
-    <link rel="stylesheet" th:href="@{/css/search-bar.css?t=1}">
-    <link rel="stylesheet" th:href="@{/css/scrollbar.css?t=1}">
-    <link rel="stylesheet" th:href="@{/css/navbar.css?t=1}">
-    <link rel="stylesheet" th:href="@{/css/footer.css?t=1}">
-    <link rel="stylesheet" th:href="@{/css/dark-theme.css?t=1}">
-    <link rel="stylesheet" th:href="@{/css/light-theme.css?t=1}">
+    <link rel="stylesheet" th:href="@{/css/common.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/search-bar.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/scrollbar.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/navbar.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/footer.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/dark-theme.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/light-theme.css(v=${#dates.createNow().time})}">
 
-    <link rel="stylesheet" th:href="@{/css/stats.css?t=1}">
+    <link rel="stylesheet" th:href="@{/css/stats.css(v=${#dates.createNow().time})}">
 </head>
 <body>
 <div th:replace="fragment/navbar.html::navbar"></div>
 <div class="background-section">
     <div class="container my-5 p-2">
         <h1 class="mb-4">Statistics</h1>
-        <div th:replace="fragment/search-bar.html::search-bar('exerciseSearch', #{exercise.search_placeholder})"></div>
+        <div th:replace="fragment/search-bar.html::search-bar('exerciseSearch', #{exercise.search_placeholder}, '.exercise-item')"></div>
         <div class="row mb-4 mt-3">
-            <div class="col-md-4 mb-2">
-                <select id="categoryFilter" class="form-select">
-                    <option value="" th:text="#{exercise.all_categories}">All Categories</option>
-                    <option value="legs" th:text="#{cat.legs}">Legs</option>
-                    <option value="core" th:text="#{cat.core}">Core</option>
-                    <option value="back" th:text="#{cat.back}">Back</option>
-                    <option value="biceps" th:text="#{cat.biceps}">Biceps</option>
-                    <option value="triceps" th:text="#{cat.triceps}">Triceps</option>
-                    <option value="chest" th:text="#{cat.chest}">Chest</option>
-                </select>
-            </div>
-            <div class="col-md-4 mb-2">
-                <select id="difficultyFilter" class="form-select">
-                    <option value="" th:text="#{exercise.all_difficulties}">All Difficulties</option>
-                    <option value="novice" th:text="#{diff.novice}">Novice</option>
-                    <option value="beginner" th:text="#{diff.beginner}">Beginner</option>
-                    <option value="medium" th:text="#{diff.medium}">Medium</option>
-                    <option value="advanced" th:text="#{diff.advanced}">Advanced</option>
-                    <option value="master" th:text="#{diff.master}">Master</option>
-                </select>
-            </div>
-            <div class="col-md-4 mb-2">
-                <select id="equipmentFilter" class="form-select">
-                    <option value="" th:text="#{exercise.all_equipment}">All Equipment</option>
-                    <option value="body_weight" th:text="#{eq.body_weight}">Body weight</option>
-                    <option value="weighted" th:text="#{eq.weighted}">Weighted</option>
-                    <option value="machine" th:text="#{eq.machine}">Machine</option>
-                    <option value="cardio" th:text="#{eq.cardio}">Cardio</option>
-                </select>
+            <div class="row mb-4 mt-3">
+                <div class="col-md-4 mb-2">
+                    <select id="categoryFilter" class="form-select">
+                        <option value="" th:text="#{exercise.all_categories}">All Categories</option>
+                        <option value="legs" th:text="#{cat.legs}">Legs</option>
+                        <option value="core" th:text="#{cat.core}">Core</option>
+                        <option value="back" th:text="#{cat.back}">Back</option>
+                        <option value="biceps" th:text="#{cat.biceps}">Biceps</option>
+                        <option value="triceps" th:text="#{cat.triceps}">Triceps</option>
+                        <option value="chest" th:text="#{cat.chest}">Chest</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-2">
+                    <select id="typeFilter" class="form-select">
+                        <option value="" th:text="#{exercise.all_types}">All Types</option>
+                        <option value="time" th:text="#{et.time}">Time</option>
+                        <option value="repetitions" th:text="#{et.reps}">Repetitions</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-2">
+                    <select id="equipmentFilter" class="form-select">
+                        <option value="" th:text="#{exercise.all_equipment}">All Equipment</option>
+                        <option value="body_weight" th:text="#{eq.body_weight}">Body weight</option>
+                        <option value="weighted" th:text="#{eq.weighted}">Weighted</option>
+                        <option value="machine" th:text="#{eq.machine}">Machine</option>
+                        <option value="cardio" th:text="#{eq.cardio}">Cardio</option>
+                    </select>
+                </div>
             </div>
         </div>
 
-        <div class="exercise-grid-container scrollable-container mb-5">
-            <div class="row g-3 justify-content-start" id="exerciseRow">
+        <div class="exercise-grid-container scrollable-container mb-5 p-0">
+            <div class="justify-content-start" id="exerciseRow">
                 <div th:each="ex : ${exercises}"
-                     class="col-4 col-md-3 col-lg-2 exercise-item"
+                     class="col-12 exercise-item"
                      th:attr="
                     data-id=${ex.id},
                     data-name=${ex.name},
                     data-category=${#strings.toLowerCase(ex.category)},
-                    data-difficulty=${#strings.toLowerCase(ex.difficulty)},
+                    data-type=${#strings.toLowerCase(ex.exerciseType)},
                     data-equipment=${#strings.toLowerCase(ex.equipmentType)}
                  ">
                     <div class="card exercise-selectable-card p-0 h-100" onclick="toggleExercise(this)">
-                        <div class="card-body p-0 d-flex flex-column justify-content-center align-items-center text-center">
-                            <div class="exercise-name-label" th:text="${ex.name}">Exercise Name</div>
+                        <div class="card-body row align-items-center p-2 g-2">
+                            <div class="exercise-name-label col-3" th:text="${'Name: ' + ex.name}"></div>
+                            <div class="exercise-name-label col-3" th:text="${'Type: ' + ex.exerciseType}"></div>
+                            <div class="exercise-name-label col-3" th:text="${'Equipment:' + ex.equipmentType}"></div>
+                            <div class="exercise-name-label col-3" th:text="${'Category: ' + ex.category}"></div>
                         </div>
                     </div>
                 </div>
@@ -86,8 +89,7 @@
                 <div class="card shadow-sm">
                     <div class="card-header text-white d-flex justify-content-between align-items-center">
                         <span>Exercise Progress Comparison</span>
-                        <small id="selectedCounter" class="badge bg-light text-primary">0 selected</small>
-                    </div>
+                        <small id="selectedCounter" class="bg-white text-primary p-2 rounded d-flex align-items-center text-wrap"> 0 selected </small>                    </div>
                     <div class="card-body chart-container">
                         <canvas id="exerciseProgressChart"></canvas>
                     </div>
@@ -110,8 +112,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script th:src="@{/js/filters.js?t=1}"></script>
-<script th:src="@{/js/search-bar.js?t=1}"></script>
+<script th:src="@{/js/filters.js(v=${#dates.createNow().time})}"></script>
+<script th:src="@{/js/search-bar.js(v=${#dates.createNow().time})}"></script>
 <script th:inline="javascript">
     /* These variables are initialized by Thymeleaf and made global for stats.js */
     window.userStatsConfig = {
@@ -120,6 +122,6 @@
         personalData: /*[[${personalData}]]*/ []
     };
 </script>
-<script th:src="@{/js/stats.js?t=1}"></script>
+<script th:src="@{/js/stats.js(v=${#dates.createNow().time})}"></script>
 </body>
 </html>

@@ -63,51 +63,62 @@ public class ProgramService {
 
     public void createProgram(CreatedProgramDto dto, ProgramsUserDto userDto, String units) {
         User user = userRepository.findById(userDto.getId())
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "User not found with id: " + userDto.getId()));
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
         Program program = new Program(dto.getName(), user, dto.getScheduleMonths(), dto.getNotifications(), dto.getIsPublic());
         program = programRepository.save(program);
+
         LocalDate today = LocalDate.now();
-        int totalWeeks;
-        if (!dto.getRepeats() || dto.getScheduleMonths() == 0) totalWeeks = 1;
-        else totalWeeks = dto.getScheduleMonths() * 4;
+        // Start from Monday of the current week
+        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
+
+        // If it repeats, we want (months * 4) weeks.
+        // If it doesn't repeat, we only want 1 week of sessions.
+        int totalWeeks = (!dto.getRepeats() || dto.getScheduleMonths() == 0) ? 1 : dto.getScheduleMonths() * 4;
+
         for (int weekOffset = 0; weekOffset < totalWeeks; weekOffset++) {
-            LocalDate targetWeekStart = today.plusWeeks(weekOffset);
+            LocalDate targetWeekStart = startOfWeek.plusWeeks(weekOffset);
+
             for (DayWorkout dayWorkout : dto.getWeekDays()) {
                 if (dayWorkout.getExercises() == null || dayWorkout.getExercises().isEmpty()) continue;
+
                 DayOfWeek dayOfWeek = DayOfWeek.valueOf(dayWorkout.getDay().toUpperCase());
                 LocalDate sessionDate = targetWeekStart.with(dayOfWeek);
-                if (!dto.getRepeats() && sessionDate.isBefore(today)) {
-                    sessionDate = sessionDate.plusWeeks(1);
-                } else if (dto.getRepeats() && sessionDate.isBefore(today)) {
-                    sessionDate = today.with(dayOfWeek);
+
+                // --- REVISED LOGIC ---
+
+                if (dto.getRepeats()) {
+                    // If the date has passed, just skip this specific day for this week.
+                    // The loop for the NEXT week (weekOffset + 1) will create the future session.
+                    if (sessionDate.isBefore(today)) {
+                        continue;
+                    }
+                } else {
+                    // If not repeating and the day has passed, push it to next week
+                    // so the user actually gets their workout.
                     if (sessionDate.isBefore(today)) {
                         sessionDate = sessionDate.plusWeeks(1);
                     }
                 }
+
+                // --- END REVISED LOGIC ---
+
                 WorkoutSession session = new WorkoutSession(program, sessionDate);
                 program.addSession(session);
                 workoutSessionRepository.save(session);
+
                 for (ExerciseProgressDto epDto : dayWorkout.getExercises()) {
-                    Exercise exercise = exerciseRepository.findById(epDto.getExerciseId())
-                            .orElseThrow(() -> new IllegalArgumentException(
-                                    "Exercise not found with id: " + epDto.getExerciseId()));
+                    Exercise exercise = exerciseRepository.findById(epDto.getExerciseId()).orElseThrow();
+                    double weight = units.equals("lbs") ? epDto.getWeight() * LB_TO_KG : epDto.getWeight();
+
                     ExerciseProgress progress = new ExerciseProgress(
-                            session,
-                            exercise,
-                            user,
-                            epDto.getReps(),
-                            epDto.getSets(),
-                            units.equals("lbs") ? epDto.getWeight() * LB_TO_KG : epDto.getWeight(),
-                            sessionDate
+                            session, exercise, user, epDto.getReps(), epDto.getSets(), weight, sessionDate
                     );
-                    session.addExercise(progress);
                     exerciseProgressRepository.save(progress);
                 }
             }
         }
     }
-
     public void updateProgram(Long programId, CreatedProgramDto dto, String units) {
         Program program = programRepository.findById(programId)
                 .orElseThrow(() -> new IllegalArgumentException("Program not found: " + programId));
@@ -127,7 +138,7 @@ public class ProgramService {
         workoutSessionRepository.flush();
 
         if (dto.getWeekDays() == null || dto.getWeekDays().isEmpty()) {
-            System.out.println("DEBUG: No weekdays found in DTO!");
+//            System.out.println("DEBUG: No weekdays found in DTO!");
             return;
         }
 

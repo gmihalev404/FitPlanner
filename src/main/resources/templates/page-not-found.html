@@ -6,12 +6,14 @@
     <title>404 - Workout Interrupted | FitPlanner</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/common.css?t=1}">
-    <link rel="stylesheet" th:href="@{/css/footer.css?t=1}">
-    <link rel="stylesheet" th:href="@{/css/dark-theme.css?t=1}">
-    <link rel="stylesheet" th:href="@{/css/light-theme.css?t=1}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
-    <link rel="stylesheet" th:href="@{/css/page-not-found.css?t=1}">
+    <link rel="stylesheet" th:href="@{/css/common.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/footer.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/dark-theme.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/light-theme.css(v=${#dates.createNow().time})}">
+
+    <link rel="stylesheet" th:href="@{/css/page-not-found.css(v=${#dates.createNow().time})}">
 </head>
 <body>
 <div class="background-section">

@@ -1,13 +1,18 @@
 document.addEventListener("DOMContentLoaded", function () {
     const searchInputs = document.querySelectorAll(".search-input");
-    searchInputs.forEach(searchInput => {
-        if (!window.applyExerciseFilters) {
-            console.warn("applyExerciseFilters function not found on window.");
-            return;
-        }
-        searchInput.addEventListener("input", function () {
+
+    searchInputs.forEach(input => {
+        input.addEventListener("input", function () {
             const query = this.value.toLowerCase().trim();
-            window.applyExerciseFilters(query);
+            const targetSelector = this.dataset.targetSelector;
+
+            if (!targetSelector) return;
+
+            const items = document.querySelectorAll(targetSelector);
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase().trim();
+                item.style.display = text.includes(query) ? "" : "none";
+            });
         });
     });
 });

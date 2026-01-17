@@ -8,12 +8,13 @@
 <head>
     <title>Show</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
-    <link rel="stylesheet" th:href="@{/css/common.css?t=1}">
-    <link rel="stylesheet" th:href="@{/css/dark-theme.css?t=1}">
-    <link rel="stylesheet" th:href="@{/css/light-theme.css?t=1}">
+    <link rel="stylesheet" th:href="@{/css/common.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/dark-theme.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/light-theme.css(v=${#dates.createNow().time})}">
 
-    <link rel="stylesheet" th:href="@{/css/show-exercise.css?t=1}">
+    <link rel="stylesheet" th:href="@{/css/show-exercise.css(v=${#dates.createNow().time})}">
 </head>
 <body>
 <div class="background-section py-4">

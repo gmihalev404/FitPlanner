@@ -4,7 +4,7 @@
     /* Theme Integration */
     background-color: var(--bg-card);
     border: 1px solid var(--border-card);
-    border-radius: var(--radius);
+    border-radius: var(--radius-container);
     padding: 15px;
     overflow-y: auto;
     overflow-x: hidden;

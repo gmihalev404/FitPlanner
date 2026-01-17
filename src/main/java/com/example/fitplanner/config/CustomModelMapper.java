@@ -7,9 +7,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Component;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,6 +27,7 @@ public class CustomModelMapper extends ModelMapper {
                 .setFieldMatchingEnabled(true)
                 .setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE);
 
+        // --- ExerciseProgress -> ExerciseProgressDto ---
         this.typeMap(ExerciseProgress.class, ExerciseProgressDto.class).addMappings(m -> {
             m.skip(ExerciseProgressDto::setExerciseId);
             m.map(src -> src.getExercise().getName(), ExerciseProgressDto::setName);
@@ -36,35 +35,50 @@ public class CustomModelMapper extends ModelMapper {
             m.map(src -> src.getWorkoutSession().getProgram().getName(), ExerciseProgressDto::setProgramName);
         });
 
-        Converter<Set<WorkoutSession>, List<DayWorkout>> sessionsToDaysConverter = context -> {
-            Map<String, List<ExerciseProgressDto>> fullWeek = new LinkedHashMap<>();
-            for (DayOfWeek day : DayOfWeek.values()) {
-                fullWeek.put(day.name(), new ArrayList<>());
+// --- Program -> CreatedProgramDto ---
+        Converter<Set<WorkoutSession>, List<DayWorkout>> sessionsToWeekConverter = context -> {
+            // Initialize map for each day of the week
+            Map<String, List<ExerciseProgressDto>> weekMap = new LinkedHashMap<>();
+            for (java.time.DayOfWeek day : java.time.DayOfWeek.values()) {
+                weekMap.put(day.name(), new ArrayList<>());
             }
-
-            LocalDate today = LocalDate.now();
-            LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-            LocalDate endOfWeek = startOfWeek.plusDays(7);
 
             if (context.getSource() != null) {
                 context.getSource().stream()
-                        .filter(d -> d.getScheduledFor() != null &&
-                                d.getScheduledFor().isAfter(startOfWeek.minusDays(1)) &&
-                                d.getScheduledFor().isBefore(endOfWeek))
+                        .filter(session -> session.getScheduledFor() != null)
                         .forEach(session -> {
                             String dayName = session.getScheduledFor().getDayOfWeek().name();
-                            List<ExerciseProgressDto> dtos = session.getExercises().stream()
-                                    .map(ex -> this.map(ex, ExerciseProgressDto.class))
-                                    .collect(Collectors.toList());
-                            fullWeek.get(dayName).addAll(dtos);
+                            List<ExerciseProgressDto> exercisesForDay = weekMap.get(dayName);
+
+                            // Track already added exercises to avoid duplicates
+                            Set<Long> addedExerciseIds = exercisesForDay.stream()
+                                    .map(ExerciseProgressDto::getExerciseId)
+                                    .collect(Collectors.toSet());
+
+                            session.getExercises().stream()
+                                    .map(ex -> map(ex, ExerciseProgressDto.class))
+                                    .filter(dto -> !addedExerciseIds.contains(dto.getExerciseId()))
+                                    .forEach(dto -> exercisesForDay.add(dto));
                         });
             }
 
-            return fullWeek.entrySet().stream()
+            // Convert map to DayWorkout list
+            return weekMap.entrySet().stream()
                     .map(entry -> new DayWorkout(entry.getKey(), entry.getValue()))
                     .collect(Collectors.toList());
         };
 
+        this.createTypeMap(Program.class, CreatedProgramDto.class)
+                .addMappings(m -> {
+                    m.map(Program::getName, CreatedProgramDto::setName);
+                    m.map(Program::getRepeats, CreatedProgramDto::setRepeats);
+                    m.map(Program::getScheduleMonths, CreatedProgramDto::setScheduleMonths);
+                    m.map(Program::getNotifications, CreatedProgramDto::setNotifications);
+                    m.map(Program::getIsPublic, CreatedProgramDto::setIsPublic);
+                    m.using(sessionsToWeekConverter).map(Program::getSessions, CreatedProgramDto::setWeekDays);
+                });
+
+        // --- User -> StatsUserDto ---
         this.typeMap(User.class, StatsUserDto.class).setPostConverter(context -> {
             User source = context.getSource();
             StatsUserDto destination = context.getDestination();
@@ -72,7 +86,7 @@ public class CustomModelMapper extends ModelMapper {
             if (source == null || destination == null) return destination;
 
             boolean isLbs = "lbs".equalsIgnoreCase(source.getMeasuringUnits());
-            
+
             if (source.getCompletedExercises() != null) {
                 List<StatsExerciseDto> convertedProgress = getStatsExerciseDtos(source, isLbs, KG_TO_LB);
                 destination.setProgresses(convertedProgress);
@@ -129,7 +143,7 @@ public class CustomModelMapper extends ModelMapper {
                 if (dto.getCompletedDate() != null) {
                     convertedProgress.add(dto);
                 }
-            } catch (Exception e) {}
+            } catch (Exception ignored) {}
         }
         return convertedProgress;
     }

@@ -22,19 +22,21 @@ public class DevDataInitializer {
     private final ExerciseRepository exerciseRepository;
     private final WorkoutSessionRepository workoutSessionRepository;
     private final ExerciseProgressRepository exerciseProgressRepository;
+    private final NotificationRepository notificationRepository;
     private final SHA256Hasher hasher;
 
     public DevDataInitializer(UserRepository userRepository,
                               ProgramRepository programRepository,
                               ExerciseRepository exerciseRepository,
                               WorkoutSessionRepository workoutSessionRepository,
-                              ExerciseProgressRepository exerciseProgressRepository,
+                              ExerciseProgressRepository exerciseProgressRepository, NotificationRepository notificationRepository,
                               SHA256Hasher hasher) {
         this.userRepository = userRepository;
         this.programRepository = programRepository;
         this.exerciseRepository = exerciseRepository;
         this.workoutSessionRepository = workoutSessionRepository;
         this.exerciseProgressRepository = exerciseProgressRepository;
+        this.notificationRepository = notificationRepository;
         this.hasher = hasher;
     }
 
@@ -67,8 +69,8 @@ public class DevDataInitializer {
 
                     LocalDate today = LocalDate.now();
 
-                    // IMPORTANT: add all weights before saving the user
-                    user.setWeight(70.0, today);           // current weight
+                    // Add weight history
+                    user.setWeight(70.0, today);
                     user.setWeight(69.5, today.minusWeeks(1));
                     user.setWeight(70.2, today.minusWeeks(2));
                     user.setWeight(69.0, today.minusWeeks(3));
@@ -77,10 +79,23 @@ public class DevDataInitializer {
                     user.setWeight(68.5, today.minusWeeks(6));
                     user.setWeight(69.0, today.minusWeeks(7));
                     user.setWeight(68.7, today.minusWeeks(8));
-                    System.out.println(user);
+
+                    // Add notifications
+                    for (int i = 0; i < 10; i++) {
+                        Notification n = new Notification();
+                        n.setName("Name" + i);
+                        n.setDescription("Description" + i);
+                        if ((i & 1) == 0) n.setChecked(true);
+
+                        n.setObserver(user);      // IMPORTANT: set observer
+                        user.getNotifications().add(n); // add to user's collection
+                    }
+
+                    // Save user, cascading notifications
                     return userRepository.save(user);
                 });
     }
+
 
 
 

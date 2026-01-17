@@ -12,7 +12,7 @@
     height: 100%;
     width: 3px;
     padding: 0;
-    background: var(--border-soft); /* Use soft border variable for consistency */
+    background: var(--delimiter-color); /* Use soft border variable for consistency */
     border-radius: 5px;
 }
 

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Component
 public class DataInitializer {
@@ -56,6 +57,7 @@ public class DataInitializer {
     }
 
     private void initDemoExercises() {
+        Random rand = new Random(1);
         if (exerciseRepository.count() == 0) {
             List<Exercise> exercises = new ArrayList<>();
             Category[] categories = Category.values();
@@ -64,9 +66,9 @@ public class DataInitializer {
             for (int i = 1; i <= 60; i++) {
                 exercises.add(new Exercise(
                         "Exercise " + i,
-                        categories[i % categories.length],
-                        types[i % types.length],
-                        equipments[i % equipments.length],
+                        categories[rand.nextInt(categories.length )],
+                        types[rand.nextInt(types.length)],
+                        equipments[rand.nextInt(equipments.length)],
                         "/icons/bench-press by Leremy from Flaticon.png",
                          "/videos/push-ups.mp4"
                 ));

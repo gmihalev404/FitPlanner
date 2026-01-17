@@ -60,6 +60,7 @@ public class WorkoutProgramScheduleController {
     @GetMapping("edit-program")
     public String showEditForm(@RequestParam Long programId, HttpSession session){
         CreatedProgramDto programDto = programService.getById(programId, CreatedProgramDto.class);
+//        System.out.println("ProgramDto" + programDto);
         session.setAttribute("programForm", programDto);
         session.setAttribute("weekDays", programDto.getWeekDays());
         session.setAttribute("programId", programId);

@@ -62,6 +62,11 @@ html.light {
     --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.2);
 
     --scroll-track: #d0d0d0;
+
+    --bg-bell: rgba(96, 148, 148, 0.89);
+    --bg-bell-hover: rgb(162, 149, 149);
+
+    --delimiter-color: rgb(0, 0, 0);
 }
 
 @media (max-width: 880px) {

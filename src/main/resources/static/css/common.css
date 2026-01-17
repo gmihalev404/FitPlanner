@@ -1,6 +1,7 @@
 :root {
     --btn-danger-bg: #dc3545;
     --btn-primary-text: #ffffff;
+    --radius-container: 12px;
 }
 
 * {
@@ -77,6 +78,7 @@ a {
 /* ---------- Layout ---------- */
 
 .background-section {
+    background-attachment: fixed;
     width: 100%;
     min-height: calc(100vh - 50px);
     display: flex;
@@ -85,7 +87,7 @@ a {
     padding: 20px;
     background-color: var(--bg-section);
     background-image: url('/images/background.png');
-    background-size: cover;
+    background-size: cover; /* fit the entire image */
     background-position: center;
     background-repeat: no-repeat;
     overflow: visible;
@@ -94,7 +96,8 @@ a {
 .background-section div.container {
     position: relative;
     padding: 1%;
-    border-radius: 10px;
+    border-radius: var(--radius-container);
+    margin-top: 45px;
     background-color: var(--bg-container);
     color: var(--text-main);
 }
@@ -219,7 +222,7 @@ button:hover, .btn:hover {
     font-size: 18px;
     width: 36px;
     height: 36px;
-    border-radius: 0 12px 0 0 !important;
+    border-radius: 0 var(--radius-container) 0 0 !important;
     cursor: pointer;
 }
 

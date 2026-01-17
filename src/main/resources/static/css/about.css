@@ -2,16 +2,16 @@
     font-size: 1.1rem;
     line-height: 1.7;
     color: var(--text-muted);
-    padding: 15px 0;
+    /*padding: 15px 0;*/
     background: transparent !important;
 }
 
 .delimiter {
     width: 100%;
     height: 3px;
-    background: var(--border-contrast) !important;
+    background: var(--delimiter-color) !important;
     border-radius: 5px;
-    margin: 15px 0;
+    /*margin: 15px 0;*/
 }
 
 .container-heading {

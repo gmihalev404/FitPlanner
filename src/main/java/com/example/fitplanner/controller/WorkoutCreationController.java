@@ -42,7 +42,7 @@ public class WorkoutCreationController {
         }
         model.addAttribute("programForm", programForm);
         List<DayWorkout> weekDays = (List<DayWorkout>) session.getAttribute("weekDays");
-        if (weekDays == null) {
+        if (weekDays == null || weekDays.isEmpty()) {
             weekDays = new ArrayList<>();
             DayOfWeek[] days = DayOfWeek.values();
             for (DayOfWeek day : days) {

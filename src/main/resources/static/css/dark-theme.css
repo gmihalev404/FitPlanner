@@ -61,7 +61,12 @@ html.dark {
     /* ---------- Effects ---------- */
     --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.5);
 
-    --scroll-track: #000
+    --scroll-track: #000;
+
+    --bg-bell: rgb(162, 149, 149);
+    --bg-bell-hover: rgba(245, 245, 245, 1);
+
+    --delimiter-color: rgba(23, 224, 224, 0.89);
 }
 
 @media (max-width: 880px) {

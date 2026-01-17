@@ -10,10 +10,7 @@ import java.util.List;
 @Data
 public class ProgramsUserDto implements Serializable{
     private Long id;
-//    private String username;
-//    private String firstName;
-//    private String lastName;
-//    private Role role;
+
     private String theme = "dark";
     private String language = "en";
     private String measuringUnits = "kg";
