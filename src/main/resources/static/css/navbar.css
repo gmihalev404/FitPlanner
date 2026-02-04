@@ -46,21 +46,96 @@
 .bell {
     font-size: 24px;
     color: var(--bg-bell);
-    /*border: 1px solid black;*/
+    cursor: pointer;
+    background-color: var(--bg-navbar);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    padding: 0;
 }
 
 .bell:hover {
     color: var(--bg-bell-hover);
 }
 
-.badge {
-    width: 1.5rem;
-    height: 1.5rem;
-    font-size: 0.8rem;
-    position: absolute;
-    top: 0;
-    right: 0;
+/* --- СЕКЦИЯ ИЗВЕСТИЯ (ПРОМЕНЕНАТА ЛОГИКА) --- */
+
+/* Бадж върху камбанката */
+.badge-notif-count {
+    font-size: 0.6rem !important;
+    font-weight: bold;
+    width: 16px;
+    height: 16px;
+    padding: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 2px !important;
+    right: 2px !important;
+    border: 1.5px solid var(--bg-navbar);
 }
+
+/* Основен панел на нотификациите */
+.notification-panel {
+    display: none; /* по default затворено */
+    width: 400px;
+    max-height: 400px;
+    overflow-y: auto;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+    box-shadow: var(--shadow-card);
+    padding: 0;
+
+    position: absolute;
+    top: 100%; /* под камбанката */
+    left: 50%; /* центрира спрямо wrapper */
+    transform: translateX(-50%); /* центриране по хоризонтала */
+    z-index: 1050;
+}
+/* Вътрешни елементи */
+.notification-header {
+    padding: 12px 16px;
+    background-color: var(--bg-section); /* нова променлива без прозрачност */
+    border-bottom: 1px solid var(--border-soft);
+    color: var(--text-main);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.notification-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-soft);
+    transition: background 0.2s;
+}
+
+.notification-item:hover {
+    background-color: var(--hover-light);
+}
+
+.notification-sender {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.notification-desc {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin: 4px 0;
+}
+
+.notification-date {
+    font-size: 0.7rem;
+    color: var(--text-soft);
+}
+
+/* --- RESPONSIVE --- */
 
 @media (max-width: 992px) {
     .navbar-collapse {
@@ -82,5 +157,18 @@
     .nav-link {
         padding: 0.8rem 1rem;
         display: block;
+    }
+
+    /* Notification panel */
+    .notification-panel {
+        position: fixed !important;
+        top: 70px; /* под navbar */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90vw;
+        max-height: calc(100vh - 80px);
+        overflow-y: auto;
+        border-radius: 0.5rem;
+        z-index: 1100; /* над navbar */
     }
 }

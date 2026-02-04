@@ -15,4 +15,6 @@ public class NotificationDto implements Serializable {
     private Boolean checked = false;
 
     private LocalDateTime date;
+
+    private String url;
 }

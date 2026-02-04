@@ -16,6 +16,7 @@
     <link rel="stylesheet" th:href="@{/css/dark-theme.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/light-theme.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/search-bar.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/scrollbar.css(v=${#dates.createNow().time})}">
 
     <link rel="stylesheet" th:href="@{/css/my-workouts.css(v=${#dates.createNow().time})}">
 </head>
@@ -110,5 +111,6 @@
         document.querySelectorAll(".program-checkbox").forEach(cb => cb.checked = source.checked);
     }
 </script>
+<script th:src="@{/js/notifications.js(v=${#dates.createNow().time})}" defer></script>
 </body>
 </html>

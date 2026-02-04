@@ -24,7 +24,7 @@
 <div th:replace="fragment/navbar.html::navbar"></div>
 <div class="background-section">
     <div class="container my-5 p-2">
-        <h1 class="mb-4">Statistics</h1>
+        <h1 class="container-heading text-center mb-4">Statistics</h1>
         <div th:replace="fragment/search-bar.html::search-bar('exerciseSearch', #{exercise.search_placeholder}, '.exercise-item')"></div>
         <div class="row mb-4 mt-3">
             <div class="row mb-4 mt-3">
@@ -123,5 +123,6 @@
     };
 </script>
 <script th:src="@{/js/stats.js(v=${#dates.createNow().time})}"></script>
+<script th:src="@{/js/notifications.js(v=${#dates.createNow().time})}" defer></script>
 </body>
 </html>

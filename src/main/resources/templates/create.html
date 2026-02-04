@@ -12,6 +12,7 @@
     <link rel="stylesheet" th:href="@{/css/common.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/navbar.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/footer.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/scrollbar.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/dark-theme.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/light-theme.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/search-bar.css(v=${#dates.createNow().time})}">
@@ -22,7 +23,7 @@
 <div th:replace="~{fragment/navbar.html::navbar}"></div>
 <div class="background-section py-4">
     <div class="container create-workout-log p-2">
-        <h2 th:text="#{create.workout}" class="text-center mb-4 text-dark">Create Workout</h2>
+        <h1 class="container-heading text-center mb-4">Create Workout</h1>
         <form id="programForm"
               th:action="${programId == null} ? @{'/create-full-workout'} : @{'edit-program'}"
               th:object="${programForm}" method="post">
@@ -109,5 +110,6 @@
 <script th:src="@{/js/update-program-session.js(v=${#dates.createNow().time})}"></script>
 <script th:src="@{/js/scrollable-days.js(v=${#dates.createNow().time})}"></script>
 <script th:src="@{/js/search-bar.js(v=${#dates.createNow().time})}"></script>
+<script th:src="@{/js/notifications.js(v=${#dates.createNow().time})}" defer></script>
 </body>
 </html>

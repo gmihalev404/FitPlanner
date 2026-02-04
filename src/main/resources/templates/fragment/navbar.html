@@ -7,26 +7,49 @@
     </a>
 
     <!-- Profile + Notifications (only visible if userDto is not null) -->
-    <div th:if="${userDto != null}" class="d-flex align-items-center gap-5 ms-auto">
+    <div th:if="${userDto != null}" class="d-flex align-items-center gap-2 ms-auto me-2">
+      <!-- Профил -->
       <a class="nav-link p-2" th:href="@{/profile}">
-        <img th:if="${userDto.profileImageUrl != null}" th:src="${userDto.profileImageUrl}"
+        <img th:src="${userDto.profileImageUrl != null ? userDto.profileImageUrl : '/images/default-user-image.webp'}"
              alt="Profile"
              class="rounded-circle"
-             style="width: 40px; height: 40px; object-fit: cover;">
-        <img th:unless="${userDto.profileImageUrl != null}" th:src="@{/images/default-user-image.webp}"
-             alt="Profile"
-             class="rounded-circle"
-             style="width: 40px; height: 40px; object-fit: cover;">
+             style="width: 40px; height: 40px; object-fit: cover; border: 1px solid var(--border-soft);">
       </a>
-      <a class="nav-link position-relative p-2 bell" th:href="@{/notifications}">
-        <i class="bi bi-bell-fill"></i>
-        <span th:if="${#lists.size(userDto.notifications.?[!checked]) > 0}"
-              th:text="${#lists.size(userDto.notifications.?[!checked])}"
-              class="badge rounded-pill bg-danger d-flex justify-content-center align-items-center">
-        </span>
-      </a>
-    </div>
 
+      <!-- Нотификации -->
+      <div id="notifDropdownWrapper" class="position-relative">
+        <a id="notifDrop" class="btn btn-link nav-link position-relative p-2 bell" type="button">
+          <i class="bi bi-bell-fill"></i>
+          <span class="badge rounded-pill bg-danger position-absolute badge-notif-count"
+                th:if="${userDto.notifications != null && #lists.size(userDto.notifications.?[!checked]) > 0}"
+                th:text="${#lists.size(userDto.notifications.?[!checked])}"></span>
+        </a>
+
+        <ul id="notifPanel" class="notification-panel shadow-lg scrollable-container">
+          <li class="notification-header text-center">
+            <h6 class="m-0 small fw-bold">Известия</h6>
+          </li>
+
+          <li th:if="${userDto.notifications == null || #lists.isEmpty(userDto.notifications.?[!checked])}">
+            <div class="dropdown-item text-center py-4 text-muted small">Нямате нови известия</div>
+          </li>
+
+          <li th:each="n : ${userDto.notifications}" th:if="${!n.checked}">
+            <a th:href="${n.url != null ? n.url : '#'}" class="dropdown-item notification-item">
+              <span class="notification-sender" th:text="${n.name}"></span>
+              <p class="notification-desc" th:text="${n.description}"></p>
+              <div class="notification-date text-end">
+                <span th:text="${#temporals.format(n.date, 'dd MMM, HH:mm')}"></span>
+              </div>
+            </a>
+          </li>
+
+          <li class="border-top border-soft">
+            <a th:href="@{/notifications}" class="dropdown-item text-center py-2 small text-primary fw-bold">Виж всички</a>
+          </li>
+        </ul>
+      </div>
+    </div>
     <!-- Toggler for collapse -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
       <span class="navbar-toggler-icon"></span>

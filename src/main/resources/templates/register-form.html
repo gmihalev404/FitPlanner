@@ -15,6 +15,7 @@
     <link rel="stylesheet" th:href="@{/css/dark-theme.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/light-theme.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/search-bar.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/scrollbar.css(v=${#dates.createNow().time})}">
 
     <link rel="stylesheet" th:href="@{/css/dropdown.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/login-register-form.css(v=${#dates.createNow().time})}">
@@ -25,7 +26,8 @@
     <div class="form-container container">
         <form th:action="@{/register}"
               th:object="${registerDto}"
-              method="post">
+              method="post"
+              class="p-2">
             <h1 class="container-heading" th:text="#{register.heading}">Sign up</h1>
             <div class="row mb-3 gy-3">
                 <div class="col-md-6">
