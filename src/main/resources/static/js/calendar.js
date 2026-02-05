@@ -1,6 +1,6 @@
 let currentDate = new Date();
 function addFormAttributes(dayForm, year, month, day, selectedIds) {
-    dayForm.action = '/session';
+    dayForm.action = '/workout-day';
     dayForm.method = 'get';
     dayForm.className = 'calendar-day-form';
     const params = { year, month, day };

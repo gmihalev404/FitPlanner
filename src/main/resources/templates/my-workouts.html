@@ -45,14 +45,14 @@
                         <div class="col-12 col-lg-8">
                             <div class="row g-0 mt-2 mt-lg-0">
                                 <div class="col-12 col-sm-6 mb-1 mb-sm-0">
-            <span class="small text-muted d-flex align-items-center">
-                <i class="bi bi-calendar-plus me-2"></i>
-                <span class="me-1">Created:</span>
-                <span th:text="${#temporals.format(program.createdAt, 'dd MMM HH:mm')}"></span>
-            </span>
+                                    <span class="small text-muted d-flex align-items-center">
+                                        <i class="bi bi-calendar-plus me-2"></i>
+                                        <span class="me-1">Created:</span>
+                                        <span th:text="${#temporals.format(program.createdAt, 'dd MMM HH:mm')}"></span>
+                                    </span>
                                 </div>
                                 <div class="col-12 col-sm-6">
-            <span class="small text-muted d-flex align-items-center">
+                                    <span class="small text-muted d-flex align-items-center">
                 <i class="bi bi-arrow-repeat me-2"></i>
                 <span class="me-1">Updated:</span>
                 <span th:text="${#temporals.format(program.lastChanged, 'dd MMM HH:mm')}"></span>

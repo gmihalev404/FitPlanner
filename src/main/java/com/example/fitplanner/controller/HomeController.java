@@ -17,6 +17,7 @@ public class HomeController {
         session.removeAttribute("programForm");
         UserDto userDto = (UserDto) session.getAttribute("loggedUser");
         model.addAttribute("userDto", userDto);
+        session.removeAttribute("sessionExercises");
 //        if (model.getAttribute("userDto") == null) return "redirect:/login";
         return "home";
     }

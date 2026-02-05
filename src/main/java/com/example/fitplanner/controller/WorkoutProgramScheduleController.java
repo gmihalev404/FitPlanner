@@ -38,22 +38,33 @@ public class WorkoutProgramScheduleController {
         return "my-workouts";
     }
 
-    @GetMapping("session")
-    public String showDateSession(@RequestParam Integer year,
-                                  @RequestParam Integer month,
-                                  @RequestParam Integer day,
-                                  @RequestParam(required = false) List<Long> programIds,
-                                  Model model, HttpSession session){
+    @GetMapping("workout-day")
+    public String showDateWorkouts(@RequestParam Integer year,
+                                   @RequestParam Integer month,
+                                   @RequestParam Integer day,
+                                   @RequestParam(required = false) List<Long> programIds,
+                                   Model model, HttpSession session){
         UserDto userDto = (UserDto) session.getAttribute("loggedUser");
         if(userDto == null) return "redirect:/login";
+
         ProgramsUserDto programsUserDto = userService.getById(userDto.getId(), ProgramsUserDto.class);
         LocalDate date = LocalDate.of(year, month, day);
-        List<ExerciseProgressDto> exercises = workoutSessionService.getWorkoutsByProgramIdsAndDate(programIds, date,
-                programsUserDto.getMeasuringUnits());
+
+        // FIX: Check if the session for this date is already finished
+        boolean isFinished = workoutSessionService.isSessionFinished(userDto.getId(), date);
+
+        List<ExerciseSessionDto> exercises = workoutSessionService.getWorkoutsByProgramIdsAndDate(programIds, date,
+                programsUserDto.getMeasuringUnits(), programsUserDto.getId());
+
         model.addAttribute("exercises", exercises);
         model.addAttribute("date", date);
         model.addAttribute("isToday", LocalDate.now().equals(date));
         model.addAttribute("units", programsUserDto.getMeasuringUnits());
+        model.addAttribute("selectedProgramIds", programIds != null ? programIds : List.of());
+
+        // NEW: Add the flag to the model
+        model.addAttribute("isFinished", isFinished);
+
         return "workout-day";
     }
 

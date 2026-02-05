@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ExerciseProgressRepository extends JpaRepository<ExerciseProgress, Long> {
@@ -19,4 +20,22 @@ public interface ExerciseProgressRepository extends JpaRepository<ExerciseProgre
 
     @Query("SELECT exPr FROM ExerciseProgress  exPr WHERE exPr.user.id = :userId")
     List<ExerciseProgress> findByUserId(@Param(value = "userId") Long userId);
+
+    @Query("SELECT e FROM ExerciseProgress e " +
+            "WHERE (:programIds IS NULL OR e.workoutSession.program.id IN :programIds) " +
+            "AND e.lastScheduled = :date")
+    List<ExerciseProgress> findByProgramIdsAndDate(List<Long> programIds, LocalDate date);
+
+    @Query("SELECT e FROM ExerciseProgress e WHERE e.id = :exerciseId")
+    ExerciseProgress getExerciseProgressById(@Param("exerciseId") Long exerciseId);
+
+    @Query("SELECT ep FROM ExerciseProgress ep " +
+            "WHERE ep.user.id = :userId " +
+            "AND ep.exercise.id = :exerciseId " +
+            "AND ep.lastScheduled = :lastScheduled")
+    Optional<ExerciseProgress> findByUserIdAndExerciseIdAndLastScheduled(
+            @Param("userId") Long userId,
+            @Param("exerciseId") Long exerciseId,
+            @Param("lastScheduled") LocalDate lastScheduled
+    );
 }

@@ -29,7 +29,8 @@ public class DevDataInitializer {
                               ProgramRepository programRepository,
                               ExerciseRepository exerciseRepository,
                               WorkoutSessionRepository workoutSessionRepository,
-                              ExerciseProgressRepository exerciseProgressRepository, NotificationRepository notificationRepository,
+                              ExerciseProgressRepository exerciseProgressRepository,
+                              NotificationRepository notificationRepository,
                               SHA256Hasher hasher) {
         this.userRepository = userRepository;
         this.programRepository = programRepository;
@@ -48,7 +49,7 @@ public class DevDataInitializer {
         initProgress(program, user, exercises);
     }
 
-    // --------------------------------------------------------
+    // ----------------------------- Demo User -----------------------------
 
     private User initDemoUser() {
         return userRepository.findByUsername("testuser")
@@ -85,22 +86,21 @@ public class DevDataInitializer {
                         Notification n = new Notification();
                         n.setName("Name" + i);
                         n.setDescription("Description" + i);
-                        if ((i & 1) == 0) n.setChecked(true);
-
-                        n.setObserver(user);      // IMPORTANT: set observer
-                        user.getNotifications().add(n); // add to user's collection
+                        n.setChecked((i % 2) == 0);
+                        n.setObserver(user); // important
+                        user.getNotifications().add(n);
                     }
 
-                    // Save user, cascading notifications
+                    // Save user (notifications cascade)
                     return userRepository.save(user);
                 });
     }
 
-
-
+    // ----------------------------- Program -----------------------------
 
     private Program initProgram(User user) {
-        return programRepository.getByUserId(user.getId()).stream().findFirst()
+        return programRepository.getByUserId(user.getId())
+                .stream().findFirst()
                 .orElseGet(() -> {
                     Program program = new Program();
                     program.setUser(user);
@@ -109,11 +109,12 @@ public class DevDataInitializer {
                 });
     }
 
+    // ----------------------------- Exercises -----------------------------
+
     private List<Exercise> initExercises() {
         if (exerciseRepository.count() >= 60) {
             return exerciseRepository.findAll();
         }
-
         for (int i = 1; i <= 60; i++) {
             Exercise exercise = new Exercise();
             exercise.setName("Exercise" + i);
@@ -122,35 +123,39 @@ public class DevDataInitializer {
         return exerciseRepository.findAll();
     }
 
+    // ----------------------------- Progress -----------------------------
+
     private void initProgress(Program program, User user, List<Exercise> exercises) {
-        if (!exerciseProgressRepository.findByUserId(user.getId()).isEmpty()) {
-            return;
-        }
+        if (!exerciseProgressRepository.findByUserId(user.getId()).isEmpty()) return;
 
         Random random = new Random();
         LocalDate startDate = LocalDate.now().minusWeeks(12);
 
-        for (Exercise exercise : exercises) {
+        for (int week = 0; week < 8; week++) {
+            LocalDate sessionDate = startDate.plusWeeks(week);
 
-            for (int week = 0; week < 8; week++) {
+            // Create ONE session per week
+            WorkoutSession session = new WorkoutSession();
+            session.setProgram(program);
+            session.setUser(user);
+            session.setScheduledFor(sessionDate);
+            session.setFinished(false);
+            WorkoutSession savedSession = workoutSessionRepository.saveAndFlush(session);
 
-                WorkoutSession session = new WorkoutSession(
-                        program,
-                        startDate.plusWeeks(week)
-                );
-                workoutSessionRepository.save(session);
-
+            // Add all exercises to this session
+            for (Exercise exercise : exercises) {
                 ExerciseProgress progress = new ExerciseProgress(
-                        session,
+                        savedSession,
                         exercise,
                         user,
                         8 + random.nextInt(6),
                         3 + random.nextInt(3),
                         20.0 + random.nextInt(50),
-                        session.getScheduledFor()
+                        sessionDate // lastScheduled
                 );
-
-                progress.markCompleted(session.getScheduledFor());
+                progress.markCompleted(sessionDate); // sets completed and lastCompleted
+                progress.setSuggestedChangeIncrease(false); // default
+                progress.setSuggestedChange(0.0);          // default
                 exerciseProgressRepository.save(progress);
             }
         }

@@ -40,7 +40,7 @@
                 </div>
 
                 <div class="col-2 col-lg-2 text-center text-lg-start">
-                    <label th:text="${exercise.finished ? 'Done' : 'Pending'}"
+                    <label th:text="${exercise.finished ? 'Done' : ''}"
                            th:classappend="${exercise.finished ? 'text-success' : 'text-secondary'}"
                            class="extra-small fw-bold mb-0"></label>
                 </div>
@@ -58,8 +58,21 @@
         </div>
 
         <div th:if="${!exercises.isEmpty() && isToday}" class="row justify-content-center mt-auto pt-3">
-            <form th:action="@{/startSession}" method="get" class="col-auto">
-                <button class="btn bg-success px-5">Start</button>
+            <form th:action="@{/workout-session}" method="get" class="col-auto">
+                <input type="hidden" name="year" th:value="${date.year}">
+                <input type="hidden" name="month" th:value="${date.monthValue}">
+                <input type="hidden" name="day" th:value="${date.dayOfMonth}">
+                <div th:each="programId : ${selectedProgramIds}">
+                    <input type="hidden" name="programIds" th:value="${programId}">
+                </div>
+
+                <button th:if="${!isFinished}" class="btn btn-success px-5" type="submit">
+                    <i class="bi bi-play-fill"></i> Start Session
+                </button>
+
+                <button th:if="${isFinished}" class="btn btn-outline-info px-5" type="submit">
+                    <i class="bi bi-info-circle"></i> View Day Summary
+                </button>
             </form>
         </div>
         <form th:action="@{/close-day-session}" method="post" class="close-form">

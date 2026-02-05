@@ -1,10 +1,9 @@
 package com.example.fitplanner.entity.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import lombok.NoArgsConstructor;
 
@@ -12,12 +11,13 @@ import java.time.LocalDate;
 
 @Entity
 @Getter
+@Setter
 @ToString(exclude = {"user", "workoutSession"})
-@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class ExerciseProgress extends BaseEntity {
 
-    @ManyToOne(optional = false)
-    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "workout_session_id", nullable = false)
     private WorkoutSession workoutSession;
 
     @ManyToOne(optional = false)
@@ -58,11 +58,22 @@ public class ExerciseProgress extends BaseEntity {
 
     @Column(nullable = false)
     @NotNull
-    private Boolean suggestedIncrease = false;
+    private Integer missedExercisesInARow = 0;
+
+    @Column
+    private Boolean suggestedChangeIncrease = false;
+
+    @Column
+    private Double suggestedChange = 0.0;
 
     @Column(nullable = false)
     @NotNull
     private Boolean completed = false;
+
+    @Column(nullable = false)
+    @NotNull
+    @Min(0)
+    private Integer setsCompleted = 0;
 
     public ExerciseProgress(WorkoutSession workoutSession, Exercise exercise, User user,
                             Integer reps, Integer sets, Double weight, LocalDate lastScheduled) {
@@ -72,21 +83,47 @@ public class ExerciseProgress extends BaseEntity {
         this.reps = reps;
         this.sets = sets;
         this.weight = weight;
-        this.lastScheduled = lastScheduled;
-        if (workoutSession != null) {
-            workoutSession.addExercise(this);
-        }
+        this.lastScheduled = lastScheduled != null ? lastScheduled : LocalDate.now(); // fallback
+        this.completed = false;
+        this.completedExercisesInARow = 0;
+        this.missedExercisesInARow = 0;
+        this.suggestedChangeIncrease = null;
+        this.suggestedChange = null;
+
+        if (workoutSession != null) workoutSession.addExercise(this);
     }
 
     public void markCompleted(LocalDate date) {
         this.completed = true;
         this.lastCompleted = date;
         this.completedExercisesInARow++;
+        this.missedExercisesInARow = 0;
     }
 
-    public void updateProgress(Integer reps, Integer sets, Double weight) {
-        this.reps = reps;
-        this.sets = sets;
-        this.weight = weight;
+    public void markMissed(LocalDate date) {
+        this.completed = false;
+        this.lastScheduled = date;
+        this.missedExercisesInARow++;
+        this.completedExercisesInARow = 0;
+    }
+
+    public void applySuggestedChange(boolean accepted) {
+        if (accepted && suggestedChange != null) {
+            if (Boolean.TRUE.equals(suggestedChangeIncrease)) {
+                this.weight = this.weight * (1 + suggestedChange / 100);
+            } else {
+                this.weight = this.weight * (1 - suggestedChange / 100);
+            }
+        }
+        // след прилагане или отказ
+        this.suggestedChangeIncrease = null;
+        this.suggestedChange = null;
+    }
+
+    public void resetCountersAfterSuggestion() {
+        this.completedExercisesInARow = 0;
+        this.missedExercisesInARow = 0; // ако имаме такъв
+        this.suggestedChangeIncrease = null; // няма повече предложение
+        this.suggestedChange = 0.0;
     }
 }
