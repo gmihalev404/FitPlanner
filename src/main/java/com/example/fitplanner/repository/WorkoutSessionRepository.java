@@ -18,7 +18,7 @@ public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, 
     Optional<WorkoutSession> findByUserIdAndScheduledFor(Long userId, LocalDate date);
 
     @Query("SELECT COALESCE(s.finished, false) FROM WorkoutSession s WHERE s.user.id = :userId AND s.scheduledFor = :date")
-    boolean isSessionFinished(@Param("userId") Long userId, @Param("date") LocalDate date);
+    Boolean isSessionFinished(@Param("userId") Long userId, @Param("date") LocalDate date);
 
     @Query("SELECT ws FROM WorkoutSession ws WHERE ws.program.id IN :programIds AND ws.scheduledFor = :date")
     List<WorkoutSession> getByProgramIdsAndDate(@Param("programIds") List<Long> programIds, @Param("date") LocalDate date);

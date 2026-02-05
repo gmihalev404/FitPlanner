@@ -77,28 +77,6 @@ public class WorkoutSessionService {
         return exercises;
     }
 
-    @Transactional
-    public void handleSuggestedChangeDecision(List<ExerciseSessionDto> exercises, Long exerciseId, boolean accepted) {
-        for (ExerciseSessionDto ex : exercises) {
-            if (ex.getExerciseId().equals(exerciseId) && ex.getSuggestedIncrease() != null) {
-                ex.setIncreaseAccepted(accepted);
-                ex.setSuggestedIncrease(null); // remove suggestion
-
-                // ✅ Use progressId here
-                ExerciseProgress progress = exerciseProgressRepository.findById(ex.getProgressId()).orElse(null);
-                if (progress != null) {
-                    if (accepted && ex.getSuggestedChange() != null) {
-                        double newWeight = progress.getWeight() * (ex.getSuggestedChange() > 0 ? 1.05 : 0.95);
-                        progress.setWeight(newWeight);
-                    }
-                    progress.resetCountersAfterSuggestion();
-                    exerciseProgressRepository.save(progress);
-                }
-                break;
-            }
-        }
-    }
-
     public Boolean getSuggestedIncreaseForExercise(Long userId, Long exerciseId, LocalDate date) {
         return exerciseProgressRepository.findByUserIdAndExerciseIdAndLastScheduled(userId, exerciseId, date)
                 .map(ExerciseProgress::getSuggestedChangeIncrease)
@@ -111,9 +89,9 @@ public class WorkoutSessionService {
                 .orElse(null);
     }
 
-    public boolean isSessionFinished(Long userId, LocalDate date) {
-        return workoutSessionRepository.isSessionFinished(userId, date);
-    }
+    public Boolean isSessionFinished(Long userId, LocalDate date) {
+        Boolean finished = workoutSessionRepository.isSessionFinished(userId, date);
+        return Boolean.TRUE.equals(finished);    }
 
     public int getSetsCompletedForExercise(Long userId, Long exerciseId, LocalDate date) {
         Optional<ExerciseProgress> epOpt = exerciseProgressRepository
@@ -137,24 +115,82 @@ public class WorkoutSessionService {
 
     @Transactional
     public void finishSession(List<ExerciseSessionResultDto> results, LocalDate date, Long userId) {
-        // 1. Fetch the actual session entity for this user and date
         WorkoutSession session = workoutSessionRepository.findByUserIdAndScheduledFor(userId, date)
-                .orElseThrow(() -> new RuntimeException("Workout session not found for " + date));
+                .orElseThrow(() -> new RuntimeException("Workout session not found"));
 
-        // 2. Update individual exercise progress from the form data
         if (results != null) {
             for (ExerciseSessionResultDto result : results) {
-                // The result.getExerciseId() here should be the PROGRESS ID from the hidden input
                 exerciseProgressRepository.findById(result.getExerciseId()).ifPresent(ep -> {
                     ep.setSetsCompleted(result.getSetsCompleted());
-                    ep.setCompleted(result.isFinished());
+                    boolean isSuccessful = result.isFinished();
+
+                    if (isSuccessful) {
+                        ep.markCompleted(date);
+                    } else {
+                        ep.markMissed(date);
+                    }
+
+                    // --- STREAK TRIGGERS ---
+                    if (ep.getCompletedExercisesInARow() >= 5) {
+                        ep.setSuggestedChangeIncrease(true);
+                        ep.setSuggestedChange(5.0); // Suggesting a 5% increase
+                    } else if (ep.getMissedExercisesInARow() >= 3) {
+                        ep.setSuggestedChangeIncrease(false);
+                        ep.setSuggestedChange(10.0); // Suggesting a 10% decrease (deload)
+                    } else {
+                        ep.setSuggestedChangeIncrease(null);
+                        ep.setSuggestedChange(0.0);
+                    }
+
                     exerciseProgressRepository.save(ep);
                 });
             }
         }
-
-        // 3. Mark the whole session as finished and save
         session.setFinished(true);
         workoutSessionRepository.save(session);
+    }
+    @Transactional
+    public void handleSuggestedChangeDecision(List<ExerciseSessionDto> exercises, Long exerciseId, boolean accepted) {
+        for (ExerciseSessionDto ex : exercises) {
+            if (ex.getExerciseId().equals(exerciseId) && ex.getSuggestedIncrease() != null) {
+
+                ExerciseProgress progress = exerciseProgressRepository.findById(ex.getProgressId()).orElse(null);
+                if (progress != null) {
+                    if (accepted) {
+                        applyDoubleProgression(progress);
+                    }
+                    // Reset streaks regardless of acceptance
+                    progress.resetCountersAfterSuggestion();
+                    exerciseProgressRepository.save(progress);
+                }
+                break;
+            }
+        }
+    }
+
+    private void applyDoubleProgression(ExerciseProgress ep) {
+        boolean isIncrease = Boolean.TRUE.equals(ep.getSuggestedChangeIncrease());
+        double percent = (ep.getSuggestedChange() != null) ? ep.getSuggestedChange() / 100.0 : 0.05;
+
+        int currentReps = ep.getReps();
+
+        if (isIncrease) {
+            // Logic: Weight increases at 10 reps or 30 reps. Otherwise, reps increase.
+            if (currentReps == 10 || currentReps >= 30) {
+                ep.setWeight(ep.getWeight() * (1 + percent));
+                // Optional: reset reps back to 8 after a weight increase to allow room to grow
+                if(currentReps >= 30) ep.setReps(10);
+            } else {
+                ep.setReps(currentReps + 1);
+            }
+        } else {
+            // Logic: Weight decreases if at the 4-rep floor. Otherwise, reps decrease.
+            if (currentReps <= 4) {
+                ep.setWeight(ep.getWeight() * (1 - percent));
+                ep.setReps(8); // Move back to a safer rep range
+            } else {
+                ep.setReps(currentReps - 1);
+            }
+        }
     }
 }

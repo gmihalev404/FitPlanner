@@ -16,48 +16,89 @@
     <link rel="stylesheet" th:href="@{/css/light-theme.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/search-bar.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/scrollbar.css(v=${#dates.createNow().time})}">
-
     <link rel="stylesheet" th:href="@{/css/workout-day.css(v=${#dates.createNow().time})}">
+
+    <style>
+        .status-badge { font-size: 0.8rem; padding: 0.4rem 0.8rem; border-radius: 2rem; }
+        .read-only-icon { opacity: 0.6; }
+        .exercise-row { transition: background 0.2s; }
+        .exercise-row:hover { background-color: rgba(128, 128, 128, 0.1); }
+    </style>
 </head>
 <body>
 <div th:replace="fragment/navbar.html::navbar"></div>
 <div class="background-section">
-    <div class="container session-container p-2 pt-5 d-flex flex-column justify-content-center">
-        <div th:if="${exercises.isEmpty()}" class="text-center w-100 fw-bold" th:text="'No workout scheduled for ' + ${date}"></div>
-        <div th:if="${!exercises.isEmpty()}" class="w-100 fw-bold mb-3" th:text="'Workout scheduled for ' + ${date}"></div>
-        <div class="session-exercises scrollable-container">
-            <div th:each="exercise : ${exercises}" class="row align-items-center mb-3 border-bottom pb-2 g-0">
+    <div class="container session-container p-3 pt-5 d-flex flex-column justify-content-center">
 
-                <div class="col-5 col-lg-3 d-flex flex-column">
-                    <label th:text="${exercise.name}" class="fw-bold text-truncate d-block mb-0"></label>
-                    <span th:text="${'Program: ' + exercise.programName}" class="text-info text-truncate"></span>
-                </div>
-
-                <div class="col-2 col-lg-5 d-flex flex-column flex-lg-row justify-content-lg-around small px-1">
-                    <span th:text="${#numbers.formatDecimal(exercise.weight, 1, 2) + units}"></span>
-                    <span th:text="${exercise.reps + ' reps'}"></span>
-                    <span th:text="${exercise.sets + ' sets'}"></span>
-                </div>
-
-                <div class="col-2 col-lg-2 text-center text-lg-start">
-                    <label th:text="${exercise.finished ? 'Done' : ''}"
-                           th:classappend="${exercise.finished ? 'text-success' : 'text-secondary'}"
-                           class="extra-small fw-bold mb-0"></label>
-                </div>
-
-                <div class="col-3 col-lg-2 d-flex justify-content-end align-items-center">
-                    <form th:action="@{/edit-session-exercise}" method="get" class="me-2">
-                        <button type="submit" class="btn text-primary fs-4 p-0 px-1" title="Edit">&#9998;</button>
-                    </form>
-
-                    <form th:action="@{/remove-session-exercise}" method="post" onsubmit="return confirm('Remove this exercise?')">
-                        <button type="submit" class="btn text-danger fs-4 p-0 px-1" title="Remove">✕</button>
-                    </form>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4 class="fw-bold mb-0" th:text="'Workout for ' + ${date}"></h4>
+                <div class="mt-2">
+                    <span th:if="${isFinished}" class="badge bg-success status-badge">
+                        <i class="bi bi-check-circle-fill"></i> Completed
+                    </span>
+                    <span th:if="${!isFinished && isPast && !isToday}" class="badge bg-secondary status-badge">
+                        <i class="bi bi-clock-history"></i> Past Session
+                    </span>
+                    <span th:if="${!isFinished && isToday}" class="badge bg-warning text-dark status-badge">
+                        <i class="bi bi- lightning-charge-fill"></i> Today's Goal
+                    </span>
                 </div>
             </div>
         </div>
 
-        <div th:if="${!exercises.isEmpty() && isToday}" class="row justify-content-center mt-auto pt-3">
+        <div th:if="${exercises.isEmpty()}" class="text-center w-100 py-5">
+            <i class="bi bi-calendar-x fs-1 text-muted"></i>
+            <p class="fw-bold mt-2" th:text="'No workout scheduled for ' + ${date}"></p>
+        </div>
+
+        <div th:if="${!exercises.isEmpty()}" class="session-exercises scrollable-container">
+            <div th:each="exercise : ${exercises}" class="row align-items-center mb-3 border-bottom pb-2 g-0 exercise-row">
+
+                <div class="col-5 col-lg-3 d-flex flex-column">
+                    <label th:text="${exercise.name}" class="fw-bold text-truncate d-block mb-0"></label>
+                    <span th:text="${'Program: ' + exercise.programName}" class="text-info text-truncate small"></span>
+                </div>
+
+                <div class="col-2 col-lg-5 d-flex flex-column flex-lg-row justify-content-lg-around small px-1">
+                    <span class="fw-bold"><i class="bi bi-weight me-1"></i><span th:text="${#numbers.formatDecimal(exercise.weight, 1, 2) + units}"></span></span>
+                    <span><i class="bi bi-arrow-repeat me-1"></i><span th:text="${exercise.reps + ' reps'}"></span></span>
+                    <span><i class="bi bi-layers me-1"></i><span th:text="${exercise.sets + ' sets'}"></span></span>
+                </div>
+
+                <div class="col-2 col-lg-2 text-center text-lg-start">
+                    <span th:if="${exercise.finished}" class="text-success fw-bold small">
+                        <i class="bi bi-check-lg"></i> Done
+                    </span>
+                    <span th:if="${!exercise.finished && (isFinished || isPast)}" class="text-muted small italic">
+                        Skipped
+                    </span>
+                </div>
+
+                <div class="col-3 col-lg-2 d-flex justify-content-end align-items-center">
+
+                    <th:block th:if="${isToday && !isFinished}">
+                        <form th:action="@{/edit-session-exercise}" method="get" class="me-2">
+                            <button type="submit" class="btn text-primary fs-4 p-0 px-1" title="Edit">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+                        </form>
+
+                        <form th:action="@{/remove-session-exercise}" method="post" onsubmit="return confirm('Remove this exercise?')">
+                            <button type="submit" class="btn text-danger fs-4 p-0 px-1" title="Remove">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </form>
+                    </th:block>
+
+                    <span th:if="${isFinished || isPast}" class="read-only-icon text-muted" title="Read Only">
+                        <i class="bi bi-lock-fill fs-5"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${!exercises.isEmpty() && (isToday || isPast)}" class="row justify-content-center mt-auto pt-4">
             <form th:action="@{/workout-session}" method="get" class="col-auto">
                 <input type="hidden" name="year" th:value="${date.year}">
                 <input type="hidden" name="month" th:value="${date.monthValue}">
@@ -66,21 +107,24 @@
                     <input type="hidden" name="programIds" th:value="${programId}">
                 </div>
 
-                <button th:if="${!isFinished}" class="btn btn-success px-5" type="submit">
-                    <i class="bi bi-play-fill"></i> Start Session
+                <button th:if="${isToday && !isFinished}" class="btn btn-success px-5 py-2 fw-bold shadow-sm" type="submit">
+                    <i class="bi bi-play-circle-fill me-2"></i> Start Session
                 </button>
 
-                <button th:if="${isFinished}" class="btn btn-outline-info px-5" type="submit">
-                    <i class="bi bi-info-circle"></i> View Day Summary
+                <button th:if="${isFinished || (isPast && !isToday)}" class="btn btn-outline-info px-5 py-2 fw-bold shadow-sm" type="submit">
+                    <i class="bi bi-info-circle-fill me-2"></i> View Day Summary
                 </button>
             </form>
         </div>
+
         <form th:action="@{/close-day-session}" method="post" class="close-form">
             <button type="submit" class="close-btn" th:title="#{exercise.close}">✕</button>
         </form>
     </div>
 </div>
+
 <footer th:replace="fragment/footer.html::footer"></footer>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/notifications.js(v=${#dates.createNow().time})}" defer></script>
 </body>

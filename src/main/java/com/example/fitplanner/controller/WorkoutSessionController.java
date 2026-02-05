@@ -32,30 +32,38 @@ public class WorkoutSessionController {
         if (userDto == null) return "redirect:/login";
 
         LocalDate date = LocalDate.of(year, month, day);
+        LocalDate today = LocalDate.now();
+
+        // LOGIC: A session is read-only if it was manually finished OR if the day has passed.
         boolean isFinished = workoutSessionService.isSessionFinished(userDto.getId(), date);
+        boolean isPast = date.isBefore(today);
+        boolean viewOnly = isFinished || isPast;
 
         List<ExerciseSessionDto> exercises = workoutSessionService
                 .getWorkoutsByProgramIdsAndDate(programIds, date, userDto.getMeasuringUnits(), userDto.getId());
 
-        // Calculate progress
+        // Calculate progress for the progress bar
         int totalSets = exercises.stream().mapToInt(ExerciseSessionDto::getSets).sum();
         int completedSets = exercises.stream().mapToInt(ex ->
                 workoutSessionService.getSetsCompletedForExercise(userDto.getId(), ex.getExerciseId(), date)).sum();
 
         long progressPercent = (totalSets > 0) ? Math.round(((double) completedSets / totalSets) * 100) : 0;
 
-        // Populate DTOs with current DB values
-        exercises.forEach(ex -> ex.setSetsCompleted(workoutSessionService.getSetsCompletedForExercise(userDto.getId(), ex.getExerciseId(), date)));
+        // Map existing database completion counts to the DTOs
+        exercises.forEach(ex -> ex.setSetsCompleted(
+                workoutSessionService.getSetsCompletedForExercise(userDto.getId(), ex.getExerciseId(), date)
+        ));
 
         WorkoutResultWrapper wrapper = new WorkoutResultWrapper();
+
         model.addAttribute("exercises", exercises);
         model.addAttribute("workoutForm", wrapper);
-        model.addAttribute("date", date); // Passed to hidden input in HTML
-        model.addAttribute("viewOnly", isFinished);
+        model.addAttribute("date", date);
+        model.addAttribute("viewOnly", viewOnly); // Controls JS and Submit button visibility
         model.addAttribute("progressPercent", progressPercent);
         model.addAttribute("userDto", userDto);
 
-        // Required for suggestion logic in POST
+        // Store exercises in session for the POST method to verify changes
         session.setAttribute("sessionExercises", exercises);
 
         return "workout-session";
@@ -64,7 +72,7 @@ public class WorkoutSessionController {
     @PostMapping("/finishSession")
     public String finishWorkoutSession(
             @ModelAttribute("workoutForm") WorkoutResultWrapper form,
-            @RequestParam String date, // Spring is looking for a field named "date"
+            @RequestParam String date,
             @RequestParam(required = false) List<Long> acceptedIncreaseIds,
             @RequestParam(required = false) List<Long> declinedIncreaseIds,
             HttpSession session) {
@@ -73,19 +81,31 @@ public class WorkoutSessionController {
         if (userDto == null) return "redirect:/login";
 
         LocalDate sessionDate = LocalDate.parse(date);
+        LocalDate today = LocalDate.now();
+
+        // SECURITY CHECK: Block saving if the date is in the past
+        // This prevents users from editing their history even if they bypass the UI
+        if (sessionDate.isBefore(today)) {
+            return "redirect:/my-workouts?error=past_date_immutable";
+        }
+
         List<ExerciseSessionDto> exercises = (List<ExerciseSessionDto>) session.getAttribute("sessionExercises");
 
-        // 1. Handle Suggested Increases
+        // 1. Process suggested weight increases/decreases
         if (exercises != null) {
             if (acceptedIncreaseIds != null) {
-                for (Long id : acceptedIncreaseIds) workoutSessionService.handleSuggestedChangeDecision(exercises, id, true);
+                for (Long id : acceptedIncreaseIds) {
+                    workoutSessionService.handleSuggestedChangeDecision(exercises, id, true);
+                }
             }
             if (declinedIncreaseIds != null) {
-                for (Long id : declinedIncreaseIds) workoutSessionService.handleSuggestedChangeDecision(exercises, id, false);
+                for (Long id : declinedIncreaseIds) {
+                    workoutSessionService.handleSuggestedChangeDecision(exercises, id, false);
+                }
             }
         }
 
-        // 2. Save Session Data & Mark Finished
+        // 2. Save progress to ExerciseProgress and update WorkoutSession as 'finished'
         workoutSessionService.finishSession(form.getResults(), sessionDate, userDto.getId());
 
         session.removeAttribute("sessionExercises");

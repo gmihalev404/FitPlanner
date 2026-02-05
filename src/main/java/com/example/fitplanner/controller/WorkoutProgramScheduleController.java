@@ -47,23 +47,27 @@ public class WorkoutProgramScheduleController {
         UserDto userDto = (UserDto) session.getAttribute("loggedUser");
         if(userDto == null) return "redirect:/login";
 
-        ProgramsUserDto programsUserDto = userService.getById(userDto.getId(), ProgramsUserDto.class);
         LocalDate date = LocalDate.of(year, month, day);
+        LocalDate today = LocalDate.now();
 
-        // FIX: Check if the session for this date is already finished
+        // 1. Calculate the states
         boolean isFinished = workoutSessionService.isSessionFinished(userDto.getId(), date);
+        boolean isToday = date.equals(today);
+        boolean isPast = date.isBefore(today);
 
+        // 2. Fetch data
+        ProgramsUserDto programsUserDto = userService.getById(userDto.getId(), ProgramsUserDto.class);
         List<ExerciseSessionDto> exercises = workoutSessionService.getWorkoutsByProgramIdsAndDate(programIds, date,
                 programsUserDto.getMeasuringUnits(), programsUserDto.getId());
 
+        // 3. Add to Model (Crucial to prevent SpelEvaluationException)
         model.addAttribute("exercises", exercises);
         model.addAttribute("date", date);
-        model.addAttribute("isToday", LocalDate.now().equals(date));
+        model.addAttribute("isToday", isToday);
+        model.addAttribute("isPast", isPast);
+        model.addAttribute("isFinished", isFinished);
         model.addAttribute("units", programsUserDto.getMeasuringUnits());
         model.addAttribute("selectedProgramIds", programIds != null ? programIds : List.of());
-
-        // NEW: Add the flag to the model
-        model.addAttribute("isFinished", isFinished);
 
         return "workout-day";
     }
