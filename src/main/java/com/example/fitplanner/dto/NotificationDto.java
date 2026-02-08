@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class NotificationDto implements Serializable {
+    private Long id;
     private String name;
 
     private String description;

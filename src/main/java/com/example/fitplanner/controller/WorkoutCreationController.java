@@ -236,8 +236,8 @@ public class WorkoutCreationController {
     public String createFullWorkout(@ModelAttribute("programForm") CreatedProgramDto dto,
                                     HttpSession session) {
 
-        UserDto loggedUser = (UserDto) session.getAttribute("loggedUser");
-        if (loggedUser == null) return "redirect:/login";
+        UserDto userDto = (UserDto) session.getAttribute("loggedUser");
+        if (userDto == null) return "redirect:/login";
 
         // 1. Get the form from session (which now contains our Image URL)
         CreatedProgramDto sessionForm = (CreatedProgramDto) session.getAttribute("programForm");
@@ -251,8 +251,8 @@ public class WorkoutCreationController {
         List<DayWorkout> weekDays = (List<DayWorkout>) session.getAttribute("weekDays");
         dto.setWeekDays(weekDays != null ? weekDays : new ArrayList<>());
 
-        ProgramsUserDto userSettings = userService.getById(loggedUser.getId(), ProgramsUserDto.class);
-        programService.createProgram(dto, userSettings, userSettings.getMeasuringUnits());
+        ProgramsUserDto userSettings = userService.getById(userDto.getId(), ProgramsUserDto.class);
+        programService.createProgram(dto, userSettings, userSettings.getMeasuringUnits(), userDto.getExperience());
 
         // 4. Full Cleanup
         session.removeAttribute("weekDays");
@@ -277,7 +277,7 @@ public class WorkoutCreationController {
             sessionProgramForm.setImageUrl(imageUrl);
             session.setAttribute("programForm", sessionProgramForm);
 
-            return imageUrl; // Return the path so the UI can show a preview
+            return imageUrl;
         }
         return "error";
     }

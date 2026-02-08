@@ -1,7 +1,7 @@
 package com.example.fitplanner.service;
 
 import com.example.fitplanner.dto.*;
-import com.example.fitplanner.entity.enums.Role;
+import com.example.fitplanner.entity.enums.Difficulty;
 import com.example.fitplanner.entity.model.*;
 import com.example.fitplanner.repository.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -74,11 +73,12 @@ public class ProgramService {
         }).collect(Collectors.toList());
     }
 
-    public void createProgram(CreatedProgramDto dto, ProgramsUserDto userDto, String units) {
+    public void createProgram(CreatedProgramDto dto, ProgramsUserDto userDto, String units, Difficulty difficulty) {
         User user = userRepository.findById(userDto.getId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        Program program = new Program(dto.getName(), user, dto.getScheduleMonths(), dto.getNotifications(), dto.getIsPublic());
+        Program program = new Program(dto.getName(), user, dto.getScheduleMonths(), dto.getNotifications(), dto.getIsPublic(), dto.getImageUrl());
+        program.setDifficulty(difficulty);
         program = programRepository.save(program);
 
         generateSessions(program, dto, units, user);
@@ -283,5 +283,58 @@ public class ProgramService {
         return entities.stream()
                 .map(this::mapToDto) // Uses your existing private mapToDto method
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public ProgramDetailsDto getProgramDetails(Long id) {
+        Program program = programRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Program not found"));
+
+        ProgramDetailsDto dto = new ProgramDetailsDto();
+        dto.setId(program.getId());
+        dto.setName(program.getName());
+        dto.setDescription(program.getDescription());
+        dto.setImageUrl(program.getImageUrl());
+        dto.setDifficulty(program.getDifficulty().name());
+        dto.setRating(program.getRating());
+        dto.setTrainerName(program.getUser().getFirstName() + " " + program.getUser().getLastName());
+
+        List<WorkoutSessionDto> sessionDtos = program.getSessions().stream()
+                .sorted(Comparator.comparing(WorkoutSession::getScheduledFor))
+                .map(session -> {
+                    WorkoutSessionDto sDto = new WorkoutSessionDto();
+                    sDto.setId(session.getId());
+                    sDto.setFinished(session.isFinished());
+                    sDto.setDate(session.getScheduledFor().toString());
+
+                    List<ExerciseSessionDto> exerciseDtos = session.getExercises().stream()
+                            .map(progress -> {
+                                ExerciseSessionDto esDto = new ExerciseSessionDto();
+                                esDto.setProgressId(progress.getId());
+                                esDto.setExerciseId(progress.getExercise().getId());
+                                esDto.setName(progress.getExercise().getName());
+                                esDto.setProgramName(program.getName());
+                                esDto.setWeight(progress.getWeight());
+                                esDto.setReps(progress.getReps());
+                                esDto.setSets(progress.getSets());
+                                esDto.setSetsCompleted(progress.getSetsCompleted());
+                                esDto.setFinished(progress.getCompleted());
+                                esDto.setSuggestedIncrease(progress.getSuggestedChangeIncrease());
+                                esDto.setSuggestedChange(progress.getSuggestedChange());
+                                return esDto;
+                            }).toList();
+
+                    sDto.setExercises(exerciseDtos);
+                    return sDto;
+                }).toList();
+
+        dto.setSessions(sessionDtos);
+        return dto;
+    }
+
+    @Transactional
+    public void addRating(Long id, int stars) {
+        Program program = programRepository.findById(id).orElseThrow();
+        program.addStars(stars);
     }
 }

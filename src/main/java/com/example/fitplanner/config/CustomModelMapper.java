@@ -35,9 +35,9 @@ public class CustomModelMapper extends ModelMapper {
             m.map(src -> src.getWorkoutSession().getProgram().getName(), ExerciseProgressDto::setProgramName);
         });
 
-// --- Program -> CreatedProgramDto ---
-        Converter<Set<WorkoutSession>, List<DayWorkout>> sessionsToWeekConverter = context -> {
-            // Initialize map for each day of the week
+        // --- Program -> CreatedProgramDto ---
+        // FIX: Use Collection<?> instead of Set<?> to be compatible with Hibernate's PersistentBag (List)
+        Converter<Collection<WorkoutSession>, List<DayWorkout>> sessionsToWeekConverter = context -> {
             Map<String, List<ExerciseProgressDto>> weekMap = new LinkedHashMap<>();
             for (java.time.DayOfWeek day : java.time.DayOfWeek.values()) {
                 weekMap.put(day.name(), new ArrayList<>());
@@ -50,19 +50,20 @@ public class CustomModelMapper extends ModelMapper {
                             String dayName = session.getScheduledFor().getDayOfWeek().name();
                             List<ExerciseProgressDto> exercisesForDay = weekMap.get(dayName);
 
-                            // Track already added exercises to avoid duplicates
+                            // Optimize: Use a simple Set for lookup instead of re-streaming the DTO list every time
                             Set<Long> addedExerciseIds = exercisesForDay.stream()
                                     .map(ExerciseProgressDto::getExerciseId)
                                     .collect(Collectors.toSet());
 
-                            session.getExercises().stream()
-                                    .map(ex -> map(ex, ExerciseProgressDto.class))
-                                    .filter(dto -> !addedExerciseIds.contains(dto.getExerciseId()))
-                                    .forEach(dto -> exercisesForDay.add(dto));
+                            if (session.getExercises() != null) {
+                                session.getExercises().stream()
+                                        .map(ex -> this.map(ex, ExerciseProgressDto.class))
+                                        .filter(dto -> !addedExerciseIds.contains(dto.getExerciseId()))
+                                        .forEach(exercisesForDay::add);
+                            }
                         });
             }
 
-            // Convert map to DayWorkout list
             return weekMap.entrySet().stream()
                     .map(entry -> new DayWorkout(entry.getKey(), entry.getValue()))
                     .collect(Collectors.toList());
@@ -75,6 +76,7 @@ public class CustomModelMapper extends ModelMapper {
                     m.map(Program::getScheduleMonths, CreatedProgramDto::setScheduleMonths);
                     m.map(Program::getNotifications, CreatedProgramDto::setNotifications);
                     m.map(Program::getIsPublic, CreatedProgramDto::setIsPublic);
+                    // This mapping now uses the Collection-based converter
                     m.using(sessionsToWeekConverter).map(Program::getSessions, CreatedProgramDto::setWeekDays);
                 });
 
@@ -94,10 +96,8 @@ public class CustomModelMapper extends ModelMapper {
 
             if (source.getWeightChanges() != null) {
                 List<WeightEntryDto> weightDtos = new ArrayList<>();
-
                 for (WeightEntry entry : source.getWeightChanges()) {
                     if (entry == null) continue;
-
                     WeightEntryDto dto = new WeightEntryDto();
                     Double weightVal = entry.getWeight();
 
@@ -108,24 +108,24 @@ public class CustomModelMapper extends ModelMapper {
 
                     dto.setWeight(weightVal);
                     dto.setDate(entry.getDate());
-
                     weightDtos.add(dto);
                 }
-
                 destination.setWeightChanges(weightDtos);
             }
 
             destination.setMeasuringUnits(source.getMeasuringUnits());
-
             return destination;
         });
     }
 
     private List<StatsExerciseDto> getStatsExerciseDtos(User source, boolean isLbs, double KG_TO_LB) {
         List<StatsExerciseDto> convertedProgress = new ArrayList<>();
+        if (source.getCompletedExercises() == null) return convertedProgress;
 
         for (ExerciseProgress entity : source.getCompletedExercises()) {
             try {
+                if (entity.getExercise() == null) continue;
+
                 StatsExerciseDto dto = new StatsExerciseDto();
                 dto.setExerciseId(entity.getExercise().getId());
                 dto.setWeight(entity.getWeight());

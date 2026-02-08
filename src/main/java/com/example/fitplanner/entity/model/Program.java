@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -52,21 +53,34 @@ public class Program extends BaseEntity {
     private String imageUrl;
 
     @Column
-    private Difficulty difficulty;
+    private Difficulty difficulty = Difficulty.INTERMEDIATE;
 
     @Column
     private Double rating = 0.0;
 
-    public Program(String name, User user, Integer scheduleMonths, Boolean notifications, Boolean isPublic) {
+    @ElementCollection
+    private List<Integer> starslist = new ArrayList<>();
+
+    public Program(String name, User user, Integer scheduleMonths, Boolean notifications, Boolean isPublic, String imageUrl) {
         this.name = name;
         this.user = user;
         this.repeats = scheduleMonths != 0;
         this.scheduleMonths = scheduleMonths;
         this.notifications = notifications;
         this.isPublic = isPublic;
+        this.imageUrl = imageUrl;
     }
 
     public void addSession(WorkoutSession session) {
         sessions.add(session);
+    }
+
+    public void addStars(int stars) {
+        starslist.add(stars);
+        int sum = 0;
+        for(int s : starslist) {
+            sum += s;
+        }
+        rating = sum * 1.0 / starslist.size();
     }
 }

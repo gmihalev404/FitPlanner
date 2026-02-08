@@ -2,7 +2,7 @@
   <div class="container-fluid d-flex align-items-center flex-wrap">
 
     <!-- Brand / Logo -->
-    <a href="#" class="navbar-brand">
+    <a href="/" class="navbar-brand">
       <img th:src="@{'/images/logo.png'}" class="logo" alt="Logo">
     </a>
 
@@ -22,7 +22,9 @@
           <i class="bi bi-bell-fill"></i>
           <span class="badge rounded-pill bg-danger position-absolute badge-notif-count"
                 th:if="${userDto.notifications != null && #lists.size(userDto.notifications.?[!checked]) > 0}"
-                th:text="${#lists.size(userDto.notifications.?[!checked])}"></span>
+                th:text="${#lists.size(userDto.notifications.?[!checked])}">
+
+          </span>
         </a>
 
         <ul id="notifPanel" class="notification-panel shadow-lg scrollable-container">
@@ -30,22 +32,19 @@
             <h6 class="m-0 small fw-bold">Известия</h6>
           </li>
 
-          <li th:if="${userDto.notifications == null || #lists.isEmpty(userDto.notifications.?[!checked])}">
+          <li th:if="${#lists.isEmpty(userDto.notifications.?[!checked])}">
             <div class="dropdown-item text-center py-4 text-muted small">Нямате нови известия</div>
           </li>
 
           <li th:each="n : ${userDto.notifications}" th:if="${!n.checked}">
-            <a th:href="${n.url != null ? n.url : '#'}" class="dropdown-item notification-item">
-              <span class="notification-sender" th:text="${n.name}"></span>
-              <p class="notification-desc" th:text="${n.description}"></p>
-              <div class="notification-date text-end">
+            <a th:href="@{/notifications/read/{id}(id=${n.id})}" class="dropdown-item notification-item">
+              <span class="notification-sender fw-bold d-block" th:text="${n.name}"></span>
+              <p class="notification-desc mb-1" th:text="${n.description}"></p>
+              <div class="notification-date text-end small opacity-75">
+                <i class="bi bi-clock me-1"></i>
                 <span th:text="${#temporals.format(n.date, 'dd MMM, HH:mm')}"></span>
               </div>
             </a>
-          </li>
-
-          <li class="border-top border-soft">
-            <a th:href="@{/notifications}" class="dropdown-item text-center py-2 small text-primary fw-bold">Виж всички</a>
           </li>
         </ul>
       </div>

@@ -95,6 +95,15 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "observer", cascade = CascadeType.ALL)
     private Set<Notification> notifications = new HashSet<>();
 
+    @Column(nullable = false)
+    private Integer streak = 0;
+
+    @Column
+    private LocalDate lastWorkoutDate;
+
+    @OneToMany
+    private Set<User> followers = new LinkedHashSet<>();
+
     //trainer only todo
     // private Set<User> trainees = new HashSet<>();
 

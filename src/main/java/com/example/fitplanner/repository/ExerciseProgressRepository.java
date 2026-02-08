@@ -1,6 +1,7 @@
 package com.example.fitplanner.repository;
 
 import com.example.fitplanner.entity.model.ExerciseProgress;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -38,4 +39,21 @@ public interface ExerciseProgressRepository extends JpaRepository<ExerciseProgre
             @Param("exerciseId") Long exerciseId,
             @Param("lastScheduled") LocalDate lastScheduled
     );
-}
+
+    @Query("SELECT SUM(ep.weight * ep.setsCompleted * ep.reps) FROM ExerciseProgress ep " +
+            "WHERE ep.user.id = :userId AND ep.completed = true " +
+            "AND ep.lastCompleted >= :startOfMonth")
+    Double calculateMonthlyVolume(@Param("userId") Long userId, @Param("startOfMonth") LocalDate startOfMonth);
+
+    // Count completed vs total scheduled for success rate
+    @Query("SELECT COUNT(ep) FROM ExerciseProgress ep WHERE ep.user.id = :userId AND ep.lastScheduled >= :startOfMonth")
+    long countScheduledThisMonth(@Param("userId") Long userId, @Param("startOfMonth") LocalDate startOfMonth);
+
+    @Query("SELECT COUNT(ep) FROM ExerciseProgress ep WHERE ep.user.id = :userId AND ep.completed = true AND ep.lastCompleted >= :startOfMonth")
+    long countCompletedThisMonth(@Param("userId") Long userId, @Param("startOfMonth") LocalDate startOfMonth);
+
+    @Query("SELECT ep FROM ExerciseProgress ep " +
+            "WHERE ep.user.id = :userId " +
+            "AND ep.completed = true " +
+            "ORDER BY ep.lastCompleted DESC")
+    List<ExerciseProgress> findRecentCompletedExercises(@Param("userId") Long userId, Pageable pageable);}

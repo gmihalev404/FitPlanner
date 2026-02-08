@@ -1,17 +1,21 @@
 <div th:fragment="card(prog)" class="program-card glass-panel p-0 overflow-hidden h-100 program-card border-0">
     <div class="position-relative">
-        <img th:src="${prog.imageUrl != null ? prog.imageUrl : '/default-program-image.png'}"
+        <img th:if="${prog.imageUrl != null && !prog.imageUrl.isEmpty()}"
+             th:src="${prog.imageUrl}"
              class="w-100 program-img"
              style="height: 180px; object-fit: cover;"
-             onerror="this.onerror=null; this.src='/default-program-image.png';">
-        <div th:unless="${prog.imageUrl != null && !prog.imageUrl.isEmpty()}"
-             class="w-100 program-placeholder d-flex align-items-center justify-content-center" style="height: 180px;">
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+
+        <div class="w-100 program-placeholder d-flex align-items-center justify-content-center"
+             style="height: 180px; background: rgba(255,255,255,0.05);"
+             th:styleappend="${prog.imageUrl != null && !prog.imageUrl.isEmpty()} ? 'display: none !important;' : 'display: flex !important;'">
             <i class="bi bi-lightning-fill fs-1 color-soft opacity-25"></i>
         </div>
 
         <span class="badge position-absolute top-0 end-0 m-3"
               style="background: var(--delimiter-color); color: #000; font-weight: 800;"
               th:text="${prog.difficulty}">STRENGTH</span>
+
 
         <form th:action="@{/programs/fork/{id}(id=${prog.id})}" method="post" class="position-absolute top-0 start-0 m-3">
             <button type="submit" class="btn-fork" title="Add to my programs">

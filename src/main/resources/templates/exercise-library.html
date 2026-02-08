@@ -29,7 +29,8 @@
     </div>
 </div>
 
-<div th:fragment="libraryCard" th:remove="tag">
+<div th:fragment="libraryCard" th:remove="tag"
+     th:if="${ex != null}">
     <a th:href="@{/exercises/details/{id}(id=${ex?.id})}" class="text-decoration-none">
         <div class="card exercise-card border-card h-100 overflow-hidden shadow-sm">
             <div class="exercise-image-container">

@@ -1,13 +1,8 @@
 package com.example.fitplanner.controller;
 
-import com.example.fitplanner.dto.ExerciseDto;
-import com.example.fitplanner.dto.ForkableProgramDto;
-import com.example.fitplanner.dto.ProgramDto;
-import com.example.fitplanner.dto.UserDto;
+import com.example.fitplanner.dto.*;
 import com.example.fitplanner.entity.model.Exercise;
-import com.example.fitplanner.service.ExerciseService;
-import com.example.fitplanner.service.ProgramService;
-import com.example.fitplanner.service.UserService;
+import com.example.fitplanner.service.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,11 +18,17 @@ public class HomeController {
     private final ExerciseService exerciseService;
     private final UserService userService;
     private final ProgramService programService;
+    private final DashboardService dashboardService;
+    private final QuoteService quoteService;
+    private final ActivityService activityService;
 
-    public HomeController(ExerciseService exerciseService, UserService userService, ProgramService programService) {
+    public HomeController(ExerciseService exerciseService, UserService userService, ProgramService programService, DashboardService dashboardService, QuoteService quoteService, ActivityService activityService) {
         this.exerciseService = exerciseService;
         this.userService = userService;
         this.programService = programService;
+        this.dashboardService = dashboardService;
+        this.quoteService = quoteService;
+        this.activityService = activityService;
     }
 
     @GetMapping("/home")
@@ -45,6 +46,9 @@ public class HomeController {
 
             // 3. Add to model - MUST match the name in HTML: "recommendedPrograms"
             model.addAttribute("recommendedPrograms", recommended);
+            model.addAttribute("userStats", dashboardService.getDashboardStats(userDto.getId()));
+            model.addAttribute("recentActivities", activityService.getRecentActivity(userDto.getId()));
+            model.addAttribute("dailyQuote", quoteService.getRandomQuote());
         }
 
         return "home";

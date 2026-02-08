@@ -77,33 +77,33 @@
                     <div th:each="program : ${programs}" class="d-flex w-100 justify-content-between align-items-center py-3 border-bottom program-row">
 
                         <div class="d-flex align-items-center flex-grow-1 gap-3 overflow-hidden">
-                            <img th:src="${program.imageUrl != null ? program.imageUrl : '/img/default-workout.jpg'}"
-                                 class="program-img-thumb d-none d-sm-block" alt="program">
+                            <div class="d-none d-sm-block" style="width: 50px; height: 50px; flex-shrink: 0;">
+                                <img th:if="${program.imageUrl != null && !program.imageUrl.isEmpty()}"
+                                     th:src="${program.imageUrl}"
+                                     class="program-img-thumb"
+                                     alt="program"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+
+                                <div class="program-img-thumb d-flex align-items-center justify-content-center"
+                                     style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);"
+                                     th:styleappend="${program.imageUrl != null && !program.imageUrl.isEmpty()} ? 'display: none !important;' : 'display: flex !important;'">
+                                    <i class="bi bi-lightning-fill color-soft opacity-50" style="font-size: 1.2rem;"></i>
+                                </div>
+                            </div>
 
                             <div class="flex-grow-1 overflow-hidden">
                                 <span th:text="${program.name}" class="fw-bold text-truncate d-block">Program Name</span>
-                                <div class="d-flex flex-wrap gap-3 mt-1">
-                                    <span class="small text-muted d-flex align-items-center">
-                                        <i class="bi bi-calendar-plus me-1"></i>
-                                        <span th:text="${#temporals.format(program.createdAt, 'dd MMM')}"></span>
-                                    </span>
-                                    <span class="small text-muted d-flex align-items-center">
-                                        <i class="bi bi-arrow-repeat me-1"></i>
-                                        <span th:text="${#temporals.format(program.lastChanged, 'dd MMM')}"></span>
-                                    </span>
-                                </div>
                             </div>
                         </div>
-
                         <div class="d-flex align-items-center gap-3 ms-3 ps-2 border-start">
                             <form th:action="@{/edit-program}" method="get" class="m-0">
                                 <input type="hidden" name="programId" th:value="${program.id}">
-                                <button type="submit" class="btn text-primary fs-5 p-0" title="Edit">&#9998;</button>
+                                <button type="submit" class="btn text-primary fs-5 p-0 ps-1 pe-1" title="Edit">&#9998;</button>
                             </form>
 
                             <form th:action="@{/remove-program}" method="post" class="m-0" onsubmit="return confirm('Delete this program?')">
                                 <input type="hidden" name="programId" th:value="${program.id}">
-                                <button type="submit" class="btn text-danger fs-5 p-0" title="Remove">✕</button>
+                                <button type="submit" class="btn text-danger fs-5 p-0 ps-1 pe-1" title="Remove">✕</button>
                             </form>
 
                             <input type="checkbox" class="program-checkbox"
@@ -151,5 +151,6 @@
     }
 </script>
 <script th:src="@{/js/notifications.js(v=${#dates.createNow().time})}" defer></script>
+<script th:src="@{/js/image-not-found.js}"></script>
 </body>
 </html>

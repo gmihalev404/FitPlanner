@@ -30,7 +30,8 @@
     </div>
 </div>
 
-<div th:fragment="logCard" th:remove="tag">
+<div th:fragment="logCard" th:remove="tag"
+     th:if="${ex != null}">
     <form th:action="@{/set-exercise}" method="get" class="exercise-card">
         <input type="hidden" name="exerciseId" th:value="${ex?.id}">
         <button type="submit" class="card exercise-card p-0 w-100 border-0 bg-transparent">

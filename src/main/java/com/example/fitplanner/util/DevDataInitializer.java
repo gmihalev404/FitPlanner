@@ -7,9 +7,10 @@ import com.example.fitplanner.entity.model.*;
 import com.example.fitplanner.repository.*;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-
 import jakarta.annotation.PostConstruct;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -23,185 +24,192 @@ public class DevDataInitializer {
     private final ExerciseRepository exerciseRepository;
     private final WorkoutSessionRepository workoutSessionRepository;
     private final ExerciseProgressRepository exerciseProgressRepository;
-    private final NotificationRepository notificationRepository;
+    private final QuoteRepository quoteRepository;
+    private final MilestoneRepository milestoneRepository;
     private final SHA256Hasher hasher;
+    private final Random random = new Random();
 
     public DevDataInitializer(UserRepository userRepository,
                               ProgramRepository programRepository,
                               ExerciseRepository exerciseRepository,
                               WorkoutSessionRepository workoutSessionRepository,
                               ExerciseProgressRepository exerciseProgressRepository,
-                              NotificationRepository notificationRepository,
+                              QuoteRepository quoteRepository,
+                              MilestoneRepository milestoneRepository,
                               SHA256Hasher hasher) {
         this.userRepository = userRepository;
         this.programRepository = programRepository;
         this.exerciseRepository = exerciseRepository;
         this.workoutSessionRepository = workoutSessionRepository;
         this.exerciseProgressRepository = exerciseProgressRepository;
-        this.notificationRepository = notificationRepository;
+        this.quoteRepository = quoteRepository;
+        this.milestoneRepository = milestoneRepository;
         this.hasher = hasher;
     }
 
     @PostConstruct
     public void init() {
+        initQuotes();
         User user = initDemoUser();
-        initTrainerPrograms(); // This populates the Recommended section
+        initTrainerPrograms();
         Program program = initProgram(user);
         List<Exercise> exercises = initExercises();
-        initProgress(program, user, exercises);
+        initProgressAndMilestones(program, user, exercises);
     }
 
-    // ----------------------------- Trainer Programs (For Home Page) -----------------------------
-
-    private void initTrainerPrograms() {
-        // Prevent duplicates: Only run if no trainer programs exist
-        if (userRepository.existsByRole(Role.TRAINER)) return;
-
-        // 1. Create a Professional Trainer
-        User trainer = new User();
-        trainer.setFirstName("Marcus");
-        trainer.setLastName("Steel");
-        trainer.setUsername("pro_coach");
-        trainer.setEmail("coach@fitplanner.com");
-        trainer.setRole(Role.TRAINER); // Required for your Home Page query
-        trainer.setGender(Gender.MALE);
-        trainer.setAge(34);
-        trainer.setWeight(92.0);
-        trainer.setExperience(Difficulty.ADVANCED);
-        trainer.setPassword(hasher.hash("coach123"));
-        userRepository.save(trainer);
-
-        // 2. Create Public Programs with High Ratings
-        String[] titles = {"Iron Foundation", "Hypertrophy V2", "Explosive Power", "Elite Shred"};
-        String[] images = {
-                "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500",
-                "https://images.unsplash.com/photo-1581009146145-b5ef03a7403f?w=500",
-                "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=500",
-                "https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=500"
-        };
-        double[] ratings = {4.9, 4.8, 4.7, 4.5};
-        Difficulty[] diffs = {Difficulty.BEGINNER, Difficulty.ADVANCED, Difficulty.INTERMEDIATE, Difficulty.ADVANCED};
-
-        for (int i = 0; i < titles.length; i++) {
-            Program p = new Program();
-            p.setName(titles[i]);
-            p.setUser(trainer); // Owned by Trainer
-            p.setIsPublic(true); // Visible to everyone
-            p.setDifficulty(diffs[i]);
-            p.setRating(ratings[i]);
-            p.setImageUrl(images[i]);
-            p.setDescription("A professional " + titles[i] + " routine focusing on optimized performance and consistent progression markers.");
-            p.setCreatedAt(java.time.LocalDateTime.now());
-            p.setLastChanged(java.time.LocalDateTime.now());
-            programRepository.save(p);
-        }
-        System.out.println("Trainer programs for recommendation initialized.");
+    private void initQuotes() {
+        if (quoteRepository.count() > 0) return;
+        quoteRepository.saveAll(List.of(
+                new Quote("The only bad workout is the one that didn't happen.", "Unknown"),
+                new Quote("Action is the foundational key to all success.", "Pablo Picasso"),
+                new Quote("Discipline is doing what needs to be done.", "Unknown")
+        ));
     }
-
-    // ----------------------------- Demo User -----------------------------
 
     private User initDemoUser() {
-        return userRepository.findByUsername("testuser")
-                .orElseGet(() -> {
-                    User user = new User();
-                    user.setUsername("testuser");
-                    user.setEmail("testuser@test.com");
-                    user.setRole(Role.CLIENT);
-                    user.setLanguage("en");
-                    user.setPassword(hasher.hash("test123"));
+        User user = userRepository.findByUsername("testuser").orElseGet(() -> {
+            User newUser = new User();
+            newUser.setUsername("testuser");
+            newUser.setEmail("testuser@test.com");
+            newUser.setRole(Role.CLIENT);
+            newUser.setPassword(hasher.hash("test123"));
+            newUser.setFirstName("Test");
+            newUser.setLastName("User");
+            newUser.setGender(Gender.MALE);
+            newUser.setAge(25);
+            newUser.setWeight(85.0);
+            newUser.setExperience(Difficulty.BEGINNER);
+            return newUser;
+        });
 
-                    user.setFirstName("Test");
-                    user.setLastName("User");
-                    user.setGender(Gender.MALE);
-                    user.setAge(25);
-                    user.setWeight(70.0);
-                    user.setExperience(Difficulty.BEGINNER);
+        // ---------------------------------------------------------
+        // DENSE WEIGHT HISTORY (Daily for 30 days)
+        // ---------------------------------------------------------
+        List<WeightEntry> weightHistory = new ArrayList<>();
+        LocalDate today = LocalDate.now();
 
-                    LocalDate today = LocalDate.now();
+        for (int i = 30; i >= 0; i--) {
+            // Trend: Start at 88kg 30 days ago, end at ~84kg today
+            double trendWeight = 84.0 + (i * 0.13);
+            // Add "Noise": Small daily fluctuations (+/- 0.3kg) for realism
+            double noise = (random.nextDouble() - 0.5) * 0.6;
 
-                    // Add weight history
-                    user.setWeight(70.0, today);
-                    user.setWeight(69.5, today.minusWeeks(1));
-                    user.setWeight(70.2, today.minusWeeks(2));
-                    user.setWeight(69.0, today.minusWeeks(3));
+            weightHistory.add(new WeightEntry(trendWeight + noise, today.minusDays(i)));
+        }
 
-                    // Add notifications
-                    for (int i = 0; i < 10; i++) {
-                        Notification n = new Notification();
-                        n.setName("Update " + i);
-                        n.setDescription("Your progress is looking great!");
-                        n.setChecked((i % 2) == 0);
-                        n.setObserver(user);
-                        user.getNotifications().add(n);
-                    }
+        user.setWeightChanges(weightHistory);
+        user.setStreak(14);
+        user.setLastWorkoutDate(today);
+        user.setTheme("dark");
+        user.setLanguage("en");
 
-                    return userRepository.save(user);
-                });
+        return userRepository.saveAndFlush(user);
     }
 
-    // ----------------------------- Demo Client Program -----------------------------
+    private void initTrainerPrograms() {
+        if (userRepository.existsByRole(Role.TRAINER)) return;
 
+        // Use the constructor you defined in the User entity to ensure weight logic triggers
+        User trainer = new User(
+                "Professional",      // firstName
+                "Trainer",           // lastName
+                "pro_coach",         // username
+                Role.TRAINER,        // role
+                Gender.MALE,        // gender
+                35,                  // age
+                90.0,                // weight
+                Difficulty.ADVANCED, // experience
+                "coach@fitplanner.com", // email
+                hasher.hash("coach123") // password
+        );
+
+        userRepository.save(trainer);
+
+        Program p = new Program();
+        p.setName("Iron Foundation");
+        p.setUser(trainer);
+        p.setIsPublic(true);
+        p.setDifficulty(Difficulty.ADVANCED);
+        programRepository.save(p);
+    }
     private Program initProgram(User user) {
-        return programRepository.getByUserId(user.getId())
-                .stream().findFirst()
-                .orElseGet(() -> {
-                    Program program = new Program();
-                    program.setUser(user);
-                    program.setName("My Personal Plan");
-                    program.setIsPublic(false);
-                    program.setDifficulty(user.getExperience());
-                    return programRepository.save(program);
-                });
+        return programRepository.getByUserId(user.getId()).stream().findFirst().orElseGet(() -> {
+            Program p = new Program();
+            p.setUser(user);
+            p.setName("My Personal Plan");
+            return programRepository.save(p);
+        });
     }
-
-    // ----------------------------- Exercises -----------------------------
 
     private List<Exercise> initExercises() {
-        if (exerciseRepository.count() >= 60) {
-            return exerciseRepository.findAll();
+        if (exerciseRepository.count() >= 5) return exerciseRepository.findAll();
+        String[] names = {"Bench Press", "Squat", "Deadlift", "Pullups", "Rows"};
+        for (String name : names) {
+            Exercise e = new Exercise();
+            e.setName(name);
+            exerciseRepository.save(e);
         }
-        List<Exercise> exercises = new ArrayList<>();
-        for (int i = 1; i <= 60; i++) {
-            Exercise exercise = new Exercise();
-            exercise.setName("Exercise " + i);
-            exercises.add(exercise);
-        }
-        exerciseRepository.saveAll(exercises);
         return exerciseRepository.findAll();
     }
 
-    // ----------------------------- Progress Logic -----------------------------
+    private void initProgressAndMilestones(Program program, User user, List<Exercise> exercises) {
+        // Clear all previous dev records to avoid duplicates and outdated charts
+        exerciseProgressRepository.deleteAll(exerciseProgressRepository.findByUserId(user.getId()));
+        workoutSessionRepository.deleteAll(workoutSessionRepository.findByUserId(user.getId()));
+        workoutSessionRepository.flush();
 
-    private void initProgress(Program program, User user, List<Exercise> exercises) {
-        if (!exerciseProgressRepository.findByUserId(user.getId()).isEmpty()) return;
+        LocalDate today = LocalDate.now();
 
-        Random random = new Random();
-        LocalDate startDate = LocalDate.now().minusWeeks(12);
-
-        for (int week = 0; week < 8; week++) {
-            LocalDate sessionDate = startDate.plusWeeks(week);
+        // ---------------------------------------------------------
+        // DENSE EXERCISE HISTORY (Every 2 days for 30 days)
+        // ---------------------------------------------------------
+        for (int i = 30; i >= 0; i -= 2) {
+            LocalDate sessionDate = today.minusDays(i);
 
             WorkoutSession session = new WorkoutSession();
             session.setProgram(program);
             session.setUser(user);
             session.setScheduledFor(sessionDate);
-            session.setFinished(true); // Mark past sessions as done
+            session.setFinished(true);
             WorkoutSession savedSession = workoutSessionRepository.saveAndFlush(session);
 
-            for (int i = 0; i < 5; i++) { // Add 5 exercises per session
-                Exercise exercise = exercises.get(random.nextInt(exercises.size()));
-                ExerciseProgress progress = new ExerciseProgress(
-                        savedSession,
-                        exercise,
-                        user,
-                        8 + random.nextInt(4),
-                        3,
-                        40.0 + random.nextInt(40),
-                        sessionDate
-                );
-                progress.markCompleted(sessionDate);
-                exerciseProgressRepository.save(progress);
+            for (Exercise ex : exercises) {
+                ExerciseProgress ep = new ExerciseProgress();
+                ep.setWorkoutSession(savedSession);
+                ep.setExercise(ex);
+                ep.setUser(user);
+
+                // Progressive Overload Logic:
+                // As 'i' gets smaller (closer to today), weight increases
+                double baseWeight = 50.0;
+                double weightGain = (30 - i) * 0.8; // Gains 0.8kg per session
+                double fluctuation = random.nextInt(3); // Small random variation
+
+                ep.setWeight(baseWeight + weightGain + fluctuation);
+                ep.setReps(10);
+                ep.setSets(3);
+                ep.setLastScheduled(sessionDate);
+                ep.setCompleted(true);
+                ep.setLastCompleted(sessionDate);
+                ep.setSetsCompleted(3);
+
+                exerciseProgressRepository.save(ep);
             }
         }
+
+        // Expanded Milestones for Activity Feed
+        String[] achievementTitles = {
+                "First Step", "7 Day Streak", "Power Lifter",
+                "Consistency King", "Volume Warrior", "Century Club"
+        };
+        for (int i = 0; i < achievementTitles.length; i++) {
+            Milestone m = new Milestone();
+            m.setUser(user);
+            m.setTitle(achievementTitles[i]);
+            m.setAchievedAt(LocalDateTime.now().minusDays(i * 5));
+            milestoneRepository.save(m);
+        }
+
+        exerciseProgressRepository.flush();
     }
 }

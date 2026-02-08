@@ -5,7 +5,6 @@ import com.example.fitplanner.entity.enums.Difficulty;
 import com.example.fitplanner.entity.enums.EquipmentType;
 import com.example.fitplanner.entity.enums.ExerciseType;
 import lombok.*;
-import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -13,6 +12,8 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class ExerciseDto implements Serializable {
     private Long id;
 

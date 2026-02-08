@@ -26,7 +26,7 @@
     <div class="container my-5 p-2">
         <h1 class="container-heading text-center mb-4">Statistics</h1>
         <div th:replace="fragment/search-bar.html::search-bar('exerciseSearch', #{exercise.search_placeholder}, '.exercise-item')"></div>
-        <div class="row mb-4 mt-3">
+        <div th:replace="~{fragment/exercise-components.html::exercise-filters}">
             <div class="row mb-4 mt-3">
                 <div class="col-md-4 mb-2">
                     <select id="categoryFilter" class="form-select">

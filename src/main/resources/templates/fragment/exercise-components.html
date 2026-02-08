@@ -1,7 +1,7 @@
 <div th:fragment="exercise-section(exercises, gridMaxHeight, cardLogic)">
   <div th:replace="~{fragment/search-bar.html::search-bar('exerciseSearch', #{exercise.search_placeholder}, '.exercise-item')}"></div>
 
-  <div class="row mb-4 mt-3 g-2">
+  <div th:fragment="exercise-filters" class="row mb-4 mt-3 g-2">
     <div class="col-md-4 mb-2">
       <select id="categoryFilter" class="form-select bg-input border-input color-main">
         <option value="" th:text="#{exercise.all_categories}">All Categories</option>
@@ -51,4 +51,19 @@
 
     </div>
   </div>
+</div>
+
+<div th:fragment="logCard" th:remove="tag">
+  <form th:action="@{/set-exercise}" method="get" class="exercise-card">
+    <input type="hidden" name="exerciseId" th:value="${ex?.id}">
+    <button type="submit" class="card exercise-card p-0 w-100 border-0 bg-transparent">
+      <div class="exercise-image-container">
+        <img th:src="${ex?.imageUrl}" class="exercise-image" alt="exercise">
+        <div class="exercise-name-overlay" th:text="${ex?.name}"></div>
+      </div>
+    </button>
+  </form>
+  <form th:action="@{/show/{id}(id=${ex?.id})}" method="post" class="mt-1">
+    <button type="submit" class="btn bg-success btn-sm w-100" th:text="#{exercise.btn_show}">Show</button>
+  </form>
 </div>

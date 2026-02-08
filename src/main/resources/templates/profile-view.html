@@ -79,6 +79,31 @@
         font-size: 2.5rem;
         font-weight: 800;
     }
+
+    .star-rating {
+        display: flex;
+        flex-direction: row-reverse; /* Allows us to use the ~ sibling selector easily */
+        justify-content: flex-end;
+        gap: 5px;
+    }
+    .star-rating label {
+        cursor: pointer;
+        color: rgba(255,255,255,0.2);
+        transition: color 0.2s;
+    }
+    /* When a star is checked or hovered, highlight it and all stars to its left */
+    .star-rating input:checked ~ label,
+    .star-rating label:hover,
+    .star-rating label:hover ~ label {
+        color: #ffc107 !important;
+        content: "\F586"; /* bi-star-fill icon */
+    }
+    /* Change icon to fill on selection */
+    .star-rating input:checked ~ label::before,
+    .star-rating label:hover ~ label::before,
+    .star-rating label:hover::before {
+        content: "\F586" !important;
+    }
 </style>
 <body>
 <div th:replace="~{fragment/navbar.html::navbar}"></div>
@@ -98,6 +123,19 @@
             <hr class="delimiter-line my-4">
 
             <div class="profile-details">
+                <div class="rating-input-section mb-4 p-3 rounded" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
+                    <p class="label mb-2 x-small text-uppercase">Rate this program</p>
+                    <form th:action="@{/programs/rate/{id}(id=${program.id})}" method="post" id="ratingForm">
+                        <div class="star-rating fs-4">
+                            <input type="radio" name="stars" value="5" id="5" class="d-none"><label for="5" class="bi bi-star"></label>
+                            <input type="radio" name="stars" value="4" id="4" class="d-none"><label for="4" class="bi bi-star"></label>
+                            <input type="radio" name="stars" value="3" id="3" class="d-none"><label for="3" class="bi bi-star"></label>
+                            <input type="radio" name="stars" value="2" id="2" class="d-none"><label for="2" class="bi bi-star"></label>
+                            <input type="radio" name="stars" value="1" id="1" class="d-none"><label for="1" class="bi bi-star"></label>
+                        </div>
+                        <button type="submit" id="submitRating" class="btn btn-sm btn-link color-soft p-0 text-decoration-none x-small mt-1" style="display: none;">Confirm Rating</button>
+                    </form>
+                </div>
                 <div class="row g-4 text-center">
                     <div class="col-6 col-md-4">
                         <div class="stat-box">
@@ -127,16 +165,24 @@
                 <a th:href="@{/search}" class="btn btn-outline-secondary rounded-pill px-4 me-2 m-1">
                     <i class="bi bi-arrow-left"></i> Back to Search
                 </a>
-                <button class="btn btn-success rounded-pill px-4 m-1">
-                    <i class="bi bi-person-plus"></i> Follow
-                </button>
+<!--                <button class="btn btn-success rounded-pill px-4 m-1">-->
+<!--                    <i class="bi bi-person-plus"></i> Follow-->
+<!--                </button>-->
             </div>
         </div>
     </div>
 </div>
 
 <footer th:replace="~{fragment/footer.html::footer}"></footer>
-
+<script>
+    document.querySelectorAll('.star-rating input').forEach(radio => {
+        radio.addEventListener('change', () => {
+            document.getElementById('submitRating').style.display = 'block';
+        });
+    });
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/notifications.js(v=${#dates.createNow().time})}" defer></script>
+<script th:src="@{/js/image-not-found.js}"></script>
 </body>
 </html>

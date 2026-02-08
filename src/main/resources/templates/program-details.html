@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:class="${userDto != null ? userDto.theme : 'dark'}"
+      th:lang="${userDto != null ? userDto.language : 'en'}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${program != null ? program.name + ' - Details' : 'Program Details'}">Program Details</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <link rel="stylesheet" th:href="@{/css/common.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/scrollbar.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/navbar.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/footer.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/dark-theme.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/light-theme.css(v=${#dates.createNow().time})}">
+
+    <style>
+        .background-section { padding-top: 100px; min-height: 100vh; }
+        .session-card { background: rgba(255,255,255,0.05); border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); }
+
+        /* Star Rating CSS */
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            gap: 4px;
+        }
+        .star-rating input { display: none; }
+        .star-rating label {
+            font-size: 1.4rem;
+            color: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        /* Highlight stars on hover and when checked */
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked ~ label {
+            color: var(--delimiter-color) !important;
+            transform: scale(1.1);
+        }
+        /* Visual feedback: change to fill icon on selection/hover */
+        .star-rating label:hover i::before,
+        .star-rating label:hover ~ label i::before,
+        .star-rating input:checked ~ label i::before {
+            content: "\F586"; /* bi-star-fill */
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragment/navbar.html::navbar}"></div>
+
+<div class="background-section">
+    <div class="container">
+
+        <div th:if="${program == null}" class="text-center py-5">
+            <h2 class="color-main">Program not found</h2>
+            <a th:href="@{/search}" class="btn btn-outline-custom mt-3 rounded-pill">Back to Search</a>
+        </div>
+
+        <div th:if="${program != null}">
+            <div class="glass-panel p-0 overflow-hidden mb-5 border-0">
+                <div class="row g-0">
+                    <div class="col-md-5 position-relative">
+                        <img th:if="${program.imageUrl != null && !program.imageUrl.isEmpty()}"
+                             th:src="${program.imageUrl}"
+                             class="w-100 h-100"
+                             style="min-height: 300px; object-fit: cover;"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+
+                        <div class="w-100 d-flex align-items-center justify-content-center bg-dark"
+                             style="min-height: 300px; background: rgba(255,255,255,0.05) !important;"
+                             th:styleappend="${program.imageUrl != null && !program.imageUrl.isEmpty()} ? 'display: none !important;' : 'display: flex !important;'">
+                            <i class="bi bi-lightning-fill display-1 color-soft opacity-25"></i>
+                        </div>
+
+                        <span class="badge position-absolute top-0 end-0 m-3"
+                              style="background: var(--delimiter-color); color: #000; font-weight: 800; z-index: 2;"
+                              th:text="${program.difficulty}">STRENGTH</span>
+                    </div>
+
+                    <div class="col-md-7 p-4 p-lg-5 d-flex flex-column justify-content-center">
+                        <h1 class="display-5 fw-black color-main text-uppercase mb-2" th:text="${program.name}">Name</h1>
+                        <p class="color-soft lead mb-4" th:text="${program.description}">Full Description</p>
+
+                        <div class="d-flex align-items-center gap-4 mb-4">
+                            <div>
+                                <p class="label mb-0">Trainer</p>
+                                <span class="color-main fw-bold" th:text="${program.trainerName}">Coach Name</span>
+                            </div>
+                            <div>
+                                <p class="label mb-0">Current Rating</p>
+                                <span class="text-warning">
+                                    <i class="bi bi-star-fill"></i>
+                                    <span th:text="${#numbers.formatDecimal(program.rating, 1, 1)}">5.0</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <p class="x-small text-uppercase color-soft mb-1 fw-bold" style="letter-spacing: 1px;">Rate this program</p>
+                            <form th:action="@{/programs/rate/{id}(id=${program.id})}" method="POST" id="ratingForm">
+                                <div class="star-rating">
+                                    <input type="radio" id="star5" name="rating" value="5" /><label for="star5" title="5 stars"><i class="bi bi-star"></i></label>
+                                    <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="4 stars"><i class="bi bi-star"></i></label>
+                                    <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="3 stars"><i class="bi bi-star"></i></label>
+                                    <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="2 stars"><i class="bi bi-star"></i></label>
+                                    <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="1 star"><i class="bi bi-star"></i></label>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <form th:action="@{/programs/fork/{id}(id=${program.id})}" method="post">
+                                <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold"
+                                        style="background: var(--delimiter-color); border: none; color: black;">
+                                    <i class="bi bi-diagram-2 me-2"></i>FORK PROGRAM
+                                </button>
+                            </form>
+                            <a th:href="@{/search}" class="btn btn-outline-custom rounded-pill px-4">BACK</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:each="session : ${program.sessions}" class="glass-panel p-4 mb-4">
+                <h5 class="color-link fw-bold mb-3">
+                    <i class="bi bi-calendar3 me-2"></i>
+                    <span th:text="'Workout: ' + ${session.date}">Date</span>
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-borderless align-middle mb-0">
+                        <thead>
+                        <tr class="x-small text-uppercase color-soft border-bottom border-soft">
+                            <th>Exercise</th>
+                            <th class="text-center">Protocol</th>
+                            <th class="text-end">Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="es : ${session.exercises}" class="border-bottom border-soft">
+                            <td class="py-3">
+                                <span class="color-main fw-bold d-block" th:text="${es.name}">Exercise</span>
+                                <span class="x-small color-soft" th:text="${es.programName}">Category</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="color-main fw-black" th:text="${es.sets + ' x ' + es.reps}">3 x 10</span>
+                                <div class="x-small color-soft" th:text="${es.weight + ' kg'}">70kg</div>
+                            </td>
+                            <td class="text-end">
+                                <i th:if="${es.finished}" class="bi bi-check-circle-fill text-success"></i>
+                                <i th:unless="${es.finished}" class="bi bi-circle text-soft"></i>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragment/footer.html::footer}"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/notifications.js(v=${#dates.createNow().time})}" defer></script>
+<script th:src="@{/js/image-not-found.js}"></script>
+
+<script>
+    document.querySelectorAll('.star-rating input').forEach(input => {
+        input.addEventListener('change', () => {
+            // Optional: Add a simple loader or disable stars to prevent multiple clicks
+            document.getElementById('ratingForm').submit();
+        });
+    });
+</script>
+</body>
+</html>
