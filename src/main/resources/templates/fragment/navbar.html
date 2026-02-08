@@ -1,4 +1,4 @@
-<nav th:fragment="navbar" class="navbar navbar-dark navbar-expand-lg w-100">
+<nav th:fragment="navbar" class="navbar navbar-dark navbar-expand-lg w-100" xmlns:sec="http://www.w3.org/1999/xhtml">
   <div class="container-fluid d-flex align-items-center flex-wrap">
 
     <!-- Brand / Logo -->
@@ -86,6 +86,19 @@
         <li class="nav-item"><a class="nav-link" th:href="@{/logout}" th:text="#{nav.log-out}"></a></li>
       </ul>
 
+
+      <!-- For Admin users -->
+      <ul th:if="${userDto != null and userDto.role.name() == 'ADMIN'}" class="navbar-nav ms-auto w-100-mobile gap-5">
+        <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+          <a class="nav-link" th:href="@{/management}">Admin Panel</a>
+        </li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/home}" th:text="#{nav.home}"></a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/create?newProgram=true}" th:text="#{nav.create-workout}"></a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/stats}" th:text="#{nav.stats}"></a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/my-workouts}" th:text="#{nav.my-workouts}"></a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/search}" th:text="#{nav.search}"></a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/logout}" th:text="#{nav.log-out}"></a></li>
+      </ul>
     </div>
   </div>
 </nav>

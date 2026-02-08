@@ -101,6 +101,9 @@ public class User extends BaseEntity {
     @Column
     private LocalDate lastWorkoutDate;
 
+    @Column
+    private Boolean enabled = true;
+
     @OneToMany
     private Set<User> followers = new LinkedHashSet<>();
 

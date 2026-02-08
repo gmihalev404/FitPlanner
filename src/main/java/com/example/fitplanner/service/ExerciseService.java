@@ -96,4 +96,30 @@ public class ExerciseService {
                 .equipment(entity.getEquipmentType().name())
                 .build();
     }
+
+    public void delete(Long id) {
+        Exercise exercise = exerciseRepository.findById(id).orElseThrow();
+        exerciseRepository.delete(exercise);
+    }
+
+    public void create(ExerciseDto exerciseDto) {
+        // Map DTO to Entity
+        Exercise exercise = modelMapper.map(exerciseDto, Exercise.class);
+        exerciseRepository.save(exercise);
+    }
+
+    public void update(Long id, ExerciseDto exerciseDto) {
+        // 1. Find existing exercise or throw error
+        Exercise existingExercise = exerciseRepository.findById(id)
+                .orElseThrow();
+
+        // 2. Update fields
+        existingExercise.setName(exerciseDto.getName());
+        existingExercise.setCategory(exerciseDto.getCategory());
+        existingExercise.setExerciseType(exerciseDto.getExerciseType());
+        existingExercise.setEquipmentType(exerciseDto.getEquipmentType());
+
+        // 3. Save updated entity
+        exerciseRepository.save(existingExercise);
+    }
 }

@@ -60,14 +60,24 @@ public class HomeController {
     }
 
     @GetMapping("/exercise-library")
-    public String viewAllExercises(Model model) {
+    public String viewAllExercises(Model model, HttpSession session) {
+        UserDto userDto = (UserDto) session.getAttribute("loggedUser");
+        if (!userDto.getEnabled()) {
+            session.invalidate();
+            return "redirect:/login?banned=true";
+        }
         model.addAttribute("exercises", exerciseService.getAll());
         return "exercise-library";
     }
 
     // View specific details for one exercise
     @GetMapping("/details/{id}")
-    public String showDetails(@PathVariable Long id, Model model) {
+    public String showDetails(@PathVariable Long id, Model model, HttpSession session) {
+        UserDto userDto = (UserDto) session.getAttribute("loggedUser");
+        if (!userDto.getEnabled()) {
+            session.invalidate();
+            return "redirect:/login?banned=true";
+        }
         ExerciseDto exercise = exerciseService.getById(id);
         model.addAttribute("exercise", exercise);
         return "exercise-details";

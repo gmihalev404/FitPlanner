@@ -198,9 +198,20 @@ public class UserService {
                         .firstName(user.getFirstName())
                         .lastName(user.getLastName())
                         .username(user.getUsername())
+                        .username(user.getUsername())
                         .profileImageUrl(user.getProfileImageUrl())
                         .experience("Certified Trainer") // Placeholder or logic based on user data
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void toggleStatus(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow();
+
+        // Flip the boolean
+        user.setEnabled(!user.getEnabled());
+        userRepository.save(user);
     }
 }

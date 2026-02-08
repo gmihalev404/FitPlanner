@@ -10,7 +10,7 @@ html.light {
     --text-link: #0056b3;          /* Links color */
 
     /* ---------- Containers ---------- */
-    --bg-container: rgb(158, 166, 166);  /* Inner containers */
+    --bg-container: rgb(199, 206, 206);  /* Inner containers */
     --bg-days-item: rgba(200, 200, 200, 1);
 
     --bg-card: rgba(210, 210, 210, 1);          /* Card surface */

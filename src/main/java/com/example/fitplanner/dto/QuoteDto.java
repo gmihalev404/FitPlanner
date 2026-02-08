@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class QuoteDto {
+    private Long id;
     private String text;
 
     private String author;

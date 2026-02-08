@@ -2,7 +2,6 @@ package com.example.fitplanner.dto;
 
 import com.example.fitplanner.entity.enums.Difficulty;
 import com.example.fitplanner.entity.enums.Role;
-import com.example.fitplanner.entity.model.Notification;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -22,4 +21,5 @@ public class UserDto implements Serializable {
     private String profileImageUrl;
     private List<NotificationDto> notifications = new ArrayList<>();
     private Difficulty experience;
+    private Boolean enabled;
 }
