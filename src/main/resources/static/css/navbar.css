@@ -63,6 +63,12 @@
 }
 
 /* --- СЕКЦИЯ ИЗВЕСТИЯ (ПРОМЕНЕНАТА ЛОГИКА) --- */
+#notifDropdownWrapper {
+    background: var(--bg-navbar) !important;
+    z-index: 10002 !important;
+}
+
+#notifPanel { display: none; }
 
 /* Бадж върху камбанката */
 .badge-notif-count {
@@ -81,7 +87,7 @@
 
 /* Основен панел на нотификациите */
 .notification-panel {
-    display: none; /* по default затворено */
+    display: none; /* Force hidden on load */
     width: 400px;
     max-height: 400px;
     overflow-y: auto;
@@ -92,10 +98,10 @@
     padding: 0;
 
     position: absolute;
-    top: 100%; /* под камбанката */
-    left: 50%; /* центрира спрямо wrapper */
-    transform: translateX(-50%); /* центриране по хоризонтала */
-    z-index: 1050;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10001; /* Higher than navbar 9999 */
 }
 /* Вътрешни елементи */
 .notification-header {
@@ -172,3 +178,28 @@
         z-index: 1100; /* над navbar */
     }
 }
+
+/*.navbar {*/
+/*    z-index: 9999 !important;*/
+/*}*/
+
+/*#notifDropdownWrapper {*/
+/*    position: relative;*/
+/*    !* This MUST be higher than your .log-container z-index *!*/
+/*    z-index: 10005 !important;*/
+/*}*/
+
+/*#notifPanel {*/
+/*    display: none;*/
+/*    z-index: 10010 !important;*/
+/*    position: absolute;*/
+/*    top: 100%;*/
+/*    right: 0;*/
+/*}*/
+
+/*!* Force the bell to receive mouse events *!*/
+/*.bell {*/
+/*    pointer-events: auto !important;*/
+/*    position: relative;*/
+/*    z-index: 10006;*/
+/*}*/

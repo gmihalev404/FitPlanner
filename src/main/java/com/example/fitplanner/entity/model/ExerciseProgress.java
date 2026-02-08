@@ -122,8 +122,8 @@ public class ExerciseProgress extends BaseEntity {
 
     public void resetCountersAfterSuggestion() {
         this.completedExercisesInARow = 0;
-        this.missedExercisesInARow = 0; // ако имаме такъв
-        this.suggestedChangeIncrease = null; // няма повече предложение
+        this.missedExercisesInARow = 0;
+        this.suggestedChangeIncrease = null;
         this.suggestedChange = 0.0;
     }
 }

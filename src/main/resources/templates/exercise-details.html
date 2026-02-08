@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:class="${theme != null ? theme : 'dark'}"
+      th:lang="${language != null ? language : 'en'}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${exercise.name}">Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <link rel="stylesheet" th:href="@{/css/scrollbar.css}">
+    <link rel="stylesheet" th:href="@{/css/dark-theme.css}">
+    <link rel="stylesheet" th:href="@{/css/light-theme.css}">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+
+    <style>
+        .details-wrapper {
+            background: var(--bg-container);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border-soft);
+            border-radius: 2rem;
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+        }
+        .video-box {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+        }
+        .video-box iframe {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        }
+        .info-pill {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+        .label-text { color: var(--text-soft); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; display: block; }
+        .value-text { color: var(--text-main); font-weight: 800; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragment/navbar.html::navbar}"></div>
+
+<div class="background-section py-5">
+    <div class="container">
+        <div class="mb-4">
+            <a th:href="@{/exercises}" class="btn btn-outline-light rounded-pill px-4 border-soft color-main">
+                <i class="bi bi-arrow-left me-2"></i> Back to Library
+            </a>
+        </div>
+
+        <div class="details-wrapper">
+            <div class="row g-0">
+                <div class="col-lg-7 border-end border-soft">
+                    <div class="video-box">
+                        <iframe th:src="${exercise.videoUrl}" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="p-4 p-md-5">
+                        <h4 class="color-main fw-black text-uppercase mb-3">Guide & Description</h4>
+                        <p class="color-soft lh-lg" th:text="${exercise.description}">Full exercise instructions here...</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-5 p-4 p-md-5">
+                    <div class="mb-5" style="border-left: 6px solid var(--delimiter-color); padding-left: 25px;">
+                        <h1 class="display-4 color-main fw-black text-uppercase mb-1" th:text="${exercise.name}">Name</h1>
+                        <span class="badge px-3 py-2 fs-6" th:style="'background: var(--delimiter-color); color: #000;'" th:text="${exercise.category}">Category</span>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="info-pill">
+                                <span class="label-text">Goal</span>
+                                <span class="value-text" th:text="${exercise.exerciseType}">Reps</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="info-pill">
+                                <span class="label-text">Equipment</span>
+                                <span class="value-text" th:text="${exercise.equipmentType}">Barbell</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-5">
+                        <img th:src="${exercise.imageUrl}" class="img-fluid rounded-4 shadow border border-soft" alt="Form reference">
+                    </div>
+
+                    <div class="mt-4 p-3 rounded-4 bg-white bg-opacity-10 text-center">
+                        <p class="small color-soft mb-0"> Master the movement before increasing load.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragment/footer.html::footer}"></footer>
+<script th:src="@{/js/notifications.js(v=${#dates.createNow().time})}" defer></script>
+</body>
+</html>

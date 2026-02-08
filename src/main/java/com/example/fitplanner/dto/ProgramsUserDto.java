@@ -15,5 +15,6 @@ public class ProgramsUserDto implements Serializable{
     private String language = "en";
     private String measuringUnits = "kg";
     private List<Long> programIds = new ArrayList<>();
+    private String imageUrl;
 
 }

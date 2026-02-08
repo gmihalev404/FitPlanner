@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:class="${session.theme != null ? session.theme : 'dark'}"
+      th:lang="${session.language != null ? session.language : 'en'}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${profile.username} + ' - Profile'">User Profile</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/dark-theme.css}">
+    <link rel="stylesheet" th:href="@{/css/light-theme.css}">
+    <link rel="stylesheet" th:href="@{/css/profile-view.css}">
+</head>
+<style>
+    :root {
+        --card-bg: rgba(255, 255, 255, 0.05);
+        --stat-bg: rgba(255, 255, 255, 0.03);
+        --border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    /* For Light Theme support */
+    [th\:class="light"] :root {
+        --card-bg: rgba(0, 0, 0, 0.05);
+        --stat-bg: rgba(0, 0, 0, 0.02);
+        --border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-card {
+        max-width: 700px;
+        background: var(--card-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 3rem 2rem;
+    }
+
+    .profile-avatar {
+        width: 160px;
+        height: 160px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 4px solid var(--delimiter-color);
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .stat-box {
+        background: var(--stat-bg);
+        padding: 1.5rem;
+        border-radius: 15px;
+        border: 1px solid var(--border-color);
+        transition: transform 0.3s ease;
+    }
+
+    .stat-box:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .stat-box .label {
+        font-size: 0.8rem;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0;
+    }
+
+    .delimiter-line {
+        border-color: var(--delimiter-color);
+        opacity: 0.2;
+    }
+
+    .container-heading {
+        font-size: 2.5rem;
+        font-weight: 800;
+    }
+</style>
+<body>
+<div th:replace="~{fragment/navbar.html::navbar}"></div>
+
+<div class="background-section py-5">
+    <div class="container">
+        <div class="profile-card mx-auto shadow-lg">
+            <div class="profile-header text-center">
+                <div class="avatar-container mb-3">
+                    <img th:src="${profile.profileImageUrl != null && !profile.profileImageUrl.isEmpty() ? profile.profileImageUrl : '/images/default-user-image.webp'}"
+                         alt="Profile Picture" class="profile-avatar">
+                </div>
+                <h1 class="container-heading mb-1" th:text="${profile.firstName + ' ' + profile.lastName}">John Doe</h1>
+                <p class="text-secondary fw-bold" th:text="'@' + ${profile.username}">@johndoe</p>
+            </div>
+
+            <hr class="delimiter-line my-4">
+
+            <div class="profile-details">
+                <div class="row g-4 text-center">
+                    <div class="col-6 col-md-4">
+                        <div class="stat-box">
+                            <i class="bi bi-calendar-event text-success fs-3"></i>
+                            <p class="label mt-2">Age</p>
+                            <h4 th:text="${profile.age != null ? profile.age : '--'}">25</h4>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <div class="stat-box">
+                            <i class="bi bi-speedometer2 text-info fs-3"></i>
+                            <p class="label mt-2">Weight</p>
+                            <h4 th:text="${profile.weight} + ' ' + ${profile.measuringUnits}">75 kg</h4>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="stat-box">
+                            <i class="bi bi-translate text-warning fs-3"></i>
+                            <p class="label mt-2">Language</p>
+                            <h4 class="text-uppercase" th:text="${profile.language}">EN</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-actions mt-5 text-center">
+                <a th:href="@{/search}" class="btn btn-outline-secondary rounded-pill px-4 me-2 m-1">
+                    <i class="bi bi-arrow-left"></i> Back to Search
+                </a>
+                <button class="btn btn-success rounded-pill px-4 m-1">
+                    <i class="bi bi-person-plus"></i> Follow
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragment/footer.html::footer}"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

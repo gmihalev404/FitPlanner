@@ -2,27 +2,168 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:class="${theme != null ? theme : 'dark'}"
       th:lang="${language != null ? language : 'en'}">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <head>
-    <title>Home Page</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitPlanner | Home</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
     <link rel="stylesheet" th:href="@{/css/common.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/scrollbar.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/navbar.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/footer.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/dark-theme.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/light-theme.css(v=${#dates.createNow().time})}">
-    <link rel="stylesheet" th:href="@{/css/search-bar.css(v=${#dates.createNow().time})}">
-    <link rel="stylesheet" th:href="@{/css/scrollbar.css(v=${#dates.createNow().time})}">
-
     <link rel="stylesheet" th:href="@{/css/home.css(v=${#dates.createNow().time})}">
 </head>
 <body>
-<div th:replace="fragment/navbar.html::navbar"></div>
-<div class="background-section"></div>
-<footer th:replace="fragment/footer.html::footer"></footer>
+<div th:replace="~{fragment/navbar.html::navbar}"></div>
+
+<div class="background-section">
+    <div th:if="${session.loggedUser == null}" class="container h-100 d-flex align-items-center">
+        <div class="row w-100">
+            <div class="col-lg-7">
+                <div class="hero-content p-md-5">
+                    <h1 class="display-1 fw-black tracking-tighter hero-title text-uppercase mb-0">
+                        Level <span class="accent-text">Up</span>
+                    </h1>
+                    <h2 class="display-3 fw-bold hero-title text-uppercase mb-4">
+                        Your <span class="text-outline">Performance</span>
+                    </h2>
+                    <p class="fs-4 text-white mb-5 opacity-90 shadow-text max-w-500">
+                        Experience the only training platform utilizing double-progression 5/3 streak logic to automate your growth.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <a href="/register" class="btn btn-primary btn-lg px-5 py-3 rounded-pill fw-bold shadow-lg">START NOW</a>
+                        <a href="/login" class="btn btn-outline-light btn-lg px-5 py-3 rounded-pill fw-bold">SIGN IN</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${session.loggedUser != null}" class="container py-5">
+
+        <div class="glass-panel p-4 mb-5 d-flex flex-wrap justify-content-around align-items-center gap-4">
+            <div class="text-center">
+                <span class="d-block text-uppercase small color-soft fw-bold mb-1">Current Streak</span>
+                <span class="fs-1 fw-black color-main">5 <i class="bi bi-fire text-warning"></i></span>
+            </div>
+            <div class="text-center border-start border-soft ps-4">
+                <span class="d-block text-uppercase small color-soft fw-bold mb-1">Monthly Volume</span>
+                <span class="fs-1 fw-black color-main">4.2<small class="fs-6">t</small></span>
+            </div>
+            <div class="text-center border-start border-soft ps-4">
+                <span class="d-block text-uppercase small color-soft fw-bold mb-1">Success Rate</span>
+                <span class="fs-1 fw-black color-main">92%</span>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <a href="/my-workouts" class="action-card h-100 p-5 text-center text-decoration-none">
+                    <i class="bi bi-calendar3-week fs-1 color-link mb-3"></i>
+                    <h3 class="text-uppercase fw-black color-main">Workout Calendar</h3>
+                    <p class="color-soft mb-0 small">Execute your sessions and maintain your streaks.</p>
+                </a>
+            </div>
+            <div class="col-md-6">
+                <a href="/stats" class="action-card h-100 p-5 text-center text-decoration-none">
+                    <i class="bi bi-graph-up fs-1 color-link mb-3"></i>
+                    <h3 class="text-uppercase fw-black color-main">Progress Insights</h3>
+                    <p class="color-soft mb-0 small">Analyze lift history and progression markers.</p>
+                </a>
+            </div>
+
+            <div class="col-12">
+                <div class="glass-panel p-4" style="border-left: 5px solid var(--delimiter-color) !important;">
+                    <i class="bi bi-quote fs-2 color-soft opacity-25"></i>
+                    <h4 class="fst-italic color-main fw-light">"Success is not final, failure is not fatal: it is the courage to continue that counts."</h4>
+                    <p class="text-end color-soft small mb-0">— Winston Churchill</p>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="row g-3">
+                    <div class="col-4"><a href="/exercises" class="btn-quick d-block text-decoration-none text-center p-3"><i class="bi bi-search fs-4 d-block mb-1"></i><span class="small fw-bold">Exercises</span></a></div>
+                    <div class="col-4"><a href="/programs" class="btn-quick d-block text-decoration-none text-center p-3"><i class="bi bi-journal-text fs-4 d-block mb-1"></i><span class="small fw-bold">Programs</span></a></div>
+                    <div class="col-4"><a href="/profile" class="btn-quick d-block text-decoration-none text-center p-3"><i class="bi bi-person-circle fs-4 d-block mb-1"></i><span class="small fw-bold">Profile</span></a></div>
+                </div>
+            </div>
+
+            <div class="col-12 mt-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="color-main text-uppercase fw-black mb-0 tracking-wider">Recommended Programs</h5>
+                    <a href="/programs" class="text-decoration-none small color-link">Explore All <i class="bi bi-arrow-right"></i></a>
+                </div>
+
+                <div class="row g-4">
+                    <div th:each="prog : ${recommendedPrograms}" class="col-md-6 col-lg-4 col-xl-3">
+                        <div class="glass-panel p-0 overflow-hidden h-100 program-card border-0">
+                            <div class="position-relative">
+                                <img th:if="${prog.imageUrl != null && !prog.imageUrl.isEmpty()}"
+                                     th:src="${prog.imageUrl}"
+                                     class="w-100 program-img"
+                                     alt="Program">
+
+                                <div th:unless="${prog.imageUrl != null && !prog.imageUrl.isEmpty()}"
+                                     class="w-100 program-placeholder d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-fire"></i>
+                                </div>
+
+                                <span class="badge position-absolute top-0 end-0 m-3"
+                                      style="background: var(--delimiter-color); color: #000; font-weight: 800;"
+                                      th:text="${prog.difficulty}">STRENGTH</span>
+
+                                <form th:action="@{/programs/fork/{id}(id=${prog.id})}" method="post" class="position-absolute top-0 start-0 m-3">
+                                    <button type="submit" class="btn-fork" title="Add to my programs">
+                                        <i class="bi bi-diagram-2"></i>
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="p-4">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="color-main fw-bold mb-0" th:text="${prog.name}">Program Name</h6>
+                                    <div class="text-warning x-small">
+                                        <i class="bi bi-star-fill"></i> <span class="color-main fw-bold" th:text="${prog.rating}">4.9</span>
+                                    </div>
+                                </div>
+                                <p class="color-soft x-small mb-4 text-truncate-2" th:text="${prog.descriptionShort}">Professional training routine...</p>
+                                <a th:href="@{/programs/details/{id}(id=${prog.id})}" class="btn btn-sm btn-outline-custom w-100 rounded-pill">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 mt-5">
+                <div class="glass-panel p-4">
+                    <h6 class="color-main text-uppercase fw-black mb-3 small opacity-50">Recent Activity</h6>
+                    <div class="d-flex gap-5 overflow-auto pb-2">
+                        <div class="d-flex align-items-center flex-shrink-0">
+                            <div class="rounded-circle bg-success me-3" style="width: 8px; height: 8px;"></div>
+                            <div>
+                                <p class="color-main mb-0 small fw-bold">Leg Day (Heavy)</p>
+                                <small class="color-soft x-small">2 days ago</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center flex-shrink-0 border-start border-soft ps-5">
+                            <div class="rounded-circle bg-primary me-3" style="width: 8px; height: 8px;"></div>
+                            <div>
+                                <p class="color-main mb-0 small fw-bold">Milestone: 100kg Squat</p>
+                                <small class="color-soft x-small">Last week</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragment/footer.html::footer}"></footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/notifications.js(v=${#dates.createNow().time})}" defer></script>
 </body>

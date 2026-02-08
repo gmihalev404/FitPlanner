@@ -4,6 +4,7 @@ import com.example.fitplanner.entity.enums.*;
 import com.example.fitplanner.entity.model.Exercise;
 import com.example.fitplanner.entity.model.User;
 import com.example.fitplanner.repository.ExerciseRepository;
+import com.example.fitplanner.repository.ProgramRepository;
 import com.example.fitplanner.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
@@ -17,12 +18,14 @@ public class DataInitializer {
 
     private final UserRepository userRepository;
     private final ExerciseRepository exerciseRepository;
+    private final ProgramRepository programRepository;
     private final SHA256Hasher hasher;
 
-    public DataInitializer(UserRepository userRepository, ExerciseRepository exerciseRepository,
+    public DataInitializer(UserRepository userRepository, ExerciseRepository exerciseRepository, ProgramRepository programRepository,
                            SHA256Hasher hasher) {
         this.userRepository = userRepository;
         this.exerciseRepository = exerciseRepository;
+        this.programRepository = programRepository;
         this.hasher = hasher;
     }
 
@@ -77,4 +80,5 @@ public class DataInitializer {
             System.out.println("Demo exercises initialized.");
         }
     }
+
 }

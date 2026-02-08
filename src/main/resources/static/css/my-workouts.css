@@ -8,6 +8,10 @@
     height: 350px;
 }
 
+.program-container {
+    max-height: 450px;
+}
+
 .delimiter {
     height: 100%;
     width: 3px;

@@ -10,7 +10,7 @@ html.light {
     --text-link: #0056b3;          /* Links color */
 
     /* ---------- Containers ---------- */
-    --bg-container: rgba(220, 220, 220, 0.95);  /* Inner containers */
+    --bg-container: rgb(158, 166, 166);  /* Inner containers */
     --bg-days-item: rgba(200, 200, 200, 1);
 
     --bg-card: rgba(210, 210, 210, 1);          /* Card surface */
@@ -66,7 +66,7 @@ html.light {
     --bg-bell: rgba(96, 148, 148, 0.89);
     --bg-bell-hover: rgb(162, 149, 149);
 
-    --delimiter-color: rgb(0, 0, 0);
+    --delimiter-color: rgba(83, 112, 112, 0.89);
 }
 
 @media (max-width: 880px) {

@@ -55,4 +55,6 @@ public class UserRegisterDto implements Serializable{
     private String confirmPassword;
 
     private Role role;
+
+    private String inviteCode;
 }

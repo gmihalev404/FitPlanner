@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:class="${theme != null ? theme : 'dark'}"
+      th:lang="${language != null ? language : 'en'}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitPlanner | Search</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <link rel="stylesheet" th:href="@{/css/common.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/navbar.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/search-bar.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/footer.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/dark-theme.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/light-theme.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/home.css(v=${#dates.createNow().time})}">
+
+    <style>
+        .search-container { margin-top: 100px; min-height: 80vh; }
+
+        /* Navigation Pills Styling */
+        .nav-pills .nav-link {
+            color: var(--text-soft);
+            border: 1px solid var(--border-soft);
+            margin: 0 5px;
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+        .nav-pills .nav-link.active {
+            background-color: var(--delimiter-color) !important;
+            color: #000 !important;
+            border-color: var(--delimiter-color);
+            font-weight: bold;
+        }
+
+        /* Trainer Card Styling */
+        .trainer-card {
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            border: 1px solid var(--border-soft) !important;
+        }
+        .trainer-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--delimiter-color) !important;
+        }
+
+        /* Program Image Fallback Helper */
+        .fallback-img {
+            /* This shows a gray background and the default image while the real one is loading or if it fails */
+            background-color: #2a2a2a;
+            background-image: url('/default-program-image.png');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragment/navbar.html::navbar}"></div>
+
+<div class="background-section">
+    <div class="container search-container p-2">
+
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8 text-center">
+                <h2 class="display-5 fw-black color-main text-uppercase mb-4">Discover <span class="accent-text">Excellence</span></h2>
+
+                <div th:replace="~{fragment/search-bar.html :: search-bar(id='globalSearch', placeholder='Search programs or trainers...', targetSelector='.search-item')}"></div>
+
+                <ul class="nav nav-pills justify-content-center mt-4" id="pills-tab" role="tablist">
+                    <li class="nav-item m-1" role="presentation">
+                        <button class="nav-link active rounded-pill px-4" id="programs-tab" data-bs-toggle="pill" data-bs-target="#programs-content" type="button" role="tab" aria-controls="programs-content" aria-selected="true">Programs</button>
+                    </li>
+                    <li class="nav-item m-1" role="presentation">
+                        <button class="nav-link rounded-pill px-4" id="trainers-tab" data-bs-toggle="pill" data-bs-target="#trainers-content" type="button" role="tab" aria-controls="trainers-content" aria-selected="false">Trainers</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tab-content mt-4" id="pills-tabContent">
+
+            <div class="tab-pane fade show active" id="programs-content" role="tabpanel" aria-labelledby="programs-tab">
+                <div class="row g-4">
+                    <div th:if="${programs == null || programs.isEmpty()}" class="col-12 text-center py-5">
+                        <i class="bi bi-inbox fs-1 color-soft opacity-25"></i>
+                        <p class="color-soft mt-3">No programs found matching your search.</p>
+                    </div>
+
+                    <div th:each="prog : ${programs}" class="col-md-6 col-lg-4 col-xl-3 search-item">
+                        <div th:replace="~{fragment/program-card.html :: card(prog=${prog})}"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="trainers-content" role="tabpanel" aria-labelledby="trainers-tab">
+                <div class="row g-4">
+                    <div th:if="${trainers == null || trainers.isEmpty()}" class="col-12 text-center py-5">
+                        <i class="bi bi-person-slash fs-1 color-soft opacity-25"></i>
+                        <p class="color-soft mt-3">No trainers found matching your search.</p>
+                    </div>
+
+                    <div th:each="trainer : ${trainers}" class="col-md-6 col-lg-4 search-item">
+                        <div class="glass-panel p-4 trainer-card h-100 d-flex align-items-center">
+                            <img th:src="${trainer.profileImageUrl != null ? trainer.profileImageUrl : '/images/default-user-image.webp'}"
+                                 class="rounded-circle trainer-avatar fallback-img me-4"
+                                 style="width:60px; height:60px; border: 2px solid var(--delimiter-color); object-fit: cover;"
+                                 th:alt="${trainer.firstName}">
+                            <div>
+                                <h5 class="color-main fw-bold mb-0" th:text="${trainer.firstName + ' ' + trainer.lastName}">Trainer Name</h5>
+                                <p class="color-soft small mb-2" th:text="'@' + ${trainer.username}">@username</p>
+                                <a th:href="@{/profile/{id}(id=${trainer.id})}" class="p-2 btn btn-link p-0 color-link x-small text-decoration-none">
+                                    View Profile <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragment/footer.html::footer}"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.addEventListener('error', function (event) {
+        if (event.target.tagName.toLowerCase() === 'img') {
+            const isTrainer = event.target.classList.contains('trainer-avatar');
+            const defaultImg = isTrainer ? '/images/default-user-image.webp' : '/default-program-image.png';
+
+            // Check if we already swapped it to avoid infinite loop
+            if (event.target.src !== window.location.origin + defaultImg) {
+                event.target.src = defaultImg;
+            }
+        }
+    }, true); // Capture phase is necessary for 'error' events
+</script>
+
+</body>
+</html>

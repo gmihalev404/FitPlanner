@@ -131,10 +131,10 @@ public class WorkoutSessionService {
                     }
 
                     // --- STREAK TRIGGERS ---
-                    if (ep.getCompletedExercisesInARow() >= 5) {
+                    if (ep.getCompletedExercisesInARow() >= 8) {
                         ep.setSuggestedChangeIncrease(true);
                         ep.setSuggestedChange(5.0); // Suggesting a 5% increase
-                    } else if (ep.getMissedExercisesInARow() >= 3) {
+                    } else if (ep.getMissedExercisesInARow() >= 6) {
                         ep.setSuggestedChangeIncrease(false);
                         ep.setSuggestedChange(10.0); // Suggesting a 10% decrease (deload)
                     } else {

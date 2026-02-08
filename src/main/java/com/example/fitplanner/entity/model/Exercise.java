@@ -1,6 +1,7 @@
 package com.example.fitplanner.entity.model;
 
 import com.example.fitplanner.entity.enums.Category;
+import com.example.fitplanner.entity.enums.Difficulty;
 import com.example.fitplanner.entity.enums.ExerciseType;
 import com.example.fitplanner.entity.enums.EquipmentType;
 import jakarta.persistence.Column;
@@ -11,6 +12,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.stereotype.Component;
 
 @Entity
 @Getter

@@ -1,0 +1,54 @@
+<div th:fragment="exercise-section(exercises, gridMaxHeight, cardLogic)">
+  <div th:replace="~{fragment/search-bar.html::search-bar('exerciseSearch', #{exercise.search_placeholder}, '.exercise-item')}"></div>
+
+  <div class="row mb-4 mt-3 g-2">
+    <div class="col-md-4 mb-2">
+      <select id="categoryFilter" class="form-select bg-input border-input color-main">
+        <option value="" th:text="#{exercise.all_categories}">All Categories</option>
+        <option value="legs" th:text="#{cat.legs}">Legs</option>
+        <option value="core" th:text="#{cat.core}">Core</option>
+        <option value="back" th:text="#{cat.back}">Back</option>
+        <option value="biceps" th:text="#{cat.biceps}">Biceps</option>
+        <option value="triceps" th:text="#{cat.triceps}">Triceps</option>
+        <option value="chest" th:text="#{cat.chest}">Chest</option>
+      </select>
+    </div>
+    <div class="col-md-4 mb-2">
+      <select id="typeFilter" class="form-select bg-input border-input color-main">
+        <option value="" th:text="#{exercise.all_types}">All Types</option>
+        <option value="time" th:text="#{et.time}">Time</option>
+        <option value="reps" th:text="#{et.reps}">Repetitions</option>
+      </select>
+    </div>
+    <div class="col-md-4 mb-2">
+      <select id="equipmentFilter" class="form-select bg-input border-input color-main">
+        <option value="" th:text="#{exercise.all_equipment}">All Equipment</option>
+        <option value="body_weight" th:text="#{eq.body_weight}">Body weight</option>
+        <option value="weighted" th:text="#{eq.weighted}">Weighted</option>
+        <option value="machine" th:text="#{eq.machine}">Machine</option>
+        <option value="cardio" th:text="#{eq.cardio}">Cardio</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="exercise-grid-container scrollable-container" th:style="'max-height: ' + ${gridMaxHeight} + '; overflow-y: auto;'">
+    <div class="row g-4 justify-content-start" id="exerciseRow">
+
+      <div id="noResults" class="col-12 text-center p-5 color-soft" style="display: none;">
+        <i class="bi bi-filter-circle fs-1 opacity-25 d-block mb-2"></i>
+        <span th:text="#{exercise.no_results}">No exercises match your filters.</span>
+      </div>
+
+      <div th:each="ex : ${exercises}"
+           class="col-4 col-md-3 col-lg-2 exercise-item"
+           th:attr="data-name=${#strings.toLowerCase(ex.name)},
+                      data-category=${#strings.toLowerCase(ex.category)},
+                      data-type=${#strings.toLowerCase(ex.exerciseType)},
+                      data-equipment=${#strings.toLowerCase(ex.equipmentType)}">
+
+        <div th:replace="${cardLogic}"></div>
+      </div>
+
+    </div>
+  </div>
+</div>

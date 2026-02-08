@@ -2,6 +2,7 @@ package com.example.fitplanner.service;
 
 import com.example.fitplanner.dto.ExerciseDto;
 import com.example.fitplanner.dto.ExerciseProgressDto;
+import com.example.fitplanner.dto.SearchExerciseDto;
 import com.example.fitplanner.dto.StatsExerciseDto;
 import com.example.fitplanner.entity.model.Exercise;
 import com.example.fitplanner.entity.model.ExerciseProgress;
@@ -33,9 +34,9 @@ public class ExerciseService {
         this.modelMapper = modelMapper;
     }
 
-    public Set<ExerciseDto> getAll(){
-        Set<Exercise> exercises = exerciseRepository.getAll();
-        Set<ExerciseDto> exerciseDtos = new LinkedHashSet<>();
+    public List<ExerciseDto> getAll(){
+        List<Exercise> exercises = exerciseRepository.getAll();
+        List<ExerciseDto> exerciseDtos = new LinkedList<>();
         for (Exercise e : exercises) {
             exerciseDtos.add(modelMapper.map(e, ExerciseDto.class));
         }
@@ -73,5 +74,26 @@ public class ExerciseService {
                 .filter(dto -> dto.getCompletedDate() != null)
                 .sorted(Comparator.comparing(StatsExerciseDto::getCompletedDate))
                 .collect(Collectors.toList());
+    }
+
+    // Inside ExerciseService.java
+    public List<SearchExerciseDto> searchExercises(String query) {
+        List<Exercise> entities = (query == null || query.isBlank())
+                ? exerciseRepository.findAll()
+                : exerciseRepository.searchExercises(query);
+
+        return entities.stream()
+                .map(this::mapToDto)
+                .toList();
+    }
+
+    private SearchExerciseDto mapToDto(Exercise entity) {
+        return SearchExerciseDto.builder()
+                .id(entity.getId())
+                .name(entity.getName())
+                .targetMuscle(entity.getCategory().name())
+                .imageUrl(entity.getImageUrl())
+                .equipment(entity.getEquipmentType().name())
+                .build();
     }
 }

@@ -2,6 +2,7 @@ package com.example.fitplanner.controller;
 
 import com.example.fitplanner.dto.ProfileUserDto;
 import com.example.fitplanner.dto.UserDto;
+import com.example.fitplanner.service.FileService;
 import com.example.fitplanner.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,20 +10,10 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Locale;
 import java.util.Map;
 
@@ -30,21 +21,50 @@ import java.util.Map;
 public class ProfileController {
 
     private final UserService userService;
+    private final FileService fileService;
     private final LocaleResolver localeResolver;
 
     @Autowired
-    public ProfileController(UserService userService, LocaleResolver localeResolver) {
+    public ProfileController(UserService userService,
+                             FileService fileService,
+                             LocaleResolver localeResolver) {
         this.userService = userService;
+        this.fileService = fileService;
         this.localeResolver = localeResolver;
+    }
+
+    @GetMapping("/profile/{id}")
+    public String viewPublicProfile(@PathVariable Long id, Model model, HttpSession session) {
+        // 1. Get current user from session just to handle theme/language context
+        UserDto viewer = (UserDto) session.getAttribute("loggedUser");
+
+        // 2. Fetch the profile data for the target ID
+        // We use false for convertToLbs here unless you want to detect viewer's preference
+        ProfileUserDto targetProfile = userService.getById(id, ProfileUserDto.class, false);
+
+        // 3. Optional: Logic to check if I am looking at MY OWN profile
+        boolean isOwnProfile = (viewer != null && viewer.getId().equals(id));
+        if (isOwnProfile) {
+            return "redirect:/profile"; // Send them to the editable version
+        }
+
+        model.addAttribute("profile", targetProfile);
+        return "profile-view"; // A new, read-only HTML file
     }
 
     @GetMapping("/profile")
     public String showProfile(Model model, HttpSession session) {
         UserDto userDto = (UserDto) session.getAttribute("loggedUser");
-        if (userDto == null) return "redirect:/login";
-        ProfileUserDto profileData = userService.getById(userDto.getId(), ProfileUserDto.class, userDto.getMeasuringUnits().equals("lbs"));
+        if (userDto == null) {
+            return "redirect:/login";
+        }
+
+        // Fetch profile data, converting weight to Lbs if necessary
+        boolean isLbs = "lbs".equals(userDto.getMeasuringUnits());
+        ProfileUserDto profileData = userService.getById(userDto.getId(), ProfileUserDto.class, isLbs);
+
         model.addAttribute("profileForm", profileData);
-        return "/profile";
+        return "profile";
     }
 
     @PostMapping("/profile/update")
@@ -54,65 +74,48 @@ public class ProfileController {
             @RequestParam Map<String, String> settings,
             HttpSession session,
             HttpServletRequest request,
-            HttpServletResponse response,
-            RedirectAttributes redirectAttributes) {
+            HttpServletResponse response) {
 
         UserDto userDto = (UserDto) session.getAttribute("loggedUser");
-        if (userDto == null) return "redirect:/login";
+        if (userDto == null) {
+            return "redirect:/login";
+        }
 
+        // 1. Handle Image Logic
         ProfileUserDto existing = userService.getById(profileDto.getId(), ProfileUserDto.class);
 
         if (profileImage != null && !profileImage.isEmpty()) {
+            // Clean up disk space: remove the old image before saving the new one
+            fileService.deleteImage(existing.getProfileImageUrl());
 
-            // --- Check file size (max 2MB) ---
-//            long maxSize = 2 * 1024 * 1024;
-//            if (profileImage.getSize() > maxSize) {
-//                redirectAttributes.addFlashAttribute("errorMessage", "The file is too big. Maximum size is 2MB.");
-//                return "redirect:/profile";
-//            }
-
-            // --- Remove previous image ---
-            deleteOldImage(existing.getProfileImageUrl());
-
-            // --- Upload new image ---
-            String profileImageUrl = uploadImage(profileImage);
-            profileDto.setProfileImageUrl(profileImageUrl);
-
+            String newImagePath = fileService.saveImage(profileImage);
+            profileDto.setProfileImageUrl(newImagePath);
         } else {
+            // Keep the old image path if no new file was uploaded
             profileDto.setProfileImageUrl(existing.getProfileImageUrl());
         }
 
+        // 2. Persist User Data
         userService.updateProfile(profileDto);
-        session.setAttribute("loggedUser", userService.getById(profileDto.getId(), UserDto.class));
+
+        // 3. Update Session & UI Settings (Language, Theme, Units)
+        UserDto updatedUser = userService.getById(profileDto.getId(), UserDto.class);
+        session.setAttribute("loggedUser", updatedUser);
+
         updateUserSettings(settings, session, request, response);
 
         return "redirect:/profile";
     }
 
-
-
-    private String uploadImage(MultipartFile profileImage) {
-        String uploadDir = "uploads/";
-        String fileName = System.currentTimeMillis() + "_" + profileImage.getOriginalFilename();
-
-        try {
-            Path uploadPath = Paths.get(uploadDir);
-            if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
-
-            Path filePath = uploadPath.resolve(fileName);
-            Files.copy(profileImage.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-            return "/uploads/" + fileName;
-        } catch (IOException | MaxUploadSizeExceededException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
+    /**
+     * Helper to synchronize UI preferences between the DB and the current Session/Locale.
+     */
     private void updateUserSettings(Map<String, String> settings,
                                     HttpSession session,
                                     HttpServletRequest request,
                                     HttpServletResponse response) {
 
-        // Language
+        // Language Management
         if (settings.containsKey("language")) {
             String language = settings.get("language");
             if (!language.matches("en|bg|es|fr")) language = "en";
@@ -121,38 +124,18 @@ public class ProfileController {
             localeResolver.setLocale(request, response, new Locale(language));
         }
 
-        // Theme
+        // Theme Management (light/dark)
         if (settings.containsKey("theme")) {
             String theme = settings.get("theme");
             if (!theme.matches("light|dark")) theme = "dark";
             session.setAttribute("theme", theme);
         }
 
-        // Units
+        // Units Management (kg/lbs)
         if (settings.containsKey("units")) {
             String units = settings.get("units");
-            if (!units.matches("kg|lb")) units = "kg";
+            if (!units.matches("kg|lbs")) units = "kg";
             session.setAttribute("units", units);
-        }
-    }
-
-    private void deleteOldImage(String imageUrl) {
-        if (imageUrl == null || imageUrl.isBlank() || imageUrl.contains("default")) {
-            return;
-        }
-
-        try {
-            Path path = Paths.get(imageUrl);
-            String fileName = path.getFileName().toString();
-            Path fileToDelete = Paths.get("uploads").resolve(fileName);
-            boolean deleted = Files.deleteIfExists(fileToDelete);
-            if (deleted) {
-                System.out.println("Successfully deleted: " + fileName);
-            } else {
-                System.out.println("File not found on disk, but entry was removed from DB: " + fileName);
-            }
-        } catch (IOException e) {
-            System.err.println("Could not delete file (might be in use): " + e.getMessage());
         }
     }
 }

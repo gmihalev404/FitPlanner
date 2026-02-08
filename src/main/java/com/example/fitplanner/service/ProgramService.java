@@ -1,19 +1,24 @@
 package com.example.fitplanner.service;
 
 import com.example.fitplanner.dto.*;
+import com.example.fitplanner.entity.enums.Role;
 import com.example.fitplanner.entity.model.*;
 import com.example.fitplanner.repository.*;
-import jakarta.transaction.Transactional;
+import jakarta.persistence.EntityNotFoundException;
+import org.hibernate.Hibernate;
+import org.springframework.transaction.annotation.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -43,21 +48,30 @@ public class ProgramService {
         this.modelMapper = modelMapper;
     }
 
+    // Inside ProgramService
+    @Transactional(readOnly = true)
     public List<ProgramDto> getProgramsByUserId(Long userId) {
-        List<Program> programs = programRepository.getByUserId(userId);
-        List<ProgramDto> programDtos = new ArrayList<>();
-        for (Program p : programs) {
-            ProgramDto programDto = modelMapper.map(p, ProgramDto.class);
-            for (WorkoutSession ws : p.getSessions()) {
-                List<ExerciseProgressDto> dtos = ws.getExercises()
-                        .stream()
-                        .map(e -> modelMapper.map(e, ExerciseProgressDto.class))
-                        .toList();
-                programDto.getWorkouts().add(new DateWorkout(ws.getScheduledFor(), dtos));
-            }
-            programDtos.add(programDto);
-        }
-        return programDtos;
+        List<Program> entities = programRepository.findAllByUserId(userId);
+
+        return entities.stream().map(entity -> {
+            // Force Hibernate to load the sessions collection
+            Hibernate.initialize(entity.getSessions());
+
+            ProgramDto dto = modelMapper.map(entity, ProgramDto.class);
+
+            // Explicitly map the dates from Sessions to DateWorkout
+            List<DateWorkout> dateWorkouts = entity.getSessions().stream()
+                    .map(session -> {
+                        DateWorkout dw = new DateWorkout();
+                        dw.setDate(session.getScheduledFor());
+                        return dw;
+                    })
+                    .sorted(Comparator.comparing(DateWorkout::getDate)) // Optional: keeps dates in order
+                    .collect(Collectors.toList());
+
+            dto.setWorkouts(dateWorkouts);
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     public void createProgram(CreatedProgramDto dto, ProgramsUserDto userDto, String units) {
@@ -168,5 +182,106 @@ public class ProgramService {
         Program program = programRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid ID"));
         return modelMapper.map(program, dtoType);
+    }
+
+    @Transactional
+    public void forkProgram(Long programId, Long userId) {
+        Program original = programRepository.findById(programId).orElseThrow();
+        User newUser = userRepository.findById(userId).orElseThrow();
+
+        Program fork = new Program();
+        fork.setUser(newUser);
+        fork.setName(original.getName() + " (Copied)");
+        fork.setCreatedAt(LocalDateTime.now());
+        fork.setLastChanged(LocalDateTime.now());
+        // Copy other essential fields
+        fork.setDifficulty(original.getDifficulty());
+
+        // 1. Save Program first
+        Program savedFork = programRepository.save(fork);
+
+        // 2. Initialize the sessions list to avoid nulls
+        if (savedFork.getSessions() == null) {
+            savedFork.setSessions(new LinkedList<>());
+        }
+
+        LocalDate originalStart = original.getSessions().stream()
+                .map(WorkoutSession::getScheduledFor)
+                .min(LocalDate::compareTo).orElse(LocalDate.now());
+        long dayOffset = java.time.temporal.ChronoUnit.DAYS.between(originalStart, LocalDate.now());
+
+        for (WorkoutSession originalSession : original.getSessions()) {
+            LocalDate newDate = originalSession.getScheduledFor().plusDays(dayOffset);
+
+            WorkoutSession targetSession = workoutSessionRepository
+                    .findByUserIdAndScheduledFor(newUser.getId(), newDate)
+                    .orElseGet(() -> {
+                        WorkoutSession s = new WorkoutSession();
+                        s.setUser(newUser);
+                        s.setProgram(savedFork); // Link to new program
+                        s.setScheduledFor(newDate);
+                        s.setFinished(false);
+                        return workoutSessionRepository.save(s);
+                    });
+
+            // CRITICAL: Ensure the bidirectional link is established
+            targetSession.setProgram(savedFork);
+            savedFork.getSessions().add(targetSession);
+
+            for (ExerciseProgress originalEp : originalSession.getExercises()) {
+                ExerciseProgress newEp = new ExerciseProgress();
+                newEp.setWorkoutSession(targetSession);
+                newEp.setExercise(originalEp.getExercise());
+                newEp.setUser(newUser);
+                newEp.setReps(originalEp.getReps());
+                newEp.setSets(originalEp.getSets());
+                newEp.setWeight(originalEp.getWeight());
+                newEp.setLastScheduled(newDate);
+                exerciseProgressRepository.save(newEp);
+            }
+        }
+        // Final save/flush to sync the relationship
+        programRepository.saveAndFlush(savedFork);
+    }
+    public List<ForkableProgramDto> getRecommendedPrograms(Long currentUserId) {
+        // Fetch top 4 trainer programs that the user doesn't own
+        Pageable limit = PageRequest.of(0, 4);
+        return programRepository.findTopRatedTrainerPrograms(currentUserId, limit)
+                .stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    private ForkableProgramDto mapToDto(Program program) {
+        ForkableProgramDto dto = new ForkableProgramDto();
+        dto.setId(program.getId());
+        dto.setName(program.getName());
+
+        // Handle potentially long descriptions for the UI
+        String desc = program.getDescription();
+        if (desc != null && desc.length() > 80) {
+            desc = desc.substring(0, 77) + "...";
+        }
+        dto.setDescriptionShort(desc);
+
+        dto.setImageUrl(program.getImageUrl());
+
+        // Convert Enums to Strings for the template
+        dto.setDifficulty(program.getDifficulty() != null ?
+                program.getDifficulty().name() : "INTERMEDIATE");
+
+        dto.setRating(program.getRating() != null ? program.getRating() : 0.0);
+
+        return dto;
+    }
+
+    public List<ForkableProgramDto> searchProgramsAndMap(String query) {
+        List<Program> entities = (query == null || query.isBlank())
+                ? programRepository.findAllByIsPublicTrue()
+                : programRepository.searchPublicPrograms(query);
+
+        return entities.stream()
+                .map(this::mapToDto) // Uses your existing private mapToDto method
+                .collect(Collectors.toList());
     }
 }

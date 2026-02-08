@@ -44,3 +44,9 @@ button.exercise-card {
     background: none;
     color: var(--text-main);
 }
+
+.log-container {
+    margin-top: 100px !important;
+    position: relative;
+    z-index: 1; /* Keep the log content lower than the navbar */
+}

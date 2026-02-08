@@ -1,0 +1,126 @@
+/* --- High-Contrast Typography --- */
+.hero-title {
+    color: #ffffff;
+    text-shadow: 0 4px 15px rgba(0,0,0,0.6);
+}
+
+.text-outline {
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.8);
+}
+
+.accent-text {
+    color: var(--delimiter-color);
+    transition: color 0.3s ease;
+}
+
+/* --- Adaptive Glass Panels --- */
+.glass-panel {
+    background: var(--bg-container);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-soft);
+    border-radius: 1.5rem;
+    box-shadow: var(--shadow-card);
+    transition: background 0.3s ease, border 0.3s ease;
+}
+
+html.light .glass-panel {
+    background: rgba(255, 255, 255, 0.7);
+    border-color: rgba(0, 0, 0, 0.05);
+}
+
+/* --- Interactive Cards --- */
+.action-card {
+    display: block;
+    text-decoration: none;
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: 1.25rem;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: var(--shadow-card);
+}
+
+.action-card:hover {
+    transform: translateY(-8px);
+    background: var(--bg-item);
+    border-color: var(--delimiter-color);
+}
+
+/* --- Quick Access Buttons --- */
+.btn-quick {
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
+    color: var(--text-main);
+    border-radius: 1rem;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.btn-quick:hover {
+    background: var(--hover-light);
+    border-color: var(--delimiter-color);
+}
+
+/* --- Program Card & Placeholders --- */
+.program-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.program-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.program-img {
+    height: 180px;
+    object-fit: cover;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.program-placeholder {
+    height: 180px;
+    background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+    color: var(--delimiter-color);
+    font-size: 3rem;
+    opacity: 0.8;
+}
+
+/* For Light Theme Placeholder */
+html.light .program-placeholder {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    color: #6c757d;
+}
+
+/* --- Fork Button Logic --- */
+.btn-fork {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+}
+
+.btn-fork:hover {
+    background: var(--delimiter-color);
+    color: black;
+    transform: scale(1.1) rotate(-10deg);
+    border-color: var(--delimiter-color);
+}
+
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 2.8rem;
+}

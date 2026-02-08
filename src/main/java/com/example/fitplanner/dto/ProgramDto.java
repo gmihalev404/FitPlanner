@@ -16,6 +16,7 @@ public class ProgramDto implements Serializable {
 
     private LocalDateTime createdAt;
     private LocalDateTime lastChanged;
+    private String imageUrl;
 
     private List<DateWorkout> workouts = new ArrayList<>();
 }

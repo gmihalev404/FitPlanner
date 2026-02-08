@@ -48,6 +48,24 @@
     width: 100%;
 }
 
+.custom-file-upload .form-control {
+    background: var(--bg-container) !important;
+    border: 1px solid var(--border-soft) !important;
+    color: var(--text-main) !important;
+    border-radius: 10px;
+}
+
+.custom-file-upload .form-control::-webkit-file-upload-button {
+    background-color: var(--delimiter-color);
+    color: black;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 5px;
+    margin-right: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
 /* --- EXERCISE LIST STYLING --- */
 .max-vh-25 {
     flex-grow: 1;

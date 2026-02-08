@@ -51,7 +51,7 @@ public class StatisticsController {
         // -----------------------------
         // Get all exercises for the grid/selection
         // -----------------------------
-        Set<ExerciseDto> exercises = exerciseService.getAll();
+        List<ExerciseDto> exercises = exerciseService.getAll();
 
         // -----------------------------
         // Add attributes to the model

@@ -77,19 +77,19 @@
 
                 <div class="col-3 col-lg-2 d-flex justify-content-end align-items-center">
 
-                    <th:block th:if="${isToday && !isFinished}">
-                        <form th:action="@{/edit-session-exercise}" method="get" class="me-2">
-                            <button type="submit" class="btn text-primary fs-4 p-0 px-1" title="Edit">
-                                <i class="bi bi-pencil-square"></i>
-                            </button>
-                        </form>
+<!--                    <th:block th:if="${isToday && !isFinished}">-->
+<!--                        <form th:action="@{/edit-session-exercise}" method="get" class="me-2">-->
+<!--                            <button type="submit" class="btn text-primary fs-4 p-0 px-1" title="Edit">-->
+<!--                                <i class="bi bi-pencil-square"></i>-->
+<!--                            </button>-->
+<!--                        </form>-->
 
-                        <form th:action="@{/remove-session-exercise}" method="post" onsubmit="return confirm('Remove this exercise?')">
-                            <button type="submit" class="btn text-danger fs-4 p-0 px-1" title="Remove">
-                                <i class="bi bi-x-lg"></i>
-                            </button>
-                        </form>
-                    </th:block>
+<!--                        <form th:action="@{/remove-session-exercise}" method="post" onsubmit="return confirm('Remove this exercise?')">-->
+<!--                            <button type="submit" class="btn text-danger fs-4 p-0 px-1" title="Remove">-->
+<!--                                <i class="bi bi-x-lg"></i>-->
+<!--                            </button>-->
+<!--                        </form>-->
+<!--                    </th:block>-->
 
                     <span th:if="${isFinished || isPast}" class="read-only-icon text-muted" title="Read Only">
                         <i class="bi bi-lock-fill fs-5"></i>

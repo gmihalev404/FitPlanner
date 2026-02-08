@@ -2,12 +2,14 @@ package com.example.fitplanner.controller;
 
 import com.example.fitplanner.dto.*;
 import com.example.fitplanner.service.ExerciseService;
+import com.example.fitplanner.service.FileService;
 import com.example.fitplanner.service.ProgramService;
 import com.example.fitplanner.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.DayOfWeek;
 import java.util.*;
@@ -17,12 +19,14 @@ public class WorkoutCreationController {
     private final UserService userService;
     private final ProgramService programService;
     private final ExerciseService exerciseService;
+    private final FileService fileService;
     public WorkoutCreationController(UserService userService,
                                      ProgramService programService,
-                                     ExerciseService exerciseService) {
+                                     ExerciseService exerciseService, FileService fileService) {
         this.userService = userService;
         this.programService = programService;
         this.exerciseService = exerciseService;
+        this.fileService = fileService;
     }
 
     @GetMapping("/create")
@@ -66,15 +70,23 @@ public class WorkoutCreationController {
     public String showExerciseLog(@RequestParam(required = false) String day,
                                   HttpSession session,
                                   Model model){
-        UserDto userDto = (UserDto) session.getAttribute("loggedUser");
-        if (userDto == null) return "redirect:/login";
-        ProgramsUserDto programsUserDto = userService.getById(userDto.getId(), ProgramsUserDto.class);
+        UserDto sessionUser = (UserDto) session.getAttribute("loggedUser");
+        if (sessionUser == null) return "redirect:/login";
+
+        // FETCH FRESH DATA: This ensures notifications and roles are not null/stale
+        UserDto userDto = userService.getById(sessionUser.getId(), UserDto.class);
+        ProgramsUserDto programsUserDto = userService.getById(sessionUser.getId(), ProgramsUserDto.class);
+
         if(day != null) session.setAttribute("currentDay", day);
-        Set<ExerciseDto> exercises = exerciseService.getAll();
+
+        List<ExerciseDto> exercises = exerciseService.getAll();
+
+        // Add to model
         model.addAttribute("exercises", exercises);
-        model.addAttribute("userDto", userDto);
+        model.addAttribute("userDto", userDto); // Fresh data for Navbar
         model.addAttribute("programsUserDto", programsUserDto);
-        return "exercises-log";
+
+        return "exercises-log"; // Verify this matches your file name exactly
     }
 
     @GetMapping("/edit-exercise")
@@ -223,13 +235,51 @@ public class WorkoutCreationController {
     @PostMapping("/create-full-workout")
     public String createFullWorkout(@ModelAttribute("programForm") CreatedProgramDto dto,
                                     HttpSession session) {
-        UserDto userDto = (UserDto) session.getAttribute("loggedUser");
-        ProgramsUserDto programsUserDto = userService.getById(userDto.getId(), ProgramsUserDto.class);
+
+        UserDto loggedUser = (UserDto) session.getAttribute("loggedUser");
+        if (loggedUser == null) return "redirect:/login";
+
+        // 1. Get the form from session (which now contains our Image URL)
+        CreatedProgramDto sessionForm = (CreatedProgramDto) session.getAttribute("programForm");
+
+        // 2. Merge data (Manual merge or use the session version as base)
+        if (sessionForm != null && sessionForm.getImageUrl() != null) {
+            dto.setImageUrl(sessionForm.getImageUrl());
+        }
+
+        // 3. Get weekDays from session
         List<DayWorkout> weekDays = (List<DayWorkout>) session.getAttribute("weekDays");
-        if (weekDays == null) weekDays = new ArrayList<>();
-        dto.setWeekDays(weekDays);
-        programService.createProgram(dto, programsUserDto, programsUserDto.getMeasuringUnits());
+        dto.setWeekDays(weekDays != null ? weekDays : new ArrayList<>());
+
+        ProgramsUserDto userSettings = userService.getById(loggedUser.getId(), ProgramsUserDto.class);
+        programService.createProgram(dto, userSettings, userSettings.getMeasuringUnits());
+
+        // 4. Full Cleanup
+        session.removeAttribute("weekDays");
+        session.removeAttribute("programForm");
+
         return "redirect:/home";
+    }
+
+    @PostMapping("/upload-program-image-session")
+    @ResponseBody
+    public String uploadImageToSession(@RequestParam("programImage") MultipartFile imageFile,
+                                       HttpSession session) {
+        if (imageFile != null && !imageFile.isEmpty()) {
+            // 1. Save file to disk immediately
+            String imageUrl = fileService.saveImage(imageFile);
+
+            // 2. Store the string path in the session form
+            CreatedProgramDto sessionProgramForm = (CreatedProgramDto) session.getAttribute("programForm");
+            if (sessionProgramForm == null) {
+                sessionProgramForm = new CreatedProgramDto();
+            }
+            sessionProgramForm.setImageUrl(imageUrl);
+            session.setAttribute("programForm", sessionProgramForm);
+
+            return imageUrl; // Return the path so the UI can show a preview
+        }
+        return "error";
     }
 
     @PostMapping("/update-program-session")

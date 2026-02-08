@@ -35,4 +35,6 @@ public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, 
     );
 
     @Query("SELECT ws FROM WorkoutSession ws WHERE ws.user.id = :userId AND ws.scheduledFor = :date")
-    Optional<WorkoutSession> findSession(@Param("userId") Long userId, @Param("date") LocalDate date);}
+    Optional<WorkoutSession> findSession(@Param("userId") Long userId, @Param("date") LocalDate date);
+
+}

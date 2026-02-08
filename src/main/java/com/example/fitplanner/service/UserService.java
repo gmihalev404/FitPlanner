@@ -11,6 +11,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
@@ -18,10 +19,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
 public class UserService {
+    @Value("${app.security.admin-code}")
+    private String adminSecret;
+
+    @Value("${app.security.trainer-code}")
+    private String trainerSecret;
     final private UserRepository userRepository;
     final private ModelMapper modelMapper;
     final private UnitValidator unitValidator;
@@ -67,17 +74,31 @@ public class UserService {
     }
 
     public void save(UserRegisterDto userRegisterDto) {
+// 1. Determine Role based on the Invite Code
+        Role role = determineRole(userRegisterDto.getInviteCode());
+        userRegisterDto.setRole(role);
+
+        // 2. Hash Password
         String hashedPassword = hasher.hash(userRegisterDto.getPassword());
-        userRegisterDto.setRole(determineRole(userRegisterDto.getUsername()));
         userRegisterDto.setPassword(hashedPassword);
+
+        // 3. Map and Save
         User user = modelMapper.map(userRegisterDto, User.class);
         userRepository.save(user);
     }
 
-    private Role determineRole(String username) {
-        if(username.contains("ADMIN")) return Role.ADMIN;
-        else if(username.contains("TRAINER")) return Role.TRAINER;
-        else return Role.CLIENT;
+    private Role determineRole(String inviteCode) {
+        // If code matches admin secret, they are ADMIN
+        if (adminSecret.equals(inviteCode)) {
+            return Role.ADMIN;
+        }
+        // If code matches trainer secret, they are TRAINER
+        else if (trainerSecret.equals(inviteCode)) {
+            return Role.TRAINER;
+        }
+
+        // Default role for everyone else
+        return Role.CLIENT;
     }
 
     public void save(UserLoginDto userLoginDto) {
@@ -155,5 +176,30 @@ public class UserService {
         // }
 
         return history;
+    }
+
+    public List<User> searchTrainers(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return userRepository.findByRole(Role.TRAINER); // Return all if empty
+        }
+        return userRepository.searchTrainers(query);
+    }
+
+    // Inside UserService.java
+    public List<TrainerSearchDto> searchTrainersAndMap(String query) {
+        List<User> trainers = (query == null || query.isBlank())
+                ? userRepository.findByRole(Role.TRAINER)
+                : userRepository.searchTrainers(query);
+
+        return trainers.stream()
+                .map(user -> TrainerSearchDto.builder()
+                        .id(user.getId())
+                        .firstName(user.getFirstName())
+                        .lastName(user.getLastName())
+                        .username(user.getUsername())
+                        .profileImageUrl(user.getProfileImageUrl())
+                        .experience("Certified Trainer") // Placeholder or logic based on user data
+                        .build())
+                .collect(Collectors.toList());
     }
 }

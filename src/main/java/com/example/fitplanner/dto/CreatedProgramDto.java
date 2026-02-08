@@ -18,4 +18,5 @@ public class CreatedProgramDto implements Serializable {
     private Boolean isPublic = false;
 
     private List<DayWorkout> weekDays = new ArrayList<>();
+    private String imageUrl;
 }

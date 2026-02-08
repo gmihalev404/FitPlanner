@@ -1,28 +1,27 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('click', function (event) {
     const button = document.getElementById('notifDrop');
     const panel = document.getElementById('notifPanel');
     const wrapper = document.getElementById('notifDropdownWrapper');
 
-    // по default панелът е затворен
-    panel.style.display = 'none';
+    if (!button || !panel || !wrapper) return;
 
-    // toggle панела при клик на камбанката
-    button.addEventListener('click', function (e) {
-        e.stopPropagation(); // спира клик извън панела
-        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-    });
+    if (button.contains(event.target)) {
+        event.preventDefault();
+        event.stopPropagation();
 
-    // затваряне при клик извън панела
-    document.addEventListener('click', function(e){
-        if (!wrapper.contains(e.target)) {
+        // Use a toggle class instead of direct style for better mobile reliability
+        panel.classList.toggle('show-notifs');
+
+        // Force display block if the class is present
+        if (panel.classList.contains('show-notifs')) {
+            panel.style.display = 'block';
+            console.log("Mobile/Desktop: Open");
+        } else {
             panel.style.display = 'none';
         }
-    });
-
-    // Escape -> затваряне
-    document.addEventListener('keydown', function(e){
-        if (e.key === 'Escape') {
-            panel.style.display = 'none';
-        }
-    });
+    }
+    else if (!wrapper.contains(event.target)) {
+        panel.style.display = 'none';
+        panel.classList.remove('show-notifs');
+    }
 });

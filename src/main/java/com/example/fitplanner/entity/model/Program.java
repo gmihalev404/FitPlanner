@@ -1,13 +1,13 @@
 package com.example.fitplanner.entity.model;
 
+import com.example.fitplanner.entity.enums.Difficulty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -25,7 +25,7 @@ public class Program extends BaseEntity {
     private User user;
 
     @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<WorkoutSession> sessions = new HashSet<>();
+    private List<WorkoutSession> sessions = new LinkedList<>();
 
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -44,6 +44,18 @@ public class Program extends BaseEntity {
 
     @Column(nullable = false)
     private Boolean isPublic = false;
+
+    @Column
+    private String description;
+
+    @Column
+    private String imageUrl;
+
+    @Column
+    private Difficulty difficulty;
+
+    @Column
+    private Double rating = 0.0;
 
     public Program(String name, User user, Integer scheduleMonths, Boolean notifications, Boolean isPublic) {
         this.name = name;
