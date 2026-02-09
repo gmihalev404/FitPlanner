@@ -33,24 +33,29 @@ public interface ExerciseProgressRepository extends JpaRepository<ExerciseProgre
     @Query("SELECT ep FROM ExerciseProgress ep " +
             "WHERE ep.user.id = :userId " +
             "AND ep.exercise.id = :exerciseId " +
-            "AND ep.lastScheduled = :lastScheduled")
-    Optional<ExerciseProgress> findByUserIdAndExerciseIdAndLastScheduled(
+            "AND ep.lastScheduled = :date")
+    List<ExerciseProgress> findByUserIdAndExerciseIdAndLastScheduled(
             @Param("userId") Long userId,
             @Param("exerciseId") Long exerciseId,
-            @Param("lastScheduled") LocalDate lastScheduled
-    );
+            @Param("date") LocalDate date);
 
     @Query("SELECT SUM(ep.weight * ep.setsCompleted * ep.reps) FROM ExerciseProgress ep " +
             "WHERE ep.user.id = :userId AND ep.completed = true " +
             "AND ep.lastCompleted >= :startOfMonth")
     Double calculateMonthlyVolume(@Param("userId") Long userId, @Param("startOfMonth") LocalDate startOfMonth);
 
-    // Count completed vs total scheduled for success rate
-    @Query("SELECT COUNT(ep) FROM ExerciseProgress ep WHERE ep.user.id = :userId AND ep.lastScheduled >= :startOfMonth")
-    long countScheduledThisMonth(@Param("userId") Long userId, @Param("startOfMonth") LocalDate startOfMonth);
+    @Query("SELECT COUNT(ep) FROM ExerciseProgress ep " +
+            "WHERE ep.user.id = :userId " +
+            "AND ep.lastScheduled BETWEEN :startDate AND CURRENT_DATE")
+    long countScheduledLast30Days(@Param("userId") Long userId,
+                                  @Param("startDate") LocalDate startDate);
 
-    @Query("SELECT COUNT(ep) FROM ExerciseProgress ep WHERE ep.user.id = :userId AND ep.completed = true AND ep.lastCompleted >= :startOfMonth")
-    long countCompletedThisMonth(@Param("userId") Long userId, @Param("startOfMonth") LocalDate startOfMonth);
+    @Query("SELECT COUNT(ep) FROM ExerciseProgress ep " +
+            "WHERE ep.user.id = :userId " +
+            "AND ep.completed = true " +
+            "AND ep.lastCompleted BETWEEN :startDate AND CURRENT_DATE")
+    long countCompletedLast30Days(@Param("userId") Long userId,
+                                  @Param("startDate") LocalDate startDate);
 
     @Query("SELECT ep FROM ExerciseProgress ep " +
             "WHERE ep.user.id = :userId " +

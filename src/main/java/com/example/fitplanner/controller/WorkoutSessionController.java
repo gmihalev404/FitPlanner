@@ -104,6 +104,7 @@ public class WorkoutSessionController {
                 }
             }
         }
+        System.out.println(form);
 
         // 2. Save progress to ExerciseProgress and update WorkoutSession as 'finished'
         workoutSessionService.finishSession(form.getResults(), sessionDate, userDto.getId());

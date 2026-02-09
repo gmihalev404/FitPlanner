@@ -41,6 +41,7 @@ public class ProfileController {
         // 2. Fetch the profile data for the target ID
         // We use false for convertToLbs here unless you want to detect viewer's preference
         ProfileUserDto targetProfile = userService.getById(id, ProfileUserDto.class, false);
+        System.out.println(targetProfile);
 
         // 3. Optional: Logic to check if I am looking at MY OWN profile
         boolean isOwnProfile = (viewer != null && viewer.getId().equals(id));
@@ -86,9 +87,9 @@ public class ProfileController {
 
         if (profileImage != null && !profileImage.isEmpty()) {
             // Clean up disk space: remove the old image before saving the new one
-            fileService.deleteImage(existing.getProfileImageUrl());
+            fileService.deleteFile(existing.getProfileImageUrl());
 
-            String newImagePath = fileService.saveImage(profileImage);
+            String newImagePath = fileService.saveFile(profileImage);
             profileDto.setProfileImageUrl(newImagePath);
         } else {
             // Keep the old image path if no new file was uploaded

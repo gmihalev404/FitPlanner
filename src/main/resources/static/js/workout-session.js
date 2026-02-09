@@ -1,67 +1,58 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const isViewOnly = [[${viewOnly}]];
-    if (isViewOnly) return;
+    const isViewOnly = window.workoutConfig.viewOnly; // Fixed reference
 
     const allCheckboxes = document.querySelectorAll('.set-checkbox');
     const progressBar = document.getElementById('progressBar');
     const progressText = document.getElementById('progressText');
+
+    function updateUIForCheckbox(ch) {
+        const label = ch.nextElementSibling;
+        // Find the status span (it might be the second next element depending on whitespace)
+        const statusSpan = ch.parentElement.querySelector('.status-text');
+
+        if (ch.checked) {
+            label.classList.add('completed-label');
+            if(statusSpan) statusSpan.style.display = 'inline';
+        } else {
+            label.classList.remove('completed-label');
+            if(statusSpan) statusSpan.style.display = 'none';
+        }
+    }
 
     function updateProgress() {
         const total = allCheckboxes.length;
         const checked = Array.from(allCheckboxes).filter(c => c.checked).length;
         const percent = total > 0 ? Math.round((checked / total) * 100) : 0;
 
-        progressBar.style.width = percent + '%';
-        progressBar.setAttribute('aria-valuenow', percent);
-        progressText.innerText = percent + '%';
+        if(progressBar) {
+            progressBar.style.width = percent + '%';
+            progressBar.setAttribute('aria-valuenow', percent);
+        }
+        if(progressText) progressText.innerText = percent + '%';
     }
 
-    document.querySelectorAll('.exercise-card').forEach(card => {
-        const checkboxes = card.querySelectorAll('.set-checkbox');
-        const setsCompletedInput = card.querySelector('.sets-completed-input');
-        const finishedInput = card.querySelector('.finished-input');
+    // 1. Initial UI Setup: Loop through checkboxes to set correct styles for already-checked sets
+    allCheckboxes.forEach(ch => {
+        updateUIForCheckbox(ch);
 
-        checkboxes.forEach(cb => {
-            cb.addEventListener('change', () => {
-                const completedCount = Array.from(checkboxes).filter(ch => ch.checked).length;
+        // 2. Add Event Listeners only if NOT view-only
+        if (!isViewOnly) {
+            ch.addEventListener('change', () => {
+                const card = ch.closest('.exercise-card');
+                const cardCheckboxes = card.querySelectorAll('.set-checkbox');
+                const setsCompletedInput = card.querySelector('.sets-completed-input');
+                const finishedInput = card.querySelector('.finished-input');
 
-                // Update hidden inputs for backend
+                const completedCount = Array.from(cardCheckboxes).filter(c => c.checked).length;
                 setsCompletedInput.value = completedCount;
-                finishedInput.value = (completedCount === checkboxes.length);
+                finishedInput.value = (completedCount === cardCheckboxes.length);
 
-                // Update UI appearance
-                checkboxes.forEach(ch => {
-                    const label = ch.nextElementSibling;
-                    const statusSpan = label.nextElementSibling;
-                    if (ch.checked) {
-                        label.classList.add('completed-label');
-                        statusSpan.style.display = 'inline';
-                    } else {
-                        label.classList.remove('completed-label');
-                        statusSpan.style.display = 'none';
-                    }
-                });
-
+                updateUIForCheckbox(ch);
                 updateProgress();
             });
-        });
+        }
     });
 
-    // Suggestion buttons
-    document.querySelectorAll('.accept-btn, .decline-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const exerciseId = this.getAttribute('data-id');
-            const isAccept = this.classList.contains('accept-btn');
-
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = isAccept ? 'acceptedIncreaseIds' : 'declinedIncreaseIds';
-            input.value = exerciseId;
-
-            document.getElementById('sessionForm').appendChild(input);
-
-            const parent = this.closest('div.border');
-            parent.innerHTML = '<span class="text-muted small italic"><i class="bi bi-info-circle"></i> Choice recorded. Submit session to apply.</span>';
-        });
-    });
+    // Run once on load to ensure progress bar matches the saved state
+    updateProgress();
 });

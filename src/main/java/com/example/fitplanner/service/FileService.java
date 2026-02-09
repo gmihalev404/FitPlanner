@@ -10,7 +10,7 @@ public class FileService {
 
     private final String uploadDir = "uploads/";
 
-    public String saveImage(MultipartFile file) {
+    public String saveFile(MultipartFile file) {
         if (file == null || file.isEmpty()) return null;
 
         String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
@@ -30,7 +30,7 @@ public class FileService {
         }
     }
 
-    public void deleteImage(String imageUrl) {
+    public void deleteFile(String imageUrl) {
         if (imageUrl == null || imageUrl.isBlank() || imageUrl.contains("default")) {
             return;
         }

@@ -15,3 +15,123 @@
 /* Interactive styles for labels */
 .completed-label { text-decoration: line-through; color: gray; }
 .italic { font-style: italic; }
+
+/* Container & Layout */
+.session-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.session-title {
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 2rem;
+}
+
+/* Progress Section */
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+}
+
+.progress-label, .progress-value {
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+
+/* Exercise Cards */
+.exercise-card {
+    background: var(--bg-container);
+    border: 1px solid var(--border-card);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: transform 0.2s ease;
+}
+
+.exercise-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.exercise-name {
+    margin-bottom: 0;
+    font-weight: 600;
+}
+
+.weight-badge {
+    background-color: var(--delimiter-color);
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    color: white;
+}
+
+/* Set Rows & Checkboxes */
+.set-row {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.set-label {
+    margin-left: 0.5rem;
+    font-weight: 500;
+}
+
+.completed-label {
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+
+.status-text {
+    display: none; /* Hidden by default */
+    color: #198754;
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin-left: 0.5rem;
+}
+
+.status-text.active {
+    display: inline-block; /* Becomes visible via Thymeleaf class */
+}
+
+/* Suggested Increase Box */
+.increase-suggestion-box {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    background-color: rgba(255, 193, 7, 0.05);
+}
+
+.suggestion-text {
+    font-size: 0.875rem;
+    color: #ffc107;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+/* Footer Actions */
+.action-footer {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.session-btn {
+    padding-left: 3rem;
+    padding-right: 3rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* View Only Mode Overrides */
+.view-only-mode .exercise-card {
+    opacity: 0.9;
+    border-style: dashed;
+}

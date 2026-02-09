@@ -17,7 +17,7 @@ import java.util.Set;
 @Table(
         name = "workout_sessions",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"user_id", "scheduled_for"})
+                @UniqueConstraint(columnNames = {"user_id", "scheduled_for", "program_id", "day_name"})
         }
 )
 public class WorkoutSession extends BaseEntity {

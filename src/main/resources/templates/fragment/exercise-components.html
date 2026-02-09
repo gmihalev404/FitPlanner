@@ -17,7 +17,7 @@
       <select id="typeFilter" class="form-select bg-input border-input color-main">
         <option value="" th:text="#{exercise.all_types}">All Types</option>
         <option value="time" th:text="#{et.time}">Time</option>
-        <option value="reps" th:text="#{et.reps}">Repetitions</option>
+        <option value="repetitions" th:text="#{et.reps}">Repetitions</option>
       </select>
     </div>
     <div class="col-md-4 mb-2">
@@ -53,17 +53,23 @@
   </div>
 </div>
 
-<div th:fragment="logCard" th:remove="tag">
-  <form th:action="@{/set-exercise}" method="get" class="exercise-card">
-    <input type="hidden" name="exerciseId" th:value="${ex?.id}">
-    <button type="submit" class="card exercise-card p-0 w-100 border-0 bg-transparent">
-      <div class="exercise-image-container">
-        <img th:src="${ex?.imageUrl}" class="exercise-image" alt="exercise">
-        <div class="exercise-name-overlay" th:text="${ex?.name}"></div>
-      </div>
-    </button>
-  </form>
-  <form th:action="@{/show/{id}(id=${ex?.id})}" method="post" class="mt-1">
-    <button type="submit" class="btn bg-success btn-sm w-100" th:text="#{exercise.btn_show}">Show</button>
-  </form>
+<div th:fragment="logCard" th:remove="tag" th:if="${ex != null}">
+  <div class="exercise-item-wrapper">
+    <form th:action="@{/set-exercise}" method="get" class="flex-grow-1">
+      <input type="hidden" name="exerciseId" th:value="${ex?.id}">
+      <button type="submit" class="w-100 border-0 bg-transparent p-0">
+        <div class="exercise-image-container">
+          <img th:src="${ex?.imageUrl}" class="exercise-image" alt="exercise">
+          <div class="exercise-name-overlay" th:text="${ex?.name}"></div>
+        </div>
+      </button>
+    </form>
+
+    <div class="card-actions">
+      <form th:action="@{/show/{id}(id=${ex?.id})}" method="post">
+        <button type="submit" class="btn bg-success btn-sm w-100 py-1"
+                style="font-size: 10px;" th:text="#{exercise.btn_show}">Show</button>
+      </form>
+    </div>
+  </div>
 </div>

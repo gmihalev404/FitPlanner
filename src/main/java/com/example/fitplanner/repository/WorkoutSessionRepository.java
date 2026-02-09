@@ -18,7 +18,7 @@ public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, 
     Optional<WorkoutSession> findByUserIdAndScheduledFor(Long userId, LocalDate date);
 
     @Query("SELECT COALESCE(s.finished, false) FROM WorkoutSession s WHERE s.user.id = :userId AND s.scheduledFor = :date")
-    Boolean isSessionFinished(@Param("userId") Long userId, @Param("date") LocalDate date);
+    List<Boolean> isSessionFinished(@Param("userId") Long userId, @Param("date") LocalDate date);
 
     @Query("SELECT ws FROM WorkoutSession ws WHERE ws.program.id IN :programIds AND ws.scheduledFor = :date")
     List<WorkoutSession> getByProgramIdsAndDate(@Param("programIds") List<Long> programIds, @Param("date") LocalDate date);
@@ -34,10 +34,29 @@ public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, 
             @Param("localDate") LocalDate localDate
     );
 
+    @Query("SELECT ws FROM WorkoutSession ws WHERE ws.user.id = :userId " +
+            "AND ws.scheduledFor = :date AND ws.program.id = :programId")
+    Optional<WorkoutSession> findSessionByDateAndProgram(
+            @Param("userId") Long userId,
+            @Param("date") LocalDate date,
+            @Param("programId") Long programId
+    );
+
     @Query("SELECT ws FROM WorkoutSession ws WHERE ws.user.id = :userId AND ws.scheduledFor = :date")
     Optional<WorkoutSession> findSession(@Param("userId") Long userId, @Param("date") LocalDate date);
 
     Iterable<? extends WorkoutSession> findByUserId(Long id);
 
-    @Query("SELECT s FROM WorkoutSession s WHERE s.scheduledFor = :date AND s.program.notifications = true")
-    List<WorkoutSession> findAllByScheduledForAndProgramNotificationsTrue(@Param("date") LocalDate date);}
+    @Query("SELECT s FROM WorkoutSession s " +
+            "JOIN FETCH s.user " +      // Зарежда потребителя веднага
+            "JOIN FETCH s.program " +   // Зарежда програмата веднага
+            "WHERE s.scheduledFor = :date AND s.program.notifications = true")
+    List<WorkoutSession> findAllByScheduledForAndProgramNotificationsTrue(@Param("date") LocalDate date);
+
+    @Query("SELECT DISTINCT ws FROM WorkoutSession ws " +
+            "LEFT JOIN FETCH ws.exercises " +
+            "WHERE ws.user.id = :userId AND ws.scheduledFor = :date")
+    List<WorkoutSession> findAllByUserIdAndScheduledForWithExercises(
+            @Param("userId") Long userId,
+            @Param("date") LocalDate date
+    );}

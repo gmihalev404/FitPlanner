@@ -18,28 +18,30 @@ public class DashboardService {
     }
 
     public DashboardStatsDto getDashboardStats(Long userId) {
-        // Define the start of the current month
-        LocalDate startOfMonth = LocalDate.now().withDayOfMonth(1);
+        // 1. Calculate the sliding window (Today minus 30 days)
+        LocalDate thirtyDaysAgo = LocalDate.now().minusDays(30);
 
-        // 1. Fetch Streak from UserRepository
-        // Assuming your User entity has a 'streak' field or findStreakById method
+        // 2. Fetch Streak
         int streak = userRepository.findStreakById(userId);
 
-        // 2. Calculate volume using ExerciseProgressRepository
-        // We divide by 1000.0 to convert kg into Tons (e.g., 4200kg -> 4.2t)
-        Double rawVolume = exerciseProgressRepository.calculateMonthlyVolume(userId, startOfMonth);
+        // 3. Calculate volume for the last 30 days
+        Double rawVolume = exerciseProgressRepository.calculateMonthlyVolume(userId, thirtyDaysAgo);
         double volumeInTons = (rawVolume != null) ? rawVolume / 1000.0 : 0.0;
 
-        // 3. Calculate success rate logic
-        long scheduled = exerciseProgressRepository.countScheduledThisMonth(userId, startOfMonth);
-        long completed = exerciseProgressRepository.countCompletedThisMonth(userId, startOfMonth);
+        // 4. Calculate success rate logic using the 30-day window
+        long scheduled = exerciseProgressRepository.countScheduledLast30Days(userId, thirtyDaysAgo);
+
+        // FIX: Use the 'Completed' specific repository method here
+        long completed = exerciseProgressRepository.countCompletedLast30Days(userId, thirtyDaysAgo);
+
+        System.out.println("Scheduled (30d): " + scheduled);
+        System.out.println("Completed (30d): " + completed);
 
         int rate = 0;
         if (scheduled > 0) {
             rate = (int) Math.round((double) completed / scheduled * 100);
         }
 
-        // 4. Return the DTO
         return new DashboardStatsDto(streak, volumeInTons, rate);
     }
 }

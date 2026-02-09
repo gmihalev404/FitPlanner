@@ -14,11 +14,6 @@ public class AboutController {
 
     @GetMapping("/about")
     public String getAbout(HttpSession session, Model model) {
-        UserDto userDto = (UserDto) session.getAttribute("loggedUser");
-        if (!userDto.getEnabled()) {
-            session.invalidate();
-            return "redirect:/login?banned=true";
-        }
         return "about";
     }
 }

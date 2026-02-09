@@ -107,30 +107,55 @@ public class DevDataInitializer {
     }
 
     private void initTrainerPrograms() {
-        if (userRepository.existsByRole(Role.TRAINER)) return;
+        // Only initialize if we don't have trainers yet
+        if (userRepository.findAll().stream().anyMatch(u -> u.getRole() == Role.TRAINER)) return;
 
-        // Use the constructor you defined in the User entity to ensure weight logic triggers
-        User trainer = new User(
-                "Professional",      // firstName
-                "Trainer",           // lastName
-                "pro_coach",         // username
-                Role.TRAINER,        // role
-                Gender.MALE,        // gender
-                35,                  // age
-                90.0,                // weight
-                Difficulty.ADVANCED, // experience
-                "coach@fitplanner.com", // email
-                hasher.hash("coach123") // password
+        // 1. Strength Coach - Focused on Heavy Lifting
+        User strengthCoach = new User(
+                "Marcus", "Vane", "strength_master",
+                Role.TRAINER, Gender.MALE, 38, 105.0,
+                Difficulty.ADVANCED, "marcus@fitplanner.com", hasher.hash("coach123")
         );
+        userRepository.save(strengthCoach);
 
-        userRepository.save(trainer);
+        Program powerProgram = new Program();
+        powerProgram.setName("Powerlifting Basics");
+        powerProgram.setUser(strengthCoach);
+        powerProgram.setIsPublic(true);
+        powerProgram.setDifficulty(Difficulty.ADVANCED);
+        programRepository.save(powerProgram);
 
-        Program p = new Program();
-        p.setName("Iron Foundation");
-        p.setUser(trainer);
-        p.setIsPublic(true);
-        p.setDifficulty(Difficulty.ADVANCED);
-        programRepository.save(p);
+        // 2. Bodyweight Expert - Focused on Calisthenics
+        User caliExpert = new User(
+                "Elena", "Rodriguez", "elena_fit",
+                Role.TRAINER, Gender.FEMALE, 29, 62.0,
+                Difficulty.INTERMEDIATE, "elena@fitplanner.com", hasher.hash("coach123")
+        );
+        userRepository.save(caliExpert);
+
+        Program caliProgram = new Program();
+        caliProgram.setName("Bodyweight Mastery");
+        caliProgram.setUser(caliExpert);
+        caliProgram.setIsPublic(true);
+        caliProgram.setDifficulty(Difficulty.INTERMEDIATE);
+        programRepository.save(caliProgram);
+
+        // 3. General Fitness Trainer - Focused on Hypertrophy
+        User hypertrophyCoach = new User(
+                "Sarah", "Chen", "sarah_gains",
+                Role.TRAINER, Gender.FEMALE, 31, 68.0,
+                Difficulty.ADVANCED, "sarah@fitplanner.com", hasher.hash("coach123")
+        );
+        userRepository.save(hypertrophyCoach);
+
+        Program massProgram = new Program();
+        massProgram.setName("Hypertrophy 101");
+        massProgram.setUser(hypertrophyCoach);
+        massProgram.setIsPublic(true);
+        massProgram.setDifficulty(Difficulty.BEGINNER);
+        programRepository.save(massProgram);
+
+        System.out.println("Trainers and Public Programs initialized.");
     }
     private Program initProgram(User user) {
         return programRepository.getByUserId(user.getId()).stream().findFirst().orElseGet(() -> {

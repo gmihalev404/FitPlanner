@@ -100,7 +100,14 @@
     </div>
 </div>
 
-<script th:src="@{/js/workout-session.js((v=${#dates.createNow().time}))}"></script>
+<script th:inline="javascript">
+    window.workoutConfig = {
+        viewOnly: [[${viewOnly}]],
+        progressPercent: [[${progressPercent}]]
+    };
+</script>
+
+<script th:src="@{/js/workout-session.js}"></script>
 <script th:src="@{/js/notifications.js(v=${#dates.createNow().time})}" defer></script>
 </body>
 </html>

@@ -26,11 +26,11 @@
     <h1 class="container-heading text-center mb-5">Create Workout</h1>
 
     <form id="programForm"
-          th:action="${programId == null} ? @{'/create-full-workout'} : @{'edit-program'}"
+          th:action="${programId == null} ? @{'/create-full-workout'} : @{'/edit-program'}"
           th:object="${programForm}"
           method="post"
           enctype="multipart/form-data">
-
+      <input type="hidden" th:field="*{imageUrl}" id="hiddenImageUrl">
       <div class="row g-4 mb-5 align-items-stretch">
         <div class="col-12 col-md-4">
           <label class="form-label fw-bold">Program Image</label>
@@ -154,9 +154,11 @@
     const file = this.files[0];
     const preview = document.getElementById('previewImg');
     const icon = document.getElementById('uploadIcon');
+    // This is the hidden input field we will update
+    const hiddenInput = document.getElementById('hiddenImageUrl');
 
     if (file) {
-      // 1. Instant Local Preview
+      // 1. Instant Local Preview (for the user to see immediately)
       const reader = new FileReader();
       reader.onload = function(e) {
         preview.src = e.target.result;
@@ -165,7 +167,7 @@
       }
       reader.readAsDataURL(file);
 
-      // 2. Session Upload
+      // 2. Session Upload via AJAX
       const formData = new FormData();
       formData.append('programImage', file);
 
@@ -173,13 +175,29 @@
         method: 'POST',
         body: formData
       })
-              .then(response => response.text())
-              .then(url => {
-                console.log("Image saved to session:", url);
+              .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.text();
               })
-              .catch(err => console.error("Session upload failed:", err));
+              .then(url => {
+                if (url !== "error") {
+                  console.log("Image saved to session:", url);
+
+                  // 3. SYNC: Update the hidden input field.
+                  // This ensures the final form POST sends the NEW image path.
+                  if (hiddenInput) {
+                    hiddenInput.value = url;
+                  }
+                } else {
+                  alert("Server error uploading image.");
+                }
+              })
+              .catch(err => {
+                console.error("Session upload failed:", err);
+                alert("Failed to upload image to server.");
+              });
     }
   });
 </script>
 </body>
-</html> the uploaded image gets too big
+</html>

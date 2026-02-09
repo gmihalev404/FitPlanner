@@ -4,15 +4,14 @@ import com.example.fitplanner.entity.enums.Category;
 import com.example.fitplanner.entity.enums.Difficulty;
 import com.example.fitplanner.entity.enums.ExerciseType;
 import com.example.fitplanner.entity.enums.EquipmentType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -47,9 +46,11 @@ public class Exercise extends BaseEntity {
     @Column(nullable = false)
     private String imageUrl;
 
-    @NotBlank
-    @Column(nullable = false)
+    @Column
     private String videoUrl;
+
+    @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ExerciseProgress> workoutExercises;
 
     public Exercise(String name, Category category, ExerciseType exerciseType,
                     EquipmentType equipmentType, String imageUrl, String videoUrl) {

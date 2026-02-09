@@ -111,13 +111,18 @@ public class ExerciseService {
     public void update(Long id, ExerciseDto exerciseDto) {
         // 1. Find existing exercise or throw error
         Exercise existingExercise = exerciseRepository.findById(id)
-                .orElseThrow();
+                .orElseThrow(() -> new RuntimeException("Exercise not found with id: " + id));
 
-        // 2. Update fields
+        // 2. Update all fields from the DTO
         existingExercise.setName(exerciseDto.getName());
+        existingExercise.setDescription(exerciseDto.getDescription()); // Added
         existingExercise.setCategory(exerciseDto.getCategory());
         existingExercise.setExerciseType(exerciseDto.getExerciseType());
         existingExercise.setEquipmentType(exerciseDto.getEquipmentType());
+
+        // IMPORTANT: Update media URLs
+        existingExercise.setImageUrl(exerciseDto.getImageUrl()); // Added
+        existingExercise.setVideoUrl(exerciseDto.getVideoUrl()); // Added
 
         // 3. Save updated entity
         exerciseRepository.save(existingExercise);

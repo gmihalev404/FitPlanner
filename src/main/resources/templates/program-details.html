@@ -117,7 +117,7 @@
                             <form th:action="@{/programs/fork/{id}(id=${program.id})}" method="post">
                                 <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold"
                                         style="background: var(--delimiter-color); border: none; color: black;">
-                                    <i class="bi bi-diagram-2 me-2"></i>FORK PROGRAM
+                                    <i class="bi bi-diagram-2 me-2"></i>ADD TO MY PROGRAMS
                                 </button>
                             </form>
                             <a th:href="@{/search}" class="btn btn-outline-custom rounded-pill px-4">BACK</a>
@@ -177,5 +177,7 @@
         });
     });
 </script>
+<script th:src="@{/js/notifications.js(v=${#dates.createNow().time})}" defer></script>
+<script th:src="@{/js/image-not-found.js}"></script>
 </body>
 </html>

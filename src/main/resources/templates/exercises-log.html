@@ -15,7 +15,7 @@
     <link rel="stylesheet" th:href="@{/css/footer.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/dark-theme.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/light-theme.css(v=${#dates.createNow().time})}">
-    <link rel="stylesheet" th:href="@{/css/exercise-log.css}">
+    <link rel="stylesheet" th:href="@{/css/exercise-log.css(v=${#dates.createNow().time})}">
 </head>
 <body>
 <div th:replace="~{fragment/navbar.html::navbar}"></div>

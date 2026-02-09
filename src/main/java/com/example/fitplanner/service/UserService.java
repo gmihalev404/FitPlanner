@@ -2,6 +2,8 @@ package com.example.fitplanner.service;
 
 import com.example.fitplanner.dto.*;
 import com.example.fitplanner.entity.model.ExerciseProgress;
+import com.example.fitplanner.entity.model.Program;
+import com.example.fitplanner.repository.ProgramRepository;
 import com.example.fitplanner.util.UnitValidator;
 import com.example.fitplanner.entity.enums.Role;
 import com.example.fitplanner.entity.model.User;
@@ -16,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -31,6 +30,7 @@ public class UserService {
     @Value("${app.security.trainer-code}")
     private String trainerSecret;
     final private UserRepository userRepository;
+    final private ProgramRepository programRepository;
     final private ModelMapper modelMapper;
     final private UnitValidator unitValidator;
     final private SHA256Hasher hasher;
@@ -38,10 +38,11 @@ public class UserService {
     private final double KG_TO_LB = 2.20462262;
 
     @Autowired
-    public UserService(UserRepository userRepository,
+    public UserService(UserRepository userRepository, ProgramRepository programRepository,
                        ModelMapper modelMapper,
                        UnitValidator unitValidator, SHA256Hasher encoder){
         this.userRepository = userRepository;
+        this.programRepository = programRepository;
         this.modelMapper = modelMapper;
         this.unitValidator = unitValidator;
         this.hasher = encoder;
@@ -67,10 +68,20 @@ public class UserService {
         if(unitValidator.isValidEmail(userLoginDto.getUsernameOrEmail())
                 && userRepository.getByEmailAndPassword(userLoginDto.getUsernameOrEmail(), hashedPassword).isEmpty()){
             bindingResult.rejectValue("usernameOrEmail", "", "Email and Password do not match");
+            return;
         }
         if(!unitValidator.isValidEmail(userLoginDto.getUsernameOrEmail())
         && userRepository.getByUsernameAndPassword(userLoginDto.getUsernameOrEmail(), hashedPassword).isEmpty()){
             bindingResult.rejectValue("usernameOrEmail", "", "Username and Password do not match");
+            return;
+        }
+        User usernameUser = userRepository.findByUsername(userLoginDto.getUsernameOrEmail()).orElse(null);
+        User emailUser = userRepository.findByEmail(userLoginDto.getUsernameOrEmail()).orElse(null);
+        if(usernameUser != null && !usernameUser.getEnabled()) {
+            bindingResult.rejectValue("usernameOrEmail", "", "User has been banned");
+        }
+        if(emailUser != null && !emailUser.getEnabled()) {
+            bindingResult.rejectValue("usernameOrEmail", "", "User has been banned");
         }
     }
 
@@ -213,5 +224,36 @@ public class UserService {
         // Flip the boolean
         user.setEnabled(!user.getEnabled());
         userRepository.save(user);
+    }
+
+    public void deleteUser(Long id) {
+        User user = userRepository.findById(id).orElseThrow();
+        userRepository.delete(user);
+    }
+
+    public DetailedUserDto getDetailedUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow();
+
+        // Map basic user details
+        DetailedUserDto dto = modelMapper.map(user, DetailedUserDto.class);
+
+        // Fetch and map programs specifically
+        List<Program> programs = programRepository.findAllByUserId(id);
+        List<DetailedProgramDto> programDtos = programs.stream()
+                .map(p -> modelMapper.map(p, DetailedProgramDto.class))
+                .collect(Collectors.toList());
+
+        dto.setPrograms(new LinkedHashSet<>(programDtos)); // Using Set as per your DTO definition
+        return dto;
+    }
+
+    public List<UserDto> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        List<UserDto> dtos = new ArrayList<>();
+        for (User user : users) {
+            dtos.add(modelMapper.map(user, UserDto.class));
+        }
+        return dtos;
     }
 }

@@ -26,37 +26,49 @@ public class NotificationService {
     private final WorkoutSessionRepository workoutSessionRepository;
     private final ModelMapper modelMapper;
 
-    // Runs every day at 07:00 AM
-    @Scheduled(cron = "0 30 20 * * *")
-    @Transactional
+    // Runs every day at 04:00 PM
+    @Scheduled(initialDelay = 5000, fixedDelay = 3600000) // 5 сек след старт
     public void checkAndSendDailyWorkoutNotifications() {
         LocalDate today = LocalDate.now();
+        System.out.println("DEBUG: Cron task started for date: " + today);
 
-        // Fetch sessions for today where program.notifications == true
         List<WorkoutSession> sessions = workoutSessionRepository
                 .findAllByScheduledForAndProgramNotificationsTrue(today);
 
-        for (WorkoutSession session : sessions) {
+        var uniqueNotifications = sessions.stream()
+                .collect(Collectors.toMap(
+                        session -> session.getUser().getId() + "-" + session.getProgram().getId(), // Ключ
+                        session -> session,
+                        (existing, replacement) -> existing // Ако има дубликат, запази първия намерен
+                ));
+
+        System.out.println("DEBUG: Found sessions: " + sessions.size());
+        System.out.println("DEBUG: Unique notifications to send: " + uniqueNotifications.size());
+
+        uniqueNotifications.values().forEach(session -> {
+            System.out.println("DEBUG: Sending notification to: " + session.getUser().getEmail() +
+                    " for program: " + session.getProgram().getName());
+
             sendSystemNotification(
                     session.getUser(),
                     "Workout Reminder",
-                    "Time to hit the gym! You have a session today for: " + session.getProgram().getName(),
-                    "/programs/details/" + session.getProgram().getId()
+                    "Time to hit the gym! You have a workout today for: " + session.getProgram().getName(),
+                    "/my-workouts?programId=" + session.getProgram().getId()
             );
-        }
+        });
     }
 
     private void sendSystemNotification(User observer, String name, String desc, String url) {
         Notification notification = new Notification();
         notification.setObserver(observer);
-        notification.setSender(null); // Null represents "System"
+        notification.setSender(null);
         notification.setName(name);
         notification.setDescription(desc);
         notification.setUrl(url);
         notification.setDate(LocalDateTime.now());
         notification.setChecked(false);
 
-        notificationRepository.save(notification);
+        notificationRepository.saveAndFlush(notification);
     }
 
     @Transactional(readOnly = true)
@@ -72,7 +84,7 @@ public class NotificationService {
                 .orElseThrow(() -> new EntityNotFoundException("Notification not found"));
 
         notification.setChecked(true);
-        notificationRepository.save(notification);
+        notificationRepository.saveAndFlush(notification);
 
         return notification.getUrl();
     }

@@ -93,6 +93,9 @@ public class ProgramService {
         program.setNotifications(dto.getNotifications());
         program.setIsPublic(dto.getIsPublic());
         program.setLastChanged(LocalDateTime.now());
+        if (dto.getImageUrl() != null && !dto.getImageUrl().isBlank()) {
+            program.setImageUrl(dto.getImageUrl());
+        }
         programRepository.save(program);
 
         LocalDate today = LocalDate.now();
@@ -111,29 +114,40 @@ public class ProgramService {
      */
     private void generateSessions(Program program, CreatedProgramDto dto, String units, User user) {
         LocalDate today = LocalDate.now();
+        // Use the Monday of the current week as the anchor for generation
         LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
+
+        // Calculate how many weeks to generate (Default to 1 if not repeating)
         int totalWeeks = (!dto.getRepeats() || dto.getScheduleMonths() == 0) ? 1 : dto.getScheduleMonths() * 4;
 
         for (int weekOffset = 0; weekOffset < totalWeeks; weekOffset++) {
             LocalDate targetWeekStart = startOfWeek.plusWeeks(weekOffset);
 
             for (DayWorkout dayWorkout : dto.getWeekDays()) {
+                // Skip days with no exercises defined
                 if (dayWorkout.getExercises() == null || dayWorkout.getExercises().isEmpty()) continue;
 
                 DayOfWeek dayOfWeek = DayOfWeek.valueOf(dayWorkout.getDay().toUpperCase());
                 LocalDate sessionDate = targetWeekStart.with(dayOfWeek);
 
-                // Skip past dates based on repeat logic
+                // Logic to handle dates that have already passed
                 if (sessionDate.isBefore(today)) {
-                    if (dto.getRepeats()) continue;
-                    else sessionDate = sessionDate.plusWeeks(1);
+                    if (dto.getRepeats()) {
+                        continue; // Skip past days for repeating programs
+                    } else {
+                        sessionDate = sessionDate.plusWeeks(1); // Push one-time sessions to next week
+                    }
                 }
 
-                // FIX: Check if session exists for this user/date to prevent DuplicateEntry error
                 final LocalDate finalSessionDate = sessionDate;
+
+                // --- THE FIX ---
+                // 1. We look for a session that matches USER + DATE + PROGRAM.
+                // This ensures Program B doesn't find Program A's sessions.
                 WorkoutSession session = workoutSessionRepository
-                        .findSession(user.getId(), finalSessionDate)
+                        .findSessionByDateAndProgram(user.getId(), finalSessionDate, program.getId())
                         .orElseGet(() -> {
+                            // 2. If no session exists for THIS program on THIS day, create it.
                             WorkoutSession newSession = new WorkoutSession();
                             newSession.setProgram(program);
                             newSession.setUser(user);
@@ -142,22 +156,21 @@ public class ProgramService {
                             return workoutSessionRepository.save(newSession);
                         });
 
-                // Attach session to program if not already attached
-                if (session.getProgram() == null || !session.getProgram().getId().equals(program.getId())) {
-                    session.setProgram(program);
-                    workoutSessionRepository.save(session);
-                }
+                // Note: We removed the "stealing" logic block (session.setProgram)
+                // because the find method above is now program-specific.
 
                 for (ExerciseProgressDto epDto : dayWorkout.getExercises()) {
                     Exercise exercise = exerciseRepository.findById(epDto.getExerciseId())
                             .orElseThrow(() -> new IllegalArgumentException("Exercise not found"));
 
-                    // Avoid duplicate ExerciseProgress records within the same session
+                    // 3. Avoid duplicate exercises within the same session
                     boolean exists = session.getExercises().stream()
                             .anyMatch(ep -> ep.getExercise().getId().equals(epDto.getExerciseId()));
 
                     if (!exists) {
+                        // Convert weight if user is using imperial units
                         double weight = "lbs".equals(units) ? epDto.getWeight() * LB_TO_KG : epDto.getWeight();
+
                         ExerciseProgress progress = new ExerciseProgress(
                                 session,
                                 exercise,
@@ -173,7 +186,6 @@ public class ProgramService {
             }
         }
     }
-
     public void removeProgram(Long programId) {
         programRepository.deleteById(programId);
     }
@@ -188,7 +200,9 @@ public class ProgramService {
     public void forkProgram(Long programId, Long userId) {
         Program original = programRepository.findById(programId).orElseThrow();
         User newUser = userRepository.findById(userId).orElseThrow();
-
+        if(original.getUser().getId().equals(userId)){
+            return;
+        }
         Program fork = new Program();
         fork.setUser(newUser);
         fork.setName(original.getName() + " (Copied)");

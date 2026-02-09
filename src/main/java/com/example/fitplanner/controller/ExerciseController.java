@@ -24,11 +24,7 @@ public class ExerciseController {
 
     @GetMapping
     public String viewAllExercises(HttpSession session, Model model) {
-        UserDto userDto = (UserDto) session.getAttribute("loggedUser");
-        if (!userDto.getEnabled()) {
-            session.invalidate();
-            return "redirect:/login?banned=true";
-        }
+
         List<ExerciseDto> exercises = exerciseService.getAll();
         model.addAttribute("exercises", exercises);
         return "exercise-library";
@@ -36,11 +32,6 @@ public class ExerciseController {
 
     @GetMapping("/details/{id}")
     public String showDetails(@PathVariable Long id, Model model, HttpSession session) {
-        UserDto userDto = (UserDto) session.getAttribute("loggedUser");
-        if (!userDto.getEnabled()) {
-            session.invalidate();
-            return "redirect:/login?banned=true";
-        }
         ExerciseDto exercise = exerciseService.getById(id);
         model.addAttribute("exercise", exercise);
         return "exercise-details";

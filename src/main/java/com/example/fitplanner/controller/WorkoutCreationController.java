@@ -1,6 +1,7 @@
 package com.example.fitplanner.controller;
 
 import com.example.fitplanner.dto.*;
+import com.example.fitplanner.entity.enums.Role;
 import com.example.fitplanner.service.ExerciseService;
 import com.example.fitplanner.service.FileService;
 import com.example.fitplanner.service.ProgramService;
@@ -20,73 +21,93 @@ public class WorkoutCreationController {
     private final ProgramService programService;
     private final ExerciseService exerciseService;
     private final FileService fileService;
+
     public WorkoutCreationController(UserService userService,
                                      ProgramService programService,
-                                     ExerciseService exerciseService, FileService fileService) {
+                                     ExerciseService exerciseService,
+                                     FileService fileService) {
         this.userService = userService;
         this.programService = programService;
         this.exerciseService = exerciseService;
         this.fileService = fileService;
     }
 
+    @GetMapping("/create/new")
+    public String startNewWorkout(HttpSession session) {
+        session.removeAttribute("weekDays");
+        session.removeAttribute("programForm");
+        session.removeAttribute("currentDay");
+        session.removeAttribute("exercise");
+        session.removeAttribute("programId");
+        return "redirect:/create";
+    }
+
     @GetMapping("/create")
-    public String createWorkout(HttpSession session, Model model) {
+    public String createWorkout(@RequestParam(required = false) Boolean newProgram,
+                                HttpSession session,
+                                Model model) {
         UserDto userDto = (UserDto) session.getAttribute("loggedUser");
         if (userDto == null) return "redirect:/login";
+
+        // --- THE CRITICAL RESET ---
+        // If the URL is /create?newProgram=true, we clear everything.
+        // This stops "Edit Mode" data from leaking into "New Mode".
+        if (Boolean.TRUE.equals(newProgram)) {
+            session.removeAttribute("weekDays");
+            session.removeAttribute("programForm");
+            session.removeAttribute("programId");
+            session.removeAttribute("exercise");
+            session.removeAttribute("currentDay");
+        }
+
         ProgramsUserDto programsUserDto = userService.getById(userDto.getId(), ProgramsUserDto.class);
+
+        // Standard initialization if session is empty
         CreatedProgramDto programForm = (CreatedProgramDto) session.getAttribute("programForm");
         if (programForm == null) {
             programForm = new CreatedProgramDto();
             programForm.setName("");
             programForm.setScheduleMonths(6);
-            programForm.setRepeats(true);
-            programForm.setNotifications(true);
-            programForm.setIsPublic(false);
+            // Public by default for Trainers/Admins
+            programForm.setIsPublic(userDto.getRole().equals(Role.TRAINER) || userDto.getRole().equals(Role.ADMIN));
             session.setAttribute("programForm", programForm);
         }
-        model.addAttribute("programForm", programForm);
+
         List<DayWorkout> weekDays = (List<DayWorkout>) session.getAttribute("weekDays");
-        if (weekDays == null || weekDays.isEmpty()) {
+        if (weekDays == null) {
             weekDays = new ArrayList<>();
-            DayOfWeek[] days = DayOfWeek.values();
-            for (DayOfWeek day : days) {
+            for (java.time.DayOfWeek day : java.time.DayOfWeek.values()) {
                 weekDays.add(new DayWorkout(day.name(), new ArrayList<>()));
             }
             session.setAttribute("weekDays", weekDays);
-        } else {
-            List<String> order = Arrays.asList("MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY");
-            weekDays.sort(Comparator.comparingInt(day ->
-                    order.indexOf(day.getDay().toUpperCase())));
         }
+
+        model.addAttribute("programForm", programForm);
         model.addAttribute("weekDays", weekDays);
-        Long programId = (Long) session.getAttribute("programId");
-        model.addAttribute("programId", programId);
+        model.addAttribute("programId", session.getAttribute("programId"));
         model.addAttribute("userDto", userDto);
         model.addAttribute("programsUserDto", programsUserDto);
+
         return "create";
     }
-
     @GetMapping("/exercise-log")
     public String showExerciseLog(@RequestParam(required = false) String day,
                                   HttpSession session,
-                                  Model model){
+                                  Model model) {
         UserDto sessionUser = (UserDto) session.getAttribute("loggedUser");
         if (sessionUser == null) return "redirect:/login";
 
-        // FETCH FRESH DATA: This ensures notifications and roles are not null/stale
         UserDto userDto = userService.getById(sessionUser.getId(), UserDto.class);
         ProgramsUserDto programsUserDto = userService.getById(sessionUser.getId(), ProgramsUserDto.class);
 
-        if(day != null) session.setAttribute("currentDay", day);
+        if (day != null) session.setAttribute("currentDay", day);
 
         List<ExerciseDto> exercises = exerciseService.getAll();
-
-        // Add to model
         model.addAttribute("exercises", exercises);
-        model.addAttribute("userDto", userDto); // Fresh data for Navbar
+        model.addAttribute("userDto", userDto);
         model.addAttribute("programsUserDto", programsUserDto);
 
-        return "exercises-log"; // Verify this matches your file name exactly
+        return "exercises-log";
     }
 
     @GetMapping("/edit-exercise")
@@ -95,25 +116,27 @@ public class WorkoutCreationController {
                                HttpSession session,
                                Model model) {
         UserDto userDto = (UserDto) session.getAttribute("loggedUser");
-        if(userDto == null) return "redirect:/login";
+        if (userDto == null) return "redirect:/login";
+
         ProgramsUserDto programsUserDto = userService.getById(userDto.getId(), ProgramsUserDto.class);
         session.setAttribute("currentDay", day);
-        session.setAttribute("exerciseId", id);
+
         List<DayWorkout> weekDays = (List<DayWorkout>) session.getAttribute("weekDays");
         ExerciseProgressDto foundDto = null;
+
         if (weekDays != null) {
             for (DayWorkout dw : weekDays) {
                 if (dw.getDay().equalsIgnoreCase(day)) {
-                    for (ExerciseProgressDto ep : dw.getExercises()) {
-                        if (ep.getId().equals(id)) {
-                            foundDto = ep;
-                            break;
-                        }
-                    }
+                    foundDto = dw.getExercises().stream()
+                            .filter(ep -> ep.getId().equals(id))
+                            .findFirst()
+                            .orElse(null);
                 }
             }
         }
+
         if (foundDto == null) return "redirect:/create";
+
         model.addAttribute("dto", foundDto);
         model.addAttribute("exercise", exerciseService.getById(foundDto.getExerciseId()));
         model.addAttribute("userDto", userDto);
@@ -138,11 +161,9 @@ public class WorkoutCreationController {
                             break;
                         }
                     }
-                    break;
                 }
             }
         }
-
         session.setAttribute("weekDays", weekDays);
         return "redirect:/create";
     }
@@ -153,9 +174,10 @@ public class WorkoutCreationController {
                                        Model model) {
         UserDto userDto = (UserDto) session.getAttribute("loggedUser");
         if (userDto == null) return "redirect:/login";
+
         ProgramsUserDto programsUserDto = userService.getById(userDto.getId(), ProgramsUserDto.class);
         ExerciseDto exerciseDto = exerciseService.getById(exerciseId);
-        session.removeAttribute("exercise");
+
         session.setAttribute("exercise", exerciseDto);
         model.addAttribute("exercise", exerciseDto);
         model.addAttribute("dto", new ExerciseProgressDto());
@@ -170,6 +192,7 @@ public class WorkoutCreationController {
         ExerciseDto exerciseDto = (ExerciseDto) session.getAttribute("exercise");
         String currentDay = (String) session.getAttribute("currentDay");
         if (exerciseDto == null || currentDay == null) return "redirect:/create";
+
         ExerciseProgressDto entry = new ExerciseProgressDto(
                 exerciseDto.getId(),
                 exerciseDto.getName(),
@@ -177,6 +200,7 @@ public class WorkoutCreationController {
                 dto.getSets(),
                 dto.getWeight()
         );
+
         List<DayWorkout> weekDays = (List<DayWorkout>) session.getAttribute("weekDays");
         for (DayWorkout dayWorkout : weekDays) {
             if (dayWorkout.getDay().equals(currentDay)) {
@@ -193,16 +217,71 @@ public class WorkoutCreationController {
                                  @RequestParam("id") Long id,
                                  HttpSession session) {
         List<DayWorkout> weekDays = (List<DayWorkout>) session.getAttribute("weekDays");
-        if (weekDays != null && day != null && id != null) {
-            for (DayWorkout dw : weekDays) {
-                if (dw.getDay().equalsIgnoreCase(day)) {
-                    dw.getExercises().removeIf(ep -> id.equals(ep.getId()));
-                    break;
-                }
-            }
+        if (weekDays != null) {
+            weekDays.stream()
+                    .filter(dw -> dw.getDay().equalsIgnoreCase(day))
+                    .findFirst()
+                    .ifPresent(dw -> dw.getExercises().removeIf(ep -> id.equals(ep.getId())));
         }
         session.setAttribute("weekDays", weekDays);
         return "redirect:/create";
+    }
+
+    @PostMapping("/create-full-workout")
+    public String createFullWorkout(@ModelAttribute("programForm") CreatedProgramDto dto,
+                                    HttpSession session) {
+        UserDto userDto = (UserDto) session.getAttribute("loggedUser");
+        if (userDto == null) return "redirect:/login";
+
+        CreatedProgramDto sessionForm = (CreatedProgramDto) session.getAttribute("programForm");
+        if (sessionForm != null && sessionForm.getImageUrl() != null) {
+            dto.setImageUrl(sessionForm.getImageUrl());
+        }
+
+        List<DayWorkout> weekDays = (List<DayWorkout>) session.getAttribute("weekDays");
+        dto.setWeekDays(weekDays != null ? weekDays : new ArrayList<>());
+
+        ProgramsUserDto userSettings = userService.getById(userDto.getId(), ProgramsUserDto.class);
+        programService.createProgram(dto, userSettings, userSettings.getMeasuringUnits(), userDto.getExperience());
+
+        // CRITICAL: Total session wipe to prevent data leakage into the next program
+        session.removeAttribute("weekDays");
+        session.removeAttribute("programForm");
+        session.removeAttribute("currentDay");
+        session.removeAttribute("exercise");
+        session.removeAttribute("programId");
+
+        return "redirect:/home";
+    }
+
+    @PostMapping("/upload-program-image-session")
+    @ResponseBody
+    public String uploadImageToSession(@RequestParam("programImage") MultipartFile imageFile,
+                                       HttpSession session) {
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String imageUrl = fileService.saveFile(imageFile);
+            CreatedProgramDto sessionProgramForm = (CreatedProgramDto) session.getAttribute("programForm");
+            if (sessionProgramForm == null) sessionProgramForm = new CreatedProgramDto();
+
+            sessionProgramForm.setImageUrl(imageUrl);
+            session.setAttribute("programForm", sessionProgramForm);
+            return imageUrl;
+        }
+        return "error";
+    }
+
+    @PostMapping("/update-program-session")
+    @ResponseBody
+    public void updateProgramSession(@ModelAttribute CreatedProgramDto programFormInput,
+                                     HttpSession session) {
+        CreatedProgramDto sessionProgramForm = (CreatedProgramDto) session.getAttribute("programForm");
+        if (sessionProgramForm == null) sessionProgramForm = new CreatedProgramDto();
+
+        sessionProgramForm.setName(programFormInput.getName());
+        sessionProgramForm.setScheduleMonths(programFormInput.getScheduleMonths());
+        sessionProgramForm.setNotifications(programFormInput.getNotifications());
+        sessionProgramForm.setIsPublic(programFormInput.getIsPublic());
+        session.setAttribute("programForm", sessionProgramForm);
     }
 
     @PostMapping("/show/{id}")
@@ -230,70 +309,5 @@ public class WorkoutCreationController {
     @PostMapping("/close-log")
     public String closeLog() {
         return "redirect:/create";
-    }
-
-    @PostMapping("/create-full-workout")
-    public String createFullWorkout(@ModelAttribute("programForm") CreatedProgramDto dto,
-                                    HttpSession session) {
-
-        UserDto userDto = (UserDto) session.getAttribute("loggedUser");
-        if (userDto == null) return "redirect:/login";
-
-        // 1. Get the form from session (which now contains our Image URL)
-        CreatedProgramDto sessionForm = (CreatedProgramDto) session.getAttribute("programForm");
-
-        // 2. Merge data (Manual merge or use the session version as base)
-        if (sessionForm != null && sessionForm.getImageUrl() != null) {
-            dto.setImageUrl(sessionForm.getImageUrl());
-        }
-
-        // 3. Get weekDays from session
-        List<DayWorkout> weekDays = (List<DayWorkout>) session.getAttribute("weekDays");
-        dto.setWeekDays(weekDays != null ? weekDays : new ArrayList<>());
-
-        ProgramsUserDto userSettings = userService.getById(userDto.getId(), ProgramsUserDto.class);
-        programService.createProgram(dto, userSettings, userSettings.getMeasuringUnits(), userDto.getExperience());
-
-        // 4. Full Cleanup
-        session.removeAttribute("weekDays");
-        session.removeAttribute("programForm");
-
-        return "redirect:/home";
-    }
-
-    @PostMapping("/upload-program-image-session")
-    @ResponseBody
-    public String uploadImageToSession(@RequestParam("programImage") MultipartFile imageFile,
-                                       HttpSession session) {
-        if (imageFile != null && !imageFile.isEmpty()) {
-            // 1. Save file to disk immediately
-            String imageUrl = fileService.saveImage(imageFile);
-
-            // 2. Store the string path in the session form
-            CreatedProgramDto sessionProgramForm = (CreatedProgramDto) session.getAttribute("programForm");
-            if (sessionProgramForm == null) {
-                sessionProgramForm = new CreatedProgramDto();
-            }
-            sessionProgramForm.setImageUrl(imageUrl);
-            session.setAttribute("programForm", sessionProgramForm);
-
-            return imageUrl;
-        }
-        return "error";
-    }
-
-    @PostMapping("/update-program-session")
-    @ResponseBody
-    public void updateProgramSession(@ModelAttribute CreatedProgramDto programFormInput,
-                                     HttpSession session) {
-        CreatedProgramDto sessionProgramForm = (CreatedProgramDto) session.getAttribute("programForm");
-        if (sessionProgramForm == null) {
-            sessionProgramForm = new CreatedProgramDto();
-        }
-        sessionProgramForm.setName(programFormInput.getName());
-        sessionProgramForm.setScheduleMonths(programFormInput.getScheduleMonths());
-        sessionProgramForm.setNotifications(programFormInput.getNotifications());
-        sessionProgramForm.setIsPublic(programFormInput.getIsPublic());
-        session.setAttribute("programForm", sessionProgramForm);
     }
 }

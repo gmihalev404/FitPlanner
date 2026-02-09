@@ -3,6 +3,7 @@ package com.example.fitplanner.service;
 import com.example.fitplanner.dto.ExerciseSessionDto;
 import com.example.fitplanner.dto.ExerciseSessionResultDto;
 import com.example.fitplanner.entity.model.ExerciseProgress;
+import com.example.fitplanner.entity.model.User;
 import com.example.fitplanner.entity.model.WorkoutSession;
 import com.example.fitplanner.repository.ExerciseProgressRepository;
 import com.example.fitplanner.repository.UserRepository;
@@ -78,51 +79,64 @@ public class WorkoutSessionService {
     }
 
     public Boolean getSuggestedIncreaseForExercise(Long userId, Long exerciseId, LocalDate date) {
-        return exerciseProgressRepository.findByUserIdAndExerciseIdAndLastScheduled(userId, exerciseId, date)
-                .map(ExerciseProgress::getSuggestedChangeIncrease)
-                .orElse(null);
+        List<ExerciseProgress> progressList = exerciseProgressRepository
+                .findByUserIdAndExerciseIdAndLastScheduled(userId, exerciseId, date);
+
+        return progressList.isEmpty() ? null : progressList.get(0).getSuggestedChangeIncrease();
     }
 
     public Double getSuggestedChangeForExercise(Long userId, Long exerciseId, LocalDate date) {
-        return exerciseProgressRepository.findByUserIdAndExerciseIdAndLastScheduled(userId, exerciseId, date)
-                .map(ExerciseProgress::getSuggestedChange)
-                .orElse(null);
-    }
-
-    public Boolean isSessionFinished(Long userId, LocalDate date) {
-        Boolean finished = workoutSessionRepository.isSessionFinished(userId, date);
-        return Boolean.TRUE.equals(finished);    }
-
-    public int getSetsCompletedForExercise(Long userId, Long exerciseId, LocalDate date) {
-        Optional<ExerciseProgress> epOpt = exerciseProgressRepository
+        List<ExerciseProgress> progressList = exerciseProgressRepository
                 .findByUserIdAndExerciseIdAndLastScheduled(userId, exerciseId, date);
 
-        if (epOpt.isPresent()) {
-            ExerciseProgress ep = epOpt.get();
-            System.out.println("Found ExerciseProgress ID=" + ep.getId() +
-                    ", setsCompleted=" + ep.getSetsCompleted() +
-                    ", sets=" + ep.getSets() +
-                    ", completed=" + ep.getCompleted() +
-                    ", lastScheduled=" + ep.getLastScheduled() +
-                    ", exerciseId=" + ep.getExercise().getId());
+        return progressList.isEmpty() ? null : progressList.get(0).getSuggestedChange();
+    }
+
+    public int getSetsCompletedForExercise(Long userId, Long exerciseId, LocalDate date) {
+        List<ExerciseProgress> progressList = exerciseProgressRepository
+                .findByUserIdAndExerciseIdAndLastScheduled(userId, exerciseId, date);
+
+        if (!progressList.isEmpty()) {
+            ExerciseProgress ep = progressList.get(0);
+            System.out.println("Found ExerciseProgress ID=" + ep.getId() + " (First of " + progressList.size() + ")");
             return ep.getSetsCompleted();
         } else {
-            System.out.println("No ExerciseProgress found for userId=" + userId +
-                    ", exerciseId=" + exerciseId + ", date=" + date);
+            System.out.println("No ExerciseProgress found for userId=" + userId + ", exerciseId=" + exerciseId + ", date=" + date);
             return 0;
         }
     }
 
+    public Boolean isSessionFinished(Long userId, LocalDate date) {
+        // Вземаме всички статуси (вече е List)
+        List<Boolean> statuses = workoutSessionRepository.isSessionFinished(userId, date);
+
+        // Ако няма записи за този ден, не е приключен
+        if (statuses.isEmpty()) {
+            return false;
+        }
+
+        // Връщаме TRUE само ако всяка една сесия в списъка е TRUE
+        return statuses.stream().allMatch(status -> status != null && status);
+    }
+
+
     @Transactional
     public void finishSession(List<ExerciseSessionResultDto> results, LocalDate date, Long userId) {
-        WorkoutSession session = workoutSessionRepository.findByUserIdAndScheduledFor(userId, date)
-                .orElseThrow(() -> new RuntimeException("Workout session not found"));
+        // 1. Fetch ALL sessions for this user on this date (since one day can have multiple programs)
+        List<WorkoutSession> sessions = workoutSessionRepository.findAllByUserIdAndScheduledForWithExercises(userId, date);
+
+        if (sessions.isEmpty()) {
+            throw new RuntimeException("No workout sessions found for this date");
+        }
 
         if (results != null) {
             for (ExerciseSessionResultDto result : results) {
+                // result.getExerciseId() is actually the progressId (PK of ExerciseProgress)
                 exerciseProgressRepository.findById(result.getExerciseId()).ifPresent(ep -> {
                     ep.setSetsCompleted(result.getSetsCompleted());
-                    boolean isSuccessful = result.isFinished();
+
+                    // Use our new logic: completed only if ALL sets are done
+                    boolean isSuccessful = (result.getSetsCompleted() >= ep.getSets());
 
                     if (isSuccessful) {
                         ep.markCompleted(date);
@@ -133,10 +147,10 @@ public class WorkoutSessionService {
                     // --- STREAK TRIGGERS ---
                     if (ep.getCompletedExercisesInARow() >= 8) {
                         ep.setSuggestedChangeIncrease(true);
-                        ep.setSuggestedChange(5.0); // Suggesting a 5% increase
+                        ep.setSuggestedChange(5.0);
                     } else if (ep.getMissedExercisesInARow() >= 6) {
                         ep.setSuggestedChangeIncrease(false);
-                        ep.setSuggestedChange(10.0); // Suggesting a 10% decrease (deload)
+                        ep.setSuggestedChange(10.0);
                     } else {
                         ep.setSuggestedChangeIncrease(null);
                         ep.setSuggestedChange(0.0);
@@ -146,8 +160,21 @@ public class WorkoutSessionService {
                 });
             }
         }
-        session.setFinished(true);
-        workoutSessionRepository.save(session);
+
+        // 2. Mark all sessions for this day as finished and update user streak
+        for (WorkoutSession session : sessions) {
+            boolean allExercisesInThisSessionCompleted = session.getExercises().stream()
+                    .allMatch(ep -> ep.getCompleted() != null && ep.getCompleted());
+
+            if (allExercisesInThisSessionCompleted && !session.isFinished()) {
+                User user = userRepository.findById(userId).orElseThrow();
+                user.setStreak(user.getStreak() + 1);
+                userRepository.save(user);
+            }
+
+            session.setFinished(true);
+            workoutSessionRepository.save(session);
+        }
     }
     @Transactional
     public void handleSuggestedChangeDecision(List<ExerciseSessionDto> exercises, Long exerciseId, boolean accepted) {

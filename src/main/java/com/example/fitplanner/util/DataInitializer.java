@@ -60,25 +60,38 @@ public class DataInitializer {
     }
 
     private void initDemoExercises() {
-        Random rand = new Random(1);
         if (exerciseRepository.count() == 0) {
             List<Exercise> exercises = new ArrayList<>();
-            Category[] categories = Category.values();
-            ExerciseType[] types = ExerciseType.values();
-            EquipmentType[] equipments = EquipmentType.values();
-            for (int i = 1; i <= 60; i++) {
+
+            // Mapping your files to your specific Category, ExerciseType, and EquipmentType enums
+            Object[][] exerciseData = {
+                    {"Bench Press", Category.CHEST, ExerciseType.REPETITIONS, EquipmentType.WEIGHTED, "/icons/bench-press by Leremy from Flaticon.png", null},
+                    {"Deadlift", Category.BACK, ExerciseType.REPETITIONS, EquipmentType.WEIGHTED, "/icons/deadlift By Iconjam from Flaticon.png", null},
+                    {"Dips", Category.CHEST, ExerciseType.REPETITIONS, EquipmentType.BODY_WEIGHT, "/icons/dips by Leremy from Flaticon.png", "/videos/push-ups.mp4"},
+                    {"Bicep Curls", Category.BICEPS, ExerciseType.REPETITIONS, EquipmentType.WEIGHTED, "/icons/dumbbell-bicep-curl by Leremy from Flaticon.png", "/videos/push-ups.mp4"},
+                    {"Lateral Raises", Category.CORE, ExerciseType.REPETITIONS, EquipmentType.WEIGHTED, "/icons/lateral-raises by Leremy from Flaticon.png", "/videos/push-ups.mp4"},
+                    {"Lunges", Category.LEGS, ExerciseType.REPETITIONS, EquipmentType.WEIGHTED, "/icons/lunge.png", "/videos/squats.mp4"},
+                    {"Pull-ups", Category.BACK, ExerciseType.REPETITIONS, EquipmentType.BODY_WEIGHT, "/icons/pull-ups by Ehtisham Abid from Flaticon.png", "/videos/push-ups.mp4"},
+                    {"Push-ups", Category.CHEST, ExerciseType.REPETITIONS, EquipmentType.BODY_WEIGHT, "/icons/pushups by Leremy from Flaticon.png", "/videos/push-ups.mp4"},
+                    {"Rows", Category.BACK, ExerciseType.REPETITIONS, EquipmentType.WEIGHTED, "/icons/rows by Leremy from Flaticon.png", "/videos/push-ups.mp4"},
+                    {"Shoulder Press", Category.CHEST, ExerciseType.REPETITIONS, EquipmentType.WEIGHTED, "/icons/shoulder-press by Leremy from Flaticon.png", "/videos/push-ups.mp4"},
+                    {"Squats", Category.LEGS, ExerciseType.REPETITIONS, EquipmentType.WEIGHTED, "/icons/squat by Leremy from Flaticon.png", "/videos/squats.mp4"},
+                    {"Triceps Cable Extension", Category.TRICEPS, ExerciseType.REPETITIONS, EquipmentType.MACHINE, "/icons/triceps-cable-extention by Leremy from Flaticon.png", "/videos/push-ups.mp4"},
+                    {"Triceps Overhead Extension", Category.TRICEPS, ExerciseType.REPETITIONS, EquipmentType.WEIGHTED, "/icons/triceps-overhead-extention by Leremy from Flaticon.png", "/videos/push-ups.mp4"}
+            };
+
+            for (Object[] data : exerciseData) {
                 exercises.add(new Exercise(
-                        "Exercise " + i,
-                        categories[rand.nextInt(categories.length )],
-                        types[rand.nextInt(types.length)],
-                        equipments[rand.nextInt(equipments.length)],
-                        "/icons/bench-press by Leremy from Flaticon.png",
-                         "/videos/push-ups.mp4"
+                        (String) data[0],             // Name
+                        (Category) data[1],           // Category
+                        (ExerciseType) data[2],       // ExerciseType
+                        (EquipmentType) data[3],      // EquipmentType
+                        (String) data[4],             // Image URL
+                        (String) data[5]              // Video URL
                 ));
             }
-            exerciseRepository.saveAll(exercises);
-            System.out.println("Demo exercises initialized.");
-        }
-    }
 
-}
+            exerciseRepository.saveAll(exercises);
+            System.out.println("Demo exercises successfully initialized with custom Enums.");
+        }
+    }}
