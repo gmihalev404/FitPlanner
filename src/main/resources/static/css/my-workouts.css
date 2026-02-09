@@ -20,6 +20,57 @@
     border-radius: 5px;
 }
 
+/* My Workouts Specific Styles */
+.program-scroll-container {
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 10px;
+    scrollbar-width: thin;
+}
+
+/* Sticky header за заглавието на списъка */
+.list-header-sticky {
+    position: sticky;
+    top: 0;
+    background-color: transparent;
+    z-index: 10;
+    padding-bottom: 10px;
+}
+
+/* Стилизиране на малките изображения (thumbnails) */
+.program-img-thumb {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--border-soft);
+}
+
+/* Контейнер на календара */
+.calendar-container {
+    max-width: 100%;
+    overflow-x: hidden;
+    background: var(--bg-container);
+    border-radius: 15px;
+    border: 1px solid var(--border-card);
+}
+
+/* Разделител между списъка и календара */
+.delimiter {
+    width: 1px;
+    background: var(--border-soft);
+    margin: 0 20px;
+}
+
+/* Стилизиране на редовете с програми */
+.program-row {
+    transition: background-color 0.2s ease;
+}
+
+.program-row:hover {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
 /* ---------- Calendar Variables ---------- */
 :root {
     --accent-color: #50a16b;

@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FitPlanner | Home</title>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
@@ -15,6 +16,7 @@
     <link rel="stylesheet" th:href="@{/css/footer.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/dark-theme.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/light-theme.css(v=${#dates.createNow().time})}">
+
     <link rel="stylesheet" th:href="@{/css/home.css(v=${#dates.createNow().time})}">
 </head>
 <body>
@@ -25,7 +27,7 @@
         <div class="row w-100">
             <div class="col-lg-7">
                 <div class="hero-content p-md-5">
-                    <h1 class="display-1 fw-black tracking-tighter hero-title text-uppercase mb-0">
+                    <h1 class="display-1 fw-black hero-title text-uppercase mb-0">
                         Level <span class="accent-text">Up</span>
                     </h1>
                     <h2 class="display-3 fw-bold hero-title text-uppercase mb-4">
@@ -82,10 +84,10 @@
             </div>
 
             <div class="col-12">
-                <div class="glass-panel p-4" style="border-left: 5px solid var(--delimiter-color) !important;">
+                <div class="glass-panel p-4 border-start-custom">
                     <i class="bi bi-quote fs-2 color-soft opacity-25"></i>
-                    <h4 class="fst-italic color-main fw-light" th:text="${dailyQuote.text}">...</h4>
-                    <p class="text-end color-soft small mb-0" th:text="'— ' + ${dailyQuote.author}">...</p>
+                    <h4 class="fst-italic color-main fw-light" th:text="${dailyQuote.text}">"The only bad workout is the one that didn't happen."</h4>
+                    <p class="text-end color-soft small mb-0" th:text="'— ' + ${dailyQuote.author}">Unknown</p>
                 </div>
             </div>
 
@@ -132,7 +134,7 @@
                                         <span th:text="${#numbers.formatDecimal(prog.rating, 1, 1)}">5.0</span>
                                     </div>
                                 </div>
-                                <p class="color-soft x-small mb-4 text-truncate-2" style="height: 3rem;" th:text="${prog.descriptionShort}">Description...</p>
+                                <p class="color-soft x-small mb-4 text-truncate-2" th:text="${prog.descriptionShort}">Description...</p>
                                 <a th:href="@{/programs/details/{id}(id=${prog.id})}" class="btn btn-sm btn-outline-custom w-100 rounded-pill">View Details</a>
                             </div>
                         </div>
@@ -144,25 +146,20 @@
                 <div class="glass-panel p-4">
                     <h6 class="color-main text-uppercase fw-black mb-3 small opacity-50">Recent Activity</h6>
                     <div class="d-flex gap-5 overflow-auto pb-2">
-
                         <div th:if="${#lists.isEmpty(recentActivities)}" class="color-soft small">
                             No recent activity. Time to hit the gym!
                         </div>
-
                         <div th:each="activity, activityStat : ${recentActivities}"
                              class="d-flex align-items-center flex-shrink-0"
                              th:classappend="${!activityStat.first} ? 'border-start border-soft ps-5' : ''">
-
                             <div class="rounded-circle me-3"
                                  th:style="'width: 8px; height: 8px; background-color: ' + ${activity.typeColor} + ';'">
                             </div>
-
                             <div>
-                                <p class="color-main mb-0 small fw-bold" th:text="${activity.title}">Activity Title</p>
-                                <small class="color-soft x-small" th:text="${activity.timeAgo}">Time Ago</small>
+                                <p class="color-main mb-0 small fw-bold" th:text="${activity.title}">Activity</p>
+                                <small class="color-soft x-small" th:text="${activity.timeAgo}">Time</small>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -171,6 +168,7 @@
 </div>
 
 <footer th:replace="~{fragment/footer.html::footer}"></footer>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/notifications.js(v=${#dates.createNow().time})}" defer></script>
 <script th:src="@{/js/image-not-found.js}"></script>

@@ -17,13 +17,6 @@
     <link rel="stylesheet" th:href="@{/css/search-bar.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/scrollbar.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/workout-day.css(v=${#dates.createNow().time})}">
-
-    <style>
-        .status-badge { font-size: 0.8rem; padding: 0.4rem 0.8rem; border-radius: 2rem; }
-        .read-only-icon { opacity: 0.6; }
-        .exercise-row { transition: background 0.2s; }
-        .exercise-row:hover { background-color: rgba(128, 128, 128, 0.1); }
-    </style>
 </head>
 <body>
 <div th:replace="fragment/navbar.html::navbar"></div>

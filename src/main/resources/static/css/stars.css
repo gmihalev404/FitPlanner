@@ -1,0 +1,48 @@
+/* Star Rating System */
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse; /* Важно за CSS логиката на посочване */
+    justify-content: center;
+    gap: 5px;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.2);
+    transition: color 0.2s ease-in-out, transform 0.1s ease;
+}
+
+/* Когато темата е светла */
+.star-rating label {
+    color: var(--bg-stars);
+}
+
+/* Празни звезди (default) */
+.star-rating label::before {
+    content: "\F588"; /* bi-star (Bootstrap Icons) */
+    font-family: "bootstrap-icons";
+}
+
+/* Логика: Напълни текущата и всички ПРЕДИ нея (поради row-reverse) */
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label {
+    color: #ffc107 !important;
+}
+
+.star-rating label:hover::before,
+.star-rating label:hover ~ label::before,
+.star-rating input:checked ~ label::before {
+    content: "\F586"; /* bi-star-fill */
+}
+
+.star-rating label:active {
+    transform: scale(1.2);
+}

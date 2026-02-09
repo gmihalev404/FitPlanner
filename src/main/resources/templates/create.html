@@ -30,20 +30,25 @@
           th:object="${programForm}"
           method="post"
           enctype="multipart/form-data">
+
       <input type="hidden" th:field="*{imageUrl}" id="hiddenImageUrl">
+
       <div class="row g-4 mb-5 align-items-stretch">
         <div class="col-12 col-md-4">
           <label class="form-label fw-bold">Program Image</label>
           <div class="custom-file-upload h-100 d-flex flex-column">
-            <div class="mb-2 text-center border rounded p-2 flex-grow-1 d-flex align-items-center justify-content-center"
-                 style="background: rgba(255,255,255,0.05); height: 200px; width: 100%; overflow: hidden; border: 1px dashed rgba(255,255,255,0.2);">
+            <div id="imagePreviewContainer" class="mb-2 text-center border rounded p-2 flex-grow-1 d-flex align-items-center justify-content-center"
+                 style="background: rgba(255,255,255,0.05); min-height: 200px; width: 100%; overflow: hidden; border: 1px dashed rgba(255,255,255,0.2);">
 
-              <img id="previewImg" th:src="${programForm.imageUrl != null ? programForm.imageUrl : '#'}"
-                   alt="Preview"
-                   th:style="${programForm.imageUrl != null ? 'width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 4px;' : 'display: none;'}">
+              <img th:src="${programForm.imageUrl != null ? programForm.imageUrl : ''}"
+                   th:classappend="${#strings.isEmpty(programForm.imageUrl)} ? 'hidden' : ''"
+                   class="preview-image"
+                   id="previewImgTag"
+                   alt="Preview">
 
-              <i id="uploadIcon" class="bi bi-image text-muted"
-                 th:style="${programForm.imageUrl != null ? 'display: none;' : 'font-size: 3.5rem;'}"></i>
+              <i th:if="${#strings.isEmpty(programForm.imageUrl)}"
+                 class="bi bi-image text-muted"
+                 style="font-size: 3.5rem;"></i>
             </div>
             <input type="file" name="programImage" id="programImage" class="form-control" accept="image/*">
             <div class="form-text small">Max size: 2MB (JPG, PNG)</div>
@@ -54,12 +59,12 @@
           <div class="row g-3">
             <div class="col-12">
               <label class="form-label fw-bold" th:text="#{create.program_name}">Program Name</label>
-              <input type="text" th:field="*{name}" class="form-control form-control-lg bg-input color-main" required>
+              <input type="text" th:field="*{name}" id="prog-name" class="form-control form-control-lg bg-input color-main" required>
             </div>
 
             <div class="col-12 col-md-6">
               <label class="form-label fw-bold" th:text="#{create.schedule}">Schedule</label>
-              <select class="form-select bg-input color-main" th:field="*{scheduleMonths}">
+              <select class="form-select bg-input color-main" th:field="*{scheduleMonths}" id="prog-months">
                 <option th:value="1" th:text="'1 ' + #{create.month}">1 Month</option>
                 <option th:value="3" th:text="'3 ' + #{create.months}">3 Months</option>
                 <option th:value="6" th:text="'6 ' + #{create.months}">6 Months</option>
@@ -85,8 +90,8 @@
     </form>
 
     <div class="position-relative mt-4">
-      <button id="leftArrow" class="nav-arrow" type="button" aria-label="Scroll left">&#8592;</button>
-      <button id="rightArrow" class="nav-arrow" type="button" aria-label="Scroll right">&#8594;</button>
+      <button id="leftArrow" class="nav-arrow" type="button">&#8592;</button>
+      <button id="rightArrow" class="nav-arrow" type="button">&#8594;</button>
 
       <div id="daysContainer" class="row g-4 flex-nowrap overflow-hidden">
         <div th:each="dayWorkout : ${weekDays}" class="col-12 col-md-4 col-xl-3 scroll-snap-item">
@@ -109,12 +114,12 @@
                     </div>
                   </div>
                   <div class="d-flex align-items-center ms-2">
-                    <form th:action="@{/edit-exercise}" method="get" class="me-1">
+                    <form th:action="@{/edit-exercise}" method="get" class="me-1 sync-required">
                       <input type="hidden" name="day" th:value="${dayWorkout.day}">
                       <input type="hidden" name="id" th:value="${exercise.id}">
                       <button type="submit" class="btn btn-sm text-primary p-0 px-1" title="Edit">&#9998;</button>
                     </form>
-                    <form th:action="@{/remove-exercise}" method="post">
+                    <form th:action="@{/remove-exercise}" method="post" class="sync-required">
                       <input type="hidden" name="day" th:value="${dayWorkout.day}">
                       <input type="hidden" name="id" th:value="${exercise.id}">
                       <button type="submit" class="btn btn-sm text-danger p-0 px-1">✕</button>
@@ -124,7 +129,7 @@
               </div>
             </div>
             <div class="card-footer bg-transparent border-0 p-3 mt-auto">
-              <form th:action="@{/exercise-log}" method="get">
+              <form th:action="@{/exercise-log}" method="get" class="sync-required">
                 <input type="hidden" name="day" th:value="${dayWorkout.day}">
                 <button type="submit" class="btn btn-outline-success w-100 fw-bold btn-sm rounded-pill" th:text="#{create.add_exercise}">+ Add Exercise</button>
               </form>
@@ -144,60 +149,23 @@
 <footer th:replace="~{fragment/footer.html::footer}"></footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script th:src="@{/js/update-program-session.js(v=${#dates.createNow().time})}"></script>
+
+<script th:src="@{/js/upload-file.js(v=${#dates.createNow().time})}"></script>
 <script th:src="@{/js/scrollable-days.js(v=${#dates.createNow().time})}"></script>
 <script th:src="@{/js/search-bar.js(v=${#dates.createNow().time})}"></script>
 <script th:src="@{/js/notifications.js(v=${#dates.createNow().time})}" defer></script>
-
+<script th:src="@{/js/sync-program-data.js}"></script>
 <script>
-  document.getElementById('programImage').addEventListener('change', function(event) {
-    const file = this.files[0];
-    const preview = document.getElementById('previewImg');
-    const icon = document.getElementById('uploadIcon');
-    // This is the hidden input field we will update
-    const hiddenInput = document.getElementById('hiddenImageUrl');
-
-    if (file) {
-      // 1. Instant Local Preview (for the user to see immediately)
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        preview.src = e.target.result;
-        preview.style.display = 'block';
-        if(icon) icon.style.display = 'none';
-      }
-      reader.readAsDataURL(file);
-
-      // 2. Session Upload via AJAX
-      const formData = new FormData();
-      formData.append('programImage', file);
-
-      fetch('/upload-program-image-session', {
-        method: 'POST',
-        body: formData
-      })
-              .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.text();
-              })
-              .then(url => {
-                if (url !== "error") {
-                  console.log("Image saved to session:", url);
-
-                  // 3. SYNC: Update the hidden input field.
-                  // This ensures the final form POST sends the NEW image path.
-                  if (hiddenInput) {
-                    hiddenInput.value = url;
-                  }
-                } else {
-                  alert("Server error uploading image.");
-                }
-              })
-              .catch(err => {
-                console.error("Session upload failed:", err);
-                alert("Failed to upload image to server.");
-              });
-    }
+  // Логика за снимката (запазваме съществуващата ти)
+  document.getElementById('programImage').addEventListener('change', function() {
+    FileUploader.previewAndUpload(this, {
+      containerSelector: '#imagePreviewContainer',
+      hiddenInputId: 'hiddenImageUrl',
+      uploadUrl: '/upload-program-image-session',
+      paramName: 'programImage'
+    });
   });
 </script>
+
 </body>
 </html>

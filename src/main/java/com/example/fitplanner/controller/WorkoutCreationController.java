@@ -50,8 +50,6 @@ public class WorkoutCreationController {
         if (userDto == null) return "redirect:/login";
 
         // --- THE CRITICAL RESET ---
-        // If the URL is /create?newProgram=true, we clear everything.
-        // This stops "Edit Mode" data from leaking into "New Mode".
         if (Boolean.TRUE.equals(newProgram)) {
             session.removeAttribute("weekDays");
             session.removeAttribute("programForm");

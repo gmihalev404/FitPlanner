@@ -1,0 +1,62 @@
+/* Специфични стилове за Exercise Details */
+.details-wrapper {
+    background: var(--bg-container);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--border-soft);
+    border-radius: 2rem;
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+}
+
+.video-box {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0;
+    background: #000;
+}
+
+.video-box iframe,
+.video-box video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.info-pill {
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.info-pill:hover {
+    transform: translateY(-5px);
+}
+
+.label-text {
+    color: var(--text-soft);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    display: block;
+}
+
+.value-text {
+    color: var(--text-main);
+    font-weight: 800;
+    font-size: 1.2rem;
+}
+
+.guide-section {
+    padding: 2rem;
+}
+
+@media (min-width: 768px) {
+    .guide-section {
+        padding: 3rem;
+    }
+}

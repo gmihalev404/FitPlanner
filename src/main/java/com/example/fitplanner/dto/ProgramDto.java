@@ -1,5 +1,6 @@
 package com.example.fitplanner.dto;
 
+import com.example.fitplanner.entity.enums.Difficulty;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 

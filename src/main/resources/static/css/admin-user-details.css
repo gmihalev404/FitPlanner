@@ -1,0 +1,66 @@
+.glass-panel {
+    background: var(--bg-container);
+    border: 1px solid var(--border-card);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: var(--shadow-card);
+    color: var(--text-main);
+}
+
+.stat-box {
+    background: var(--bg-container);
+    border: 1px solid var(--border-card);
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: var(--shadow-card);
+}
+
+.profile-large-avatar {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border: 4px solid var(--delimiter-color);
+    border-radius: 50%;
+    margin-bottom: 1rem;
+}
+
+.program-img-mini {
+    width: 70px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--border-soft);
+}
+
+.table {
+    --bs-table-bg: transparent !important;
+    color: var(--text-main) !important;
+}
+
+.table td, .table th {
+    border-bottom-color: var(--border-soft);
+    padding: 1rem;
+    vertical-align: middle;
+    background: transparent !important;
+}
+
+.rating-stars {
+    color: #ffca28;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.text-created {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.badge-difficulty {
+    font-size: 0.7rem;
+    letter-spacing: 0.5px;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border-soft);
+}

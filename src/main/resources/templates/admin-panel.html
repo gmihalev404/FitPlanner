@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FitPlanner | Admin Panel</title>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
@@ -15,23 +16,7 @@
     <link rel="stylesheet" th:href="@{/css/dark-theme.css}">
     <link rel="stylesheet" th:href="@{/css/light-theme.css}">
 
-    <style>
-        .background-section { background-color: var(--bg-app); min-height: 100vh; padding-top: 100px; padding-bottom: 50px; }
-        .glass-panel { background: var(--bg-container); border: 1px solid var(--border-card); padding: 1.5rem; border-radius: 15px; box-shadow: var(--shadow-card); }
-        .table { --bs-table-bg: transparent !important; color: var(--text-main) !important; border-color: var(--border-soft); }
-        .table td, .table th { background-color: transparent !important; color: var(--text-main) !important; border-bottom-color: var(--border-soft); vertical-align: middle; }
-        .nav-pills .nav-link { color: var(--text-muted); border: 1px solid var(--border-soft); margin: 5px; background: var(--btn-bg); transition: 0.3s; }
-        .nav-pills .nav-link.active { background-color: var(--delimiter-color) !important; color: #ffffff !important; }
-        .btn-main { background: var(--delimiter-color); color: white; border: none; transition: 0.3s; }
-        .btn-main:hover { opacity: 0.8; color: white; }
-        .btn-action { width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: var(--bg-body); border: 1px solid var(--border-soft); transition: 0.3s; text-decoration: none; border:none; cursor: pointer;}
-        .btn-edit { color: var(--text-link); }
-        .btn-delete { color: #ff4d4d; }
-        .modal-content { background: var(--bg-container); border: 1px solid var(--border-card); color: var(--text-main); }
-        .form-control, .form-select { background: var(--bg-input) !important; border: 1px solid var(--border-input); color: var(--text-input) !important; }
-        .preview-box { width: 100%; height: 140px; border: 2px dashed var(--border-soft); border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: rgba(0,0,0,0.1); margin-bottom: 8px; position: relative; }
-        .preview-box img, .preview-box video { max-width: 100%; max-height: 100%; object-fit: contain; }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/admin-panel.css(v=${#dates.createNow().time})}">
 </head>
 <body>
 <div th:replace="~{fragment/navbar.html::navbar}"></div>
@@ -39,7 +24,9 @@
 <div class="background-section">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold text-uppercase" style="color: var(--text-main)">Management <span style="color: var(--delimiter-color)">Hub</span></h2>
+            <h2 class="display-5 fw-bold text-uppercase" style="color: var(--text-main)">
+                Management <span style="color: var(--delimiter-color)">Hub</span>
+            </h2>
             <ul class="nav nav-pills justify-content-center" id="adminTab" role="tablist">
                 <li class="nav-item"><button class="nav-link active rounded-pill px-4" data-bs-toggle="pill" data-bs-target="#ex-panel">Exercises</button></li>
                 <li class="nav-item"><button class="nav-link rounded-pill px-4" data-bs-toggle="pill" data-bs-target="#q-panel">Quotes</button></li>
@@ -153,13 +140,13 @@
                 <div class="row mb-3">
                     <div class="col-6">
                         <label class="small fw-bold">Image</label>
-                        <div class="preview-box"><img style="display:none;"><span class="text-muted">No Image</span></div>
-                        <input type="file" name="imageFile" class="form-control" accept="image/*" onchange="previewMedia(this, 'image')">
+                        <div class="preview-box image-preview"><img style="display:none;"><span class="text-muted">No Image</span></div>
+                        <input type="file" name="imageFile" class="form-control" accept="image/*" onchange="FileUploader.previewLocal(this, '.image-preview')">
                     </div>
                     <div class="col-6">
                         <label class="small fw-bold">Video</label>
-                        <div class="preview-box"><video style="display:none;" controls></video><span class="text-muted">No Video</span></div>
-                        <input type="file" name="videoFile" class="form-control" accept="video/*" onchange="previewMedia(this, 'video')">
+                        <div class="preview-box video-preview"><video style="display:none;" controls></video><span class="text-muted">No Video</span></div>
+                        <input type="file" name="videoFile" class="form-control" accept="video/*" onchange="FileUploader.previewLocal(this, '.video-preview')">
                     </div>
                 </div>
                 <div class="row g-2 mb-4">
@@ -189,19 +176,19 @@
                 <div class="row mb-3">
                     <div class="col-6">
                         <label class="small fw-bold">Image</label>
-                        <div class="preview-box">
+                        <div class="preview-box image-preview">
                             <img th:src="${ex.imageUrl}" th:style="${ex.imageUrl != null ? 'display:block' : 'display:none'}">
                             <span th:if="${ex.imageUrl == null}" class="text-muted">No Image</span>
                         </div>
-                        <input type="file" name="imageFile" class="form-control" accept="image/*" onchange="previewMedia(this, 'image')">
+                        <input type="file" name="imageFile" class="form-control" accept="image/*" onchange="FileUploader.previewLocal(this, '.image-preview')">
                     </div>
                     <div class="col-6">
                         <label class="small fw-bold">Video</label>
-                        <div class="preview-box">
+                        <div class="preview-box video-preview">
                             <video th:src="${ex.videoUrl}" controls th:style="${ex.videoUrl != null ? 'display:block' : 'display:none'}"></video>
                             <span th:if="${ex.videoUrl == null}" class="text-muted">No Video</span>
                         </div>
-                        <input type="file" name="videoFile" class="form-control" accept="video/*" onchange="previewMedia(this, 'video')">
+                        <input type="file" name="videoFile" class="form-control" accept="video/*" onchange="FileUploader.previewLocal(this, '.video-preview')">
                     </div>
                 </div>
                 <div class="row g-2 mb-4">
@@ -240,28 +227,10 @@
     </div>
 </div>
 
-<script>
-    function previewMedia(input, type) {
-        const file = input.files[0];
-        const previewContainer = input.closest('.col-6').querySelector('.preview-box');
-        const previewEl = type === 'image' ? previewContainer.querySelector('img') : previewContainer.querySelector('video');
-        const placeholder = previewContainer.querySelector('span');
-
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                previewEl.src = e.target.result;
-                previewEl.style.display = 'block';
-                if(placeholder) placeholder.style.display = 'none';
-            }
-            reader.readAsDataURL(file);
-        }
-    }
-</script>
-
 <footer th:replace="~{fragment/footer.html::footer}"></footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/upload-file.js(v=${#dates.createNow().time})}"></script>
 <script th:src="@{/js/notifications.js(v=${#dates.createNow().time})}" defer></script>
 <script th:src="@{/js/image-not-found.js}"></script>
 </body>

@@ -16,7 +16,6 @@ public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, 
 
     // Matches your Entity's field: scheduledFor
     Optional<WorkoutSession> findByUserIdAndScheduledFor(Long userId, LocalDate date);
-
     @Query("SELECT COALESCE(s.finished, false) FROM WorkoutSession s WHERE s.user.id = :userId AND s.scheduledFor = :date")
     List<Boolean> isSessionFinished(@Param("userId") Long userId, @Param("date") LocalDate date);
 

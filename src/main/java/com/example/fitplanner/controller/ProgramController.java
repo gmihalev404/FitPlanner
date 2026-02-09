@@ -1,14 +1,19 @@
 package com.example.fitplanner.controller;
 
+import com.example.fitplanner.dto.DayWorkout;
 import com.example.fitplanner.dto.ProgramDetailsDto;
+import com.example.fitplanner.dto.ProgramDto;
 import com.example.fitplanner.dto.UserDto;
 import com.example.fitplanner.service.ProgramService;
 import com.example.fitplanner.service.UserService;
+import com.example.fitplanner.service.WorkoutSessionService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/programs")
@@ -36,21 +41,19 @@ public class ProgramController {
         return "redirect:/search";
     }
 
-    @GetMapping("/details/{id}")
+    @GetMapping("details/{id}")
     public String getProgramDetails(@PathVariable Long id, Model model, HttpSession session) {
         UserDto userDto = (UserDto) session.getAttribute("loggedUser");
+        if (userDto == null) return "redirect:/login";
 
-        if (userDto == null) {
-            return "redirect:/users/login";
-        }
+        // Използваме новия метод, който събира всичко в едно DTO
+        // Този метод трябва да връща ProgramDetailsDto
+        ProgramDetailsDto programDetails = programService.getProgramDetails(id);
 
-        ProgramDetailsDto program = programService.getProgramDetails(id);
-        System.out.println(program);
-        model.addAttribute("program", program);
-        // Important: pass the whole DTO so the navbar/footer fragments don't crash
-        model.addAttribute("userDto", userDto);
-        model.addAttribute("theme", userDto.getTheme());
+        model.addAttribute("program", programDetails);
 
+        // Вече не ти трябва отделен модел за weekDays,
+        // защото те са вътре в programDetails.getWorkouts()
         return "program-details";
     }
 

@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -300,9 +302,9 @@ public class ProgramService {
     }
 
     @Transactional(readOnly = true)
-    public ProgramDetailsDto getProgramDetails(Long id) {
-        Program program = programRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Program not found"));
+    public ProgramDetailsDto getProgramDetails(Long programId) {
+        Program program = programRepository.findById(programId)
+                .orElseThrow();
 
         ProgramDetailsDto dto = new ProgramDetailsDto();
         dto.setId(program.getId());
@@ -313,42 +315,91 @@ public class ProgramService {
         dto.setRating(program.getRating());
         dto.setTrainerName(program.getUser().getFirstName() + " " + program.getUser().getLastName());
 
-        List<WorkoutSessionDto> sessionDtos = program.getSessions().stream()
-                .sorted(Comparator.comparing(WorkoutSession::getScheduledFor))
-                .map(session -> {
-                    WorkoutSessionDto sDto = new WorkoutSessionDto();
-                    sDto.setId(session.getId());
-                    sDto.setFinished(session.isFinished());
-                    sDto.setDate(session.getScheduledFor().toString());
+        // 1. Намираме понеделник на текущата седмица за база
+        LocalDate startOfWeek = LocalDate.now().with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY));
 
-                    List<ExerciseSessionDto> exerciseDtos = session.getExercises().stream()
-                            .map(progress -> {
-                                ExerciseSessionDto esDto = new ExerciseSessionDto();
-                                esDto.setProgressId(progress.getId());
-                                esDto.setExerciseId(progress.getExercise().getId());
-                                esDto.setName(progress.getExercise().getName());
-                                esDto.setProgramName(program.getName());
-                                esDto.setWeight(progress.getWeight());
-                                esDto.setReps(progress.getReps());
-                                esDto.setSets(progress.getSets());
-                                esDto.setSetsCompleted(progress.getSetsCompleted());
-                                esDto.setFinished(progress.getCompleted());
-                                esDto.setSuggestedIncrease(progress.getSuggestedChangeIncrease());
-                                esDto.setSuggestedChange(progress.getSuggestedChange());
-                                return esDto;
-                            }).toList();
+        // 2. Группираме съществуващите упражнения по ден от седмицата
+        Map<java.time.DayOfWeek, List<ExerciseProgressDto>> exerciseMap = new java.util.EnumMap<>(java.time.DayOfWeek.class);
+        for (java.time.DayOfWeek d : java.time.DayOfWeek.values()) exerciseMap.put(d, new ArrayList<>());
 
-                    sDto.setExercises(exerciseDtos);
-                    return sDto;
-                }).toList();
+        program.getSessions().forEach(session -> {
+            java.time.DayOfWeek dayOfWeek = session.getScheduledFor().getDayOfWeek();
+            if (exerciseMap.get(dayOfWeek).isEmpty()) {
+                List<ExerciseProgressDto> dtos = session.getExercises().stream()
+                        .map(ep -> {
+                            ExerciseProgressDto exDto = new ExerciseProgressDto(
+                                    ep.getExercise().getId(), ep.getExercise().getName(),
+                                    ep.getReps(), ep.getSets(), ep.getWeight()
+                            );
+                            exDto.setFinished(ep.getCompleted());
+                            return exDto;
+                        }).collect(Collectors.toList());
+                exerciseMap.put(dayOfWeek, dtos);
+            }
+        });
 
-        dto.setSessions(sessionDtos);
+        // 3. Пълним списъка с DateWorkout
+        List<DateWorkout> workouts = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            LocalDate date = startOfWeek.plusDays(i);
+            DateWorkout dw = new DateWorkout(date, exerciseMap.get(date.getDayOfWeek()));
+            dw.setProgramName(program.getName());
+            workouts.add(dw);
+        }
+
+        dto.setWorkouts(workouts);
         return dto;
-    }
-
-    @Transactional
+    }    @Transactional
     public void addRating(Long id, int stars) {
         Program program = programRepository.findById(id).orElseThrow();
         program.addStars(stars);
+    }
+
+    public List<DayWorkout> getProgramTemplate(Long programId) {
+        Program program = programRepository.findById(programId)
+                .orElseThrow();
+
+        // Подготвяме празна карта за всички 7 дни, за да гарантираме реда и наличието на Rest Days
+        Map<DayOfWeek, List<ExerciseProgressDto>> weeklyPlan = new EnumMap<>(DayOfWeek.class);
+        for (DayOfWeek day : DayOfWeek.values()) {
+            weeklyPlan.put(day, new ArrayList<>());
+        }
+
+        // Вземаме сесиите. Ако програмата е нова, вземаме първите записи.
+        // Групираме упражненията според деня от седмицата на датата 'scheduledFor'
+        program.getSessions().stream()
+                .forEach(session -> {
+                    DayOfWeek dayOfWeek = session.getScheduledFor().getDayOfWeek();
+
+                    // Мапваме ExerciseProgress към ExerciseProgressDto
+                    List<ExerciseProgressDto> dtos = session.getExercises().stream()
+                            .map(ep -> {
+                                ExerciseProgressDto dto = new ExerciseProgressDto(
+                                        ep.getExercise().getId(),
+                                        ep.getExercise().getName(),
+                                        ep.getReps(),
+                                        ep.getSets(),
+                                        ep.getWeight()
+                                );
+                                dto.setProgramName(program.getName());
+                                return dto;
+                            })
+                            .collect(Collectors.toList());
+
+                    // Добавяме упражненията към съответния ден (ако има повече сесии в един и същи ден от седмицата, вземаме първата)
+                    if (weeklyPlan.get(dayOfWeek).isEmpty()) {
+                        weeklyPlan.put(dayOfWeek, dtos);
+                    }
+                });
+
+        // Превръщаме Map-а в списък от DayWorkout, подреден от Понеделник
+        return weeklyPlan.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .map(entry -> {
+                    // Превръщаме DayOfWeek (MONDAY) в красив String (Monday)
+                    String dayName = entry.getKey().name().charAt(0) + entry.getKey().name().substring(1).toLowerCase();
+                    return new DayWorkout(dayName, entry.getValue());
+                })
+                .collect(Collectors.toList());
     }
 }

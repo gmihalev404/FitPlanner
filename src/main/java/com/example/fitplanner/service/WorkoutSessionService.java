@@ -1,5 +1,7 @@
 package com.example.fitplanner.service;
 
+import com.example.fitplanner.dto.DayWorkout;
+import com.example.fitplanner.dto.ExerciseProgressDto;
 import com.example.fitplanner.dto.ExerciseSessionDto;
 import com.example.fitplanner.dto.ExerciseSessionResultDto;
 import com.example.fitplanner.entity.model.ExerciseProgress;
@@ -16,6 +18,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class WorkoutSessionService {

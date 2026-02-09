@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Workouts</title>
+    <title>FitPlanner | My Workouts</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -16,37 +16,8 @@
     <link rel="stylesheet" th:href="@{/css/footer.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/dark-theme.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/light-theme.css(v=${#dates.createNow().time})}">
-    <link rel="stylesheet" th:href="@{/css/my-workouts.css(v=${#dates.createNow().time})}">
 
-    <style>
-        /* Prevents the page from becoming infinitely long with many programs */
-        .program-scroll-container {
-            max-height: 600px;
-            overflow-y: auto;
-            padding-right: 10px;
-            scrollbar-width: thin;
-        }
-        /* Sticky header for the list */
-        .list-header-sticky {
-            position: sticky;
-            top: 0;
-            background: inherit;
-            z-index: 10;
-            padding-bottom: 10px;
-        }
-        /* Thumbnail styling */
-        .program-img-thumb {
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-        /* Fix for calendar overflow on small mobile */
-        .calendar-container {
-            max-width: 100%;
-            overflow-x: hidden;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/my-workouts.css(v=${#dates.createNow().time})}">
 </head>
 
 <body>
@@ -60,20 +31,20 @@
             <div class="col-12 col-lg-7">
                 <div class="list-header-sticky">
                     <div th:if="${programs != null && !programs.isEmpty()}" class="d-flex justify-content-between align-items-center mb-2">
-                        <label class="fw-bold">Active Programs</label>
+                        <label class="fw-bold color-main">Active Programs</label>
                         <div class="d-flex align-items-center gap-2">
                             <span class="small text-muted">Select All</span>
-                            <input type="checkbox" id="selectAllPrograms" onclick="toggleAllPrograms(this)">
+                            <input type="checkbox" id="selectAllPrograms" class="form-check-input" onclick="toggleAllPrograms(this)">
                         </div>
                     </div>
                 </div>
 
-                <div th:if="${programs == null || programs.isEmpty()}" class="text-center w-100 fw-bold py-5">
-                    <i class="bi bi-clipboard-x fs-1 d-block mb-3"></i>
+                <div th:if="${programs == null || programs.isEmpty()}" class="text-center w-100 fw-bold py-5 color-soft">
+                    <i class="bi bi-clipboard-x fs-1 d-block mb-3 opacity-25"></i>
                     No active programs found.
                 </div>
 
-                <div class="program-container scrollable-container">
+                <div class="program-scroll-container">
                     <div th:each="program : ${programs}" class="d-flex w-100 justify-content-between align-items-center py-3 border-bottom program-row">
 
                         <div class="d-flex align-items-center flex-grow-1 gap-3 overflow-hidden">
@@ -84,29 +55,33 @@
                                      alt="program"
                                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
 
-                                <div class="program-img-thumb d-flex align-items-center justify-content-center"
-                                     style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);"
+                                <div class="program-img-thumb d-flex align-items-center justify-content-center bg-soft-light"
                                      th:styleappend="${program.imageUrl != null && !program.imageUrl.isEmpty()} ? 'display: none !important;' : 'display: flex !important;'">
-                                    <i class="bi bi-lightning-fill color-soft opacity-50" style="font-size: 1.2rem;"></i>
+                                    <i class="bi bi-lightning-fill color-soft opacity-50"></i>
                                 </div>
                             </div>
 
                             <div class="flex-grow-1 overflow-hidden">
-                                <span th:text="${program.name}" class="fw-bold text-truncate d-block">Program Name</span>
+                                <span th:text="${program.name}" class="fw-bold text-truncate d-block color-main">Program Name</span>
                             </div>
                         </div>
-                        <div class="d-flex align-items-center gap-3 ms-3 ps-2 border-start">
+
+                        <div class="d-flex align-items-center gap-3 ms-3 ps-2 border-start border-soft">
                             <form th:action="@{/edit-program}" method="get" class="m-0">
                                 <input type="hidden" name="programId" th:value="${program.id}">
-                                <button type="submit" class="btn text-primary fs-5 p-0 ps-1 pe-1" title="Edit">&#9998;</button>
+                                <button type="submit" class="btn text-primary fs-5 p-0 px-1" title="Edit">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
                             </form>
 
                             <form th:action="@{/remove-program}" method="post" class="m-0" onsubmit="return confirm('Delete this program?')">
                                 <input type="hidden" name="programId" th:value="${program.id}">
-                                <button type="submit" class="btn text-danger fs-5 p-0 ps-1 pe-1" title="Remove">✕</button>
+                                <button type="submit" class="btn text-danger fs-5 p-0 px-1" title="Remove">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
                             </form>
 
-                            <input type="checkbox" class="program-checkbox"
+                            <input type="checkbox" class="program-checkbox form-check-input"
                                    th:data-id="${program.id}"
                                    th:data-dates="${program.workouts != null ? #strings.listJoin(program.workouts.![date], ',') : ''}"
                                    onchange="updateCalendar()">
@@ -120,17 +95,18 @@
             </div>
 
             <div class="col-12 col-lg-4 mx-auto">
-                <div class="calendar-container mx-auto shadow sticky-lg-top" style="top: 20px;">
-                    <div class="calendar-header">
-                        <button id="prevMonth" class="nav-btn">&lt;</button>
-                        <h2 id="monthDisplay" class="m-0"></h2>
-                        <button id="nextMonth" class="nav-btn">&gt;</button>
+                <div class="calendar-container shadow sticky-lg-top" style="top: 100px;">
+                    <div class="calendar-header p-3 border-bottom d-flex justify-content-between align-items-center">
+                        <button id="prevMonth" class="btn btn-sm btn-outline-light rounded-circle">&lt;</button>
+                        <h5 id="monthDisplay" class="m-0 fw-bold color-main"></h5>
+                        <button id="nextMonth" class="btn btn-sm btn-outline-light rounded-circle">&gt;</button>
                     </div>
-                    <div class="calendar-weekdays">
-                        <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div>
-                        <div>Fri</div><div>Sat</div><div>Sun</div>
+                    <div class="calendar-weekdays d-flex text-center py-2 bg-soft-light small fw-bold">
+                        <div class="flex-fill">Mon</div><div class="flex-fill">Tue</div><div class="flex-fill">Wed</div>
+                        <div class="flex-fill">Thu</div><div class="flex-fill">Fri</div><div class="flex-fill">Sat</div>
+                        <div class="flex-fill">Sun</div>
                     </div>
-                    <div id="calendarDays" class="calendar-days"></div>
+                    <div id="calendarDays" class="calendar-days p-2"></div>
                 </div>
             </div>
         </div>

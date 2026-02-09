@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -18,6 +19,6 @@ public class ProgramDetailsDto implements Serializable {
     private String difficulty;
     private Double rating;
     private String trainerName;
-    private List<WorkoutSessionDto> sessions;
+    private List<DateWorkout> workouts = new ArrayList<>();
 }
 

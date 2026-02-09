@@ -1,0 +1,94 @@
+.glass-panel {
+    background: var(--bg-container);
+    border: 1px solid var(--border-card);
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: var(--shadow-card);
+}
+
+.table {
+    --bs-table-bg: transparent !important;
+    color: var(--text-main) !important;
+    border-color: var(--border-soft);
+}
+
+.table td, .table th {
+    background-color: transparent !important;
+    color: var(--text-main) !important;
+    border-bottom-color: var(--border-soft);
+    vertical-align: middle;
+}
+
+.nav-pills .nav-link {
+    color: var(--text-muted);
+    border: 1px solid var(--border-soft);
+    margin: 5px;
+    background: var(--btn-bg);
+    transition: 0.3s;
+}
+
+.nav-pills .nav-link.active {
+    background-color: var(--delimiter-color) !important;
+    color: #ffffff !important;
+}
+
+.btn-main {
+    background: var(--delimiter-color);
+    color: white;
+    border: none;
+    transition: 0.3s;
+}
+
+.btn-main:hover {
+    opacity: 0.8;
+    color: white;
+}
+
+.btn-action {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-body);
+    border: none;
+    transition: 0.3s;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-edit { color: var(--text-link); }
+.btn-delete { color: #ff4d4d; }
+
+.modal-content {
+    background: var(--bg-container);
+    border: 1px solid var(--border-card);
+    color: var(--text-main);
+}
+
+.form-control, .form-select {
+    background: var(--bg-input) !important;
+    border: 1px solid var(--border-input);
+    color: var(--text-input) !important;
+}
+
+.preview-box {
+    width: 100%;
+    height: 140px;
+    border: 2px dashed var(--border-soft);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: rgba(0,0,0,0.1);
+    margin-bottom: 8px;
+    position: relative;
+}
+
+.preview-box img, .preview-box video {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
