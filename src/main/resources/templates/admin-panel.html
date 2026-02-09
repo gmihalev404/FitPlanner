@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitPlanner | Admin Panel</title>
+    <title th:text="#{admin.page.title}">FitPlanner | Admin Panel</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -25,12 +25,19 @@
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="display-5 fw-bold text-uppercase" style="color: var(--text-main)">
-                Management <span style="color: var(--delimiter-color)">Hub</span>
+                <span th:text="#{admin.management}">Management</span>
+                <span style="color: var(--delimiter-color)" th:text="#{admin.hub}">Hub</span>
             </h2>
             <ul class="nav nav-pills justify-content-center" id="adminTab" role="tablist">
-                <li class="nav-item"><button class="nav-link active rounded-pill px-4" data-bs-toggle="pill" data-bs-target="#ex-panel">Exercises</button></li>
-                <li class="nav-item"><button class="nav-link rounded-pill px-4" data-bs-toggle="pill" data-bs-target="#q-panel">Quotes</button></li>
-                <li class="nav-item"><button class="nav-link rounded-pill px-4" data-bs-toggle="pill" data-bs-target="#user-panel">Users</button></li>
+                <li class="nav-item">
+                    <button class="nav-link active rounded-pill px-4" data-bs-toggle="pill" data-bs-target="#ex-panel" th:text="#{admin.exercises}">Exercises</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link rounded-pill px-4" data-bs-toggle="pill" data-bs-target="#q-panel" th:text="#{admin.quotes}">Quotes</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link rounded-pill px-4" data-bs-toggle="pill" data-bs-target="#user-panel" th:text="#{admin.users}">Users</button>
+                </li>
             </ul>
         </div>
 
@@ -38,12 +45,18 @@
             <div class="tab-pane fade show active" id="ex-panel">
                 <div class="glass-panel">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h4 class="m-0 fw-bold">Exercises</h4>
-                        <button class="btn btn-main rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#addExModal">ADD EXERCISE</button>
+                        <h4 class="m-0 fw-bold" th:text="#{admin.exercises}">Exercises</h4>
+                        <button class="btn btn-main rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#addExModal" th:text="#{admin.btn.add_exercise}">ADD EXERCISE</button>
                     </div>
                     <div class="table-responsive">
                         <table class="table">
-                            <thead><tr><th>Name</th><th>Category</th><th class="text-end">Actions</th></tr></thead>
+                            <thead>
+                            <tr>
+                                <th th:text="#{admin.table.name}">Name</th>
+                                <th th:text="#{admin.table.category}">Category</th>
+                                <th class="text-end" th:text="#{admin.table.actions}">Actions</th>
+                            </tr>
+                            </thead>
                             <tbody>
                             <tr th:each="ex : ${exercises}">
                                 <td>
@@ -68,12 +81,18 @@
             <div class="tab-pane fade" id="q-panel">
                 <div class="glass-panel">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h4 class="m-0 fw-bold">Inspirational Quotes</h4>
-                        <button class="btn btn-main rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#addQModal">ADD QUOTE</button>
+                        <h4 class="m-0 fw-bold" th:text="#{admin.quotes.title}">Inspirational Quotes</h4>
+                        <button class="btn btn-main rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#addQModal" th:text="#{admin.btn.add_quote}">ADD QUOTE</button>
                     </div>
                     <div class="table-responsive">
                         <table class="table">
-                            <thead><tr><th>Text</th><th>Author</th><th class="text-end">Actions</th></tr></thead>
+                            <thead>
+                            <tr>
+                                <th th:text="#{admin.table.text}">Text</th>
+                                <th th:text="#{admin.table.author}">Author</th>
+                                <th class="text-end" th:text="#{admin.table.actions}">Actions</th>
+                            </tr>
+                            </thead>
                             <tbody>
                             <tr th:each="q : ${quotes}">
                                 <td th:text="${q.text}" class="small"></td>
@@ -93,22 +112,28 @@
 
             <div class="tab-pane fade" id="user-panel">
                 <div class="glass-panel">
-                    <h4 class="mb-4 fw-bold">User Oversight</h4>
+                    <h4 class="mb-4 fw-bold" th:text="#{admin.users.oversight}">User Oversight</h4>
                     <div class="table-responsive">
                         <table class="table">
-                            <thead><tr><th>Username</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+                            <thead>
+                            <tr>
+                                <th th:text="#{admin.table.username}">Username</th>
+                                <th th:text="#{admin.table.status}">Status</th>
+                                <th class="text-end" th:text="#{admin.table.actions}">Actions</th>
+                            </tr>
+                            </thead>
                             <tbody>
                             <tr th:each="u : ${allUsers}">
                                 <td>
                                     <span class="fw-bold" th:text="${u.username}"></span>
-                                    <span th:if="${u.id == userDto.id}" class="badge bg-secondary ms-1">YOU</span>
+                                    <span th:if="${u.id == userDto.id}" class="badge bg-secondary ms-1" th:text="#{admin.user.you}">YOU</span>
                                 </td>
                                 <td>
-                                    <span th:if="${u.enabled}" class="badge bg-success">Active</span>
-                                    <span th:unless="${u.enabled}" class="badge bg-danger">Banned</span>
+                                    <span th:if="${u.enabled}" class="badge bg-success" th:text="#{admin.user.active}">Active</span>
+                                    <span th:unless="${u.enabled}" class="badge bg-danger" th:text="#{admin.user.banned}">Banned</span>
                                 </td>
                                 <td class="text-end">
-                                    <a th:href="@{/admin/users/profile/{id}(id=${u.id})}" class="btn-action btn-edit me-1" title="View Profile"><i class="bi bi-eye"></i></a>
+                                    <a th:href="@{/admin/users/profile/{id}(id=${u.id})}" class="btn-action btn-edit me-1" th:title="#{admin.title.view_profile}"><i class="bi bi-eye"></i></a>
                                     <form th:action="@{/admin/users/toggle-status/{id}(id=${u.id})}" method="POST" class="d-inline">
                                         <button type="submit" class="btn-action me-1" th:classappend="${u.enabled ? 'btn-delete' : 'btn-edit'}" th:disabled="${u.id == userDto.id}">
                                             <i th:class="${u.enabled ? 'bi bi-slash-circle' : 'bi bi-check-circle'}"></i>
@@ -129,31 +154,48 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content p-4">
             <form th:action="@{/admin/exercises/add}" method="POST" enctype="multipart/form-data">
-                <h5 class="fw-bold mb-4">New Exercise</h5>
+                <h5 class="fw-bold mb-4" th:text="#{admin.modal.new_exercise}">New Exercise</h5>
                 <div class="row">
-                    <div class="col-md-6 mb-3"><label class="small fw-bold">Name</label><input type="text" name="name" class="form-control" required></div>
-                    <div class="col-md-6 mb-3"><label class="small fw-bold">Equipment</label>
-                        <select name="equipmentType" class="form-select"><option th:each="e : ${equipmentTypes}" th:value="${e}" th:text="${e}"></option></select>
+                    <div class="col-md-6 mb-3">
+                        <label class="small fw-bold" th:text="#{admin.label.name}">Name</label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="small fw-bold" th:text="#{admin.label.equipment}">Equipment</label>
+                        <select name="equipmentType" class="form-select">
+                            <option th:each="e : ${equipmentTypes}" th:value="${e}" th:text="${e}"></option>
+                        </select>
                     </div>
                 </div>
-                <div class="mb-3"><label class="small fw-bold">Description</label><textarea name="description" class="form-control" rows="2" required></textarea></div>
+                <div class="mb-3">
+                    <label class="small fw-bold" th:text="#{admin.label.description}">Description</label>
+                    <textarea name="description" class="form-control" rows="2" required></textarea>
+                </div>
                 <div class="row mb-3">
                     <div class="col-6">
-                        <label class="small fw-bold">Image</label>
-                        <div class="preview-box image-preview"><img style="display:none;"><span class="text-muted">No Image</span></div>
+                        <label class="small fw-bold" th:text="#{admin.label.image}">Image</label>
+                        <div class="preview-box image-preview"><img style="display:none;"><span class="text-muted" th:text="#{admin.status.no_image}">No Image</span></div>
                         <input type="file" name="imageFile" class="form-control" accept="image/*" onchange="FileUploader.previewLocal(this, '.image-preview')">
                     </div>
                     <div class="col-6">
-                        <label class="small fw-bold">Video</label>
-                        <div class="preview-box video-preview"><video style="display:none;" controls></video><span class="text-muted">No Video</span></div>
+                        <label class="small fw-bold" th:text="#{admin.label.video}">Video</label>
+                        <div class="preview-box video-preview"><video style="display:none;" controls></video><span class="text-muted" th:text="#{admin.status.no_video}">No Video</span></div>
                         <input type="file" name="videoFile" class="form-control" accept="video/*" onchange="FileUploader.previewLocal(this, '.video-preview')">
                     </div>
                 </div>
                 <div class="row g-2 mb-4">
-                    <div class="col-6"><select name="category" class="form-select"><option th:each="c : ${categories}" th:value="${c}" th:text="${c}"></option></select></div>
-                    <div class="col-6"><select name="exerciseType" class="form-select"><option th:each="t : ${exerciseTypes}" th:value="${t}" th:text="${t}"></option></select></div>
+                    <div class="col-6">
+                        <select name="category" class="form-select">
+                            <option th:each="c : ${categories}" th:value="${c}" th:text="${c}"></option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <select name="exerciseType" class="form-select">
+                            <option th:each="t : ${exerciseTypes}" th:value="${t}" th:text="${t}"></option>
+                        </select>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-main w-100 rounded-pill fw-bold">SAVE</button>
+                <button type="submit" class="btn btn-main w-100 rounded-pill fw-bold" th:text="#{admin.btn.save}">SAVE</button>
             </form>
         </div>
     </div>
@@ -163,39 +205,54 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content p-4">
             <form th:action="@{/admin/exercises/edit/{id}(id=${ex.id})}" method="POST" enctype="multipart/form-data">
-                <h5 class="fw-bold mb-4">Edit Exercise</h5>
+                <h5 class="fw-bold mb-4" th:text="#{admin.modal.edit_exercise}">Edit Exercise</h5>
                 <div class="row">
-                    <div class="col-md-6 mb-3"><label class="small fw-bold">Name</label><input type="text" name="name" class="form-control" th:value="${ex.name}" required></div>
-                    <div class="col-md-6 mb-3"><label class="small fw-bold">Equipment</label>
+                    <div class="col-md-6 mb-3">
+                        <label class="small fw-bold" th:text="#{admin.label.name}">Name</label>
+                        <input type="text" name="name" class="form-control" th:value="${ex.name}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="small fw-bold" th:text="#{admin.label.equipment}">Equipment</label>
                         <select name="equipmentType" class="form-select">
                             <option th:each="e : ${equipmentTypes}" th:value="${e}" th:text="${e}" th:selected="${e == ex.equipmentType}"></option>
                         </select>
                     </div>
                 </div>
-                <div class="mb-3"><label class="small fw-bold">Description</label><textarea name="description" class="form-control" rows="2" th:text="${ex.description}" required></textarea></div>
+                <div class="mb-3">
+                    <label class="small fw-bold" th:text="#{admin.label.description}">Description</label>
+                    <textarea name="description" class="form-control" rows="2" th:text="${ex.description}" required></textarea>
+                </div>
                 <div class="row mb-3">
                     <div class="col-6">
-                        <label class="small fw-bold">Image</label>
+                        <label class="small fw-bold" th:text="#{admin.label.image}">Image</label>
                         <div class="preview-box image-preview">
                             <img th:src="${ex.imageUrl}" th:style="${ex.imageUrl != null ? 'display:block' : 'display:none'}">
-                            <span th:if="${ex.imageUrl == null}" class="text-muted">No Image</span>
+                            <span th:if="${ex.imageUrl == null}" class="text-muted" th:text="#{admin.status.no_image}">No Image</span>
                         </div>
                         <input type="file" name="imageFile" class="form-control" accept="image/*" onchange="FileUploader.previewLocal(this, '.image-preview')">
                     </div>
                     <div class="col-6">
-                        <label class="small fw-bold">Video</label>
+                        <label class="small fw-bold" th:text="#{admin.label.video}">Video</label>
                         <div class="preview-box video-preview">
                             <video th:src="${ex.videoUrl}" controls th:style="${ex.videoUrl != null ? 'display:block' : 'display:none'}"></video>
-                            <span th:if="${ex.videoUrl == null}" class="text-muted">No Video</span>
+                            <span th:if="${ex.videoUrl == null}" class="text-muted" th:text="#{admin.status.no_video}">No Video</span>
                         </div>
                         <input type="file" name="videoFile" class="form-control" accept="video/*" onchange="FileUploader.previewLocal(this, '.video-preview')">
                     </div>
                 </div>
                 <div class="row g-2 mb-4">
-                    <div class="col-6"><select name="category" class="form-select"><option th:each="c : ${categories}" th:value="${c}" th:text="${c}" th:selected="${c == ex.category}"></option></select></div>
-                    <div class="col-6"><select name="exerciseType" class="form-select"><option th:each="t : ${exerciseTypes}" th:value="${t}" th:text="${t}" th:selected="${t == ex.exerciseType}"></option></select></div>
+                    <div class="col-6">
+                        <select name="category" class="form-select">
+                            <option th:each="c : ${categories}" th:value="${c}" th:text="${c}" th:selected="${c == ex.category}"></option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <select name="exerciseType" class="form-select">
+                            <option th:each="t : ${exerciseTypes}" th:value="${t}" th:text="${t}" th:selected="${t == ex.exerciseType}"></option>
+                        </select>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-main w-100 rounded-pill fw-bold">UPDATE</button>
+                <button type="submit" class="btn btn-main w-100 rounded-pill fw-bold" th:text="#{admin.btn.update}">UPDATE</button>
             </form>
         </div>
     </div>
@@ -205,10 +262,10 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4">
             <form th:action="@{/admin/quotes/add}" method="POST">
-                <h5 class="fw-bold mb-4">New Quote</h5>
-                <textarea name="text" class="form-control mb-3" rows="3" placeholder="Inspirational text..." required></textarea>
-                <input type="text" name="author" class="form-control mb-4" placeholder="Author name">
-                <button type="submit" class="btn btn-main w-100 rounded-pill fw-bold">SAVE QUOTE</button>
+                <h5 class="fw-bold mb-4" th:text="#{admin.modal.new_quote}">New Quote</h5>
+                <textarea name="text" class="form-control mb-3" rows="3" th:placeholder="#{admin.placeholder.quote_text}" required></textarea>
+                <input type="text" name="author" class="form-control mb-4" th:placeholder="#{admin.placeholder.author_name}">
+                <button type="submit" class="btn btn-main w-100 rounded-pill fw-bold" th:text="#{admin.btn.save_quote}">SAVE QUOTE</button>
             </form>
         </div>
     </div>
@@ -218,10 +275,10 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4">
             <form th:action="@{/admin/quotes/edit/{id}(id=${q.id})}" method="POST">
-                <h5 class="fw-bold mb-4">Edit Quote</h5>
+                <h5 class="fw-bold mb-4" th:text="#{admin.modal.edit_quote}">Edit Quote</h5>
                 <textarea name="text" class="form-control mb-3" rows="3" th:text="${q.text}" required></textarea>
                 <input type="text" name="author" class="form-control mb-4" th:value="${q.author}">
-                <button type="submit" class="btn btn-main w-100 rounded-pill fw-bold">UPDATE QUOTE</button>
+                <button type="submit" class="btn btn-main w-100 rounded-pill fw-bold" th:text="#{admin.btn.update_quote}">UPDATE QUOTE</button>
             </form>
         </div>
     </div>

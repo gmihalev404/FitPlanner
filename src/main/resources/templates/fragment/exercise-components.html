@@ -5,28 +5,28 @@
     <div class="col-md-4 mb-2">
       <select id="categoryFilter" class="form-select bg-input border-input color-main">
         <option value="" th:text="#{exercise.all_categories}">All Categories</option>
-        <option value="legs" th:text="#{cat.legs}">Legs</option>
-        <option value="core" th:text="#{cat.core}">Core</option>
-        <option value="back" th:text="#{cat.back}">Back</option>
-        <option value="biceps" th:text="#{cat.biceps}">Biceps</option>
-        <option value="triceps" th:text="#{cat.triceps}">Triceps</option>
-        <option value="chest" th:text="#{cat.chest}">Chest</option>
+        <option value="legs" th:text="#{Category.LEGS}">Legs</option>
+        <option value="core" th:text="#{Category.CORE}">Core</option>
+        <option value="back" th:text="#{Category.BACK}">Back</option>
+        <option value="biceps" th:text="#{Category.BICEPS}">Biceps</option>
+        <option value="triceps" th:text="#{Category.TRICEPS}">Triceps</option>
+        <option value="chest" th:text="#{Category.CHEST}">Chest</option>
       </select>
     </div>
     <div class="col-md-4 mb-2">
       <select id="typeFilter" class="form-select bg-input border-input color-main">
         <option value="" th:text="#{exercise.all_types}">All Types</option>
-        <option value="time" th:text="#{et.time}">Time</option>
-        <option value="repetitions" th:text="#{et.reps}">Repetitions</option>
+        <option value="time" th:text="#{ExerciseType.TIME}">Time</option>
+        <option value="repetitions" th:text="#{ExerciseType.REPETITIONS}">Repetitions</option>
       </select>
     </div>
     <div class="col-md-4 mb-2">
       <select id="equipmentFilter" class="form-select bg-input border-input color-main">
         <option value="" th:text="#{exercise.all_equipment}">All Equipment</option>
-        <option value="body_weight" th:text="#{eq.body_weight}">Body weight</option>
-        <option value="weighted" th:text="#{eq.weighted}">Weighted</option>
-        <option value="machine" th:text="#{eq.machine}">Machine</option>
-        <option value="cardio" th:text="#{eq.cardio}">Cardio</option>
+        <option value="body_weight" th:text="#{EquipmentType.BODY_WEIGHT}">Body weight</option>
+        <option value="weighted" th:text="#{EquipmentType.WEIGHTED}">Weighted</option>
+        <option value="machine" th:text="#{EquipmentType.MACHINE}">Machine</option>
+        <option value="cardio" th:text="#{EquipmentType.CARDIO}">Cardio</option>
       </select>
     </div>
   </div>
@@ -59,7 +59,7 @@
       <input type="hidden" name="exerciseId" th:value="${ex?.id}">
       <button type="submit" class="w-100 border-0 bg-transparent p-0">
         <div class="exercise-image-container">
-          <img th:src="${ex?.imageUrl}" class="exercise-image" alt="exercise">
+          <img th:src="${ex?.imageUrl}" class="exercise-image" th:alt="${ex?.name}">
           <div class="exercise-name-overlay" th:text="${ex?.name}"></div>
         </div>
       </button>

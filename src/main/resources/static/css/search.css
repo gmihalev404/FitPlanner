@@ -1,0 +1,39 @@
+.search-container { margin-top: 100px; min-height: 80vh; }
+
+/* Navigation Pills Styling */
+.nav-pills .nav-link {
+    color: var(--text-soft);
+    border: 1px solid var(--border-soft);
+    margin: 0 5px;
+    background: transparent;
+    transition: all 0.3s ease;
+}
+.nav-pills .nav-link.active {
+    background-color: var(--delimiter-color) !important;
+    color: #000 !important;
+    border-color: var(--delimiter-color);
+    font-weight: bold;
+}
+
+/* Trainer Card Styling */
+.trainer-card {
+    transition: transform 0.3s ease, border-color 0.3s ease;
+    border: 1px solid var(--border-soft) !important;
+}
+.trainer-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--delimiter-color) !important;
+}
+
+/* Prevent "broken image" icon from showing while loading or failing */
+img:not([src]), img[src=""] { visibility: hidden; }
+
+/* Specific fallback styling */
+.fallback-img {
+    background-color: #2a2a2a;
+    object-fit: cover;
+}
+
+.program-card{
+    background: var(--bg-card);
+}

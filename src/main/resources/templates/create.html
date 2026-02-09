@@ -5,7 +5,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title th:text="#{create.workout}">Create Workout</title>
+  <title th:text="#{create.workout.title}">FitPlanner | Create Workout</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
@@ -23,7 +23,7 @@
 
 <div class="background-section py-4">
   <div class="container create-workout-log p-4">
-    <h1 class="container-heading text-center mb-5">Create Workout</h1>
+    <h1 class="container-heading text-center mb-5" th:text="#{create.workout.heading}">Create Workout</h1>
 
     <form id="programForm"
           th:action="${programId == null} ? @{'/create-full-workout'} : @{'/edit-program'}"
@@ -35,7 +35,7 @@
 
       <div class="row g-4 mb-5 align-items-stretch">
         <div class="col-12 col-md-4">
-          <label class="form-label fw-bold">Program Image</label>
+          <label class="form-label fw-bold" th:text="#{create.label.program_image}">Program Image</label>
           <div class="custom-file-upload h-100 d-flex flex-column">
             <div id="imagePreviewContainer" class="mb-2 text-center border rounded p-2 flex-grow-1 d-flex align-items-center justify-content-center"
                  style="background: rgba(255,255,255,0.05); min-height: 200px; width: 100%; overflow: hidden; border: 1px dashed rgba(255,255,255,0.2);">
@@ -51,7 +51,7 @@
                  style="font-size: 3.5rem;"></i>
             </div>
             <input type="file" name="programImage" id="programImage" class="form-control" accept="image/*">
-            <div class="form-text small">Max size: 2MB (JPG, PNG)</div>
+            <div class="form-text small" th:text="#{create.image.max_size}">Max size: 2MB (JPG, PNG)</div>
           </div>
         </div>
 
@@ -59,7 +59,8 @@
           <div class="row g-3">
             <div class="col-12">
               <label class="form-label fw-bold" th:text="#{create.program_name}">Program Name</label>
-              <input type="text" th:field="*{name}" id="prog-name" class="form-control form-control-lg bg-input color-main" required>
+              <input type="text" th:field="*{name}" id="prog-name" class="form-control form-control-lg bg-input color-main"
+                     th:placeholder="#{create.placeholder.program_name}" required>
             </div>
 
             <div class="col-12 col-md-6">
@@ -100,8 +101,15 @@
               <h5 class="fw-bold text-center text-uppercase border-bottom pb-2 mb-3"
                   th:text="${#messages.msg(dayWorkout.day.toLowerCase())}"></h5>
 
-              <div th:if="${dayWorkout.exercises.isEmpty()}" class="text-center p-4">
-                <img th:src="@{/images/coffee.jpg}" class="coffee-img img-fluid rounded" th:alt="#{create.rest_day}">
+              <div th:if="${dayWorkout.exercises.isEmpty()}" class="text-center p-0">
+                <img th:src="@{/images/coffee.jpg}" class="coffee-img img-fluid rounded-top w-100" th:alt="#{create.rest_day}">
+
+                <div class="py-2 rounded-bottom">
+                  <p class="m-0 fw-bold text-uppercase small"
+                     th:text="#{create.rest_day}">
+                    Rest Day
+                  </p>
+                </div>
               </div>
 
               <div th:unless="${dayWorkout.exercises.isEmpty()}" class="max-vh-25 d-flex flex-column w-100 overflow-auto">
@@ -110,19 +118,19 @@
                     <div class="fw-bold small text-dark text-truncate" th:text="${exercise.name}"></div>
                     <div class="text-muted" style="font-size: 0.7rem;"
                          th:text="${exercise.sets + ' ' + #messages.msg('create.sets') + ' - ' + exercise.reps + ' x '
-                                             + exercise.weight + ' ' + (programsUserDto.measuringUnits == 'kg' ? 'kg' : 'lbs')}">
+                                             + exercise.weight + ' ' + (programsUserDto.measuringUnits == 'kg' ? #messages.msg('unit.kg') : #messages.msg('unit.lbs'))}">
                     </div>
                   </div>
                   <div class="d-flex align-items-center ms-2">
                     <form th:action="@{/edit-exercise}" method="get" class="me-1 sync-required">
                       <input type="hidden" name="day" th:value="${dayWorkout.day}">
                       <input type="hidden" name="id" th:value="${exercise.id}">
-                      <button type="submit" class="btn btn-sm text-primary p-0 px-1" title="Edit">&#9998;</button>
+                      <button type="submit" class="btn btn-sm text-primary p-0 px-1" th:title="#{create.btn.edit}">&#9998;</button>
                     </form>
                     <form th:action="@{/remove-exercise}" method="post" class="sync-required">
                       <input type="hidden" name="day" th:value="${dayWorkout.day}">
                       <input type="hidden" name="id" th:value="${exercise.id}">
-                      <button type="submit" class="btn btn-sm text-danger p-0 px-1">✕</button>
+                      <button type="submit" class="btn btn-sm text-danger p-0 px-1" th:title="#{create.btn.remove}">✕</button>
                     </form>
                   </div>
                 </div>
@@ -149,14 +157,12 @@
 <footer th:replace="~{fragment/footer.html::footer}"></footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
 <script th:src="@{/js/upload-file.js(v=${#dates.createNow().time})}"></script>
 <script th:src="@{/js/scrollable-days.js(v=${#dates.createNow().time})}"></script>
 <script th:src="@{/js/search-bar.js(v=${#dates.createNow().time})}"></script>
 <script th:src="@{/js/notifications.js(v=${#dates.createNow().time})}" defer></script>
 <script th:src="@{/js/sync-program-data.js}"></script>
 <script>
-  // Логика за снимката (запазваме съществуващата ти)
   document.getElementById('programImage').addEventListener('change', function() {
     FileUploader.previewAndUpload(this, {
       containerSelector: '#imagePreviewContainer',
@@ -166,6 +172,5 @@
     });
   });
 </script>
-
 </body>
 </html>

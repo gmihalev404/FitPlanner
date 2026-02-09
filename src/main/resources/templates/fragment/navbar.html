@@ -1,14 +1,11 @@
 <nav th:fragment="navbar" class="navbar navbar-dark navbar-expand-lg w-100" xmlns:sec="http://www.w3.org/1999/xhtml">
   <div class="container-fluid d-flex align-items-center flex-wrap">
 
-    <!-- Brand / Logo -->
     <a href="/" class="navbar-brand">
       <img th:src="@{'/images/logo.png'}" class="logo" alt="Logo">
     </a>
 
-    <!-- Profile + Notifications (only visible if userDto is not null) -->
     <div th:if="${userDto != null}" class="d-flex align-items-center gap-2 ms-auto me-2">
-      <!-- Профил -->
       <a class="nav-link p-2" th:href="@{/profile}">
         <img th:src="${userDto.profileImageUrl != null ? userDto.profileImageUrl : '/images/default-user-image.webp'}"
              alt="Profile"
@@ -16,23 +13,22 @@
              style="width: 40px; height: 40px; object-fit: cover; border: 1px solid var(--border-soft);">
       </a>
 
-      <!-- Нотификации -->
       <div id="notifDropdownWrapper" class="position-relative">
         <a id="notifDrop" class="btn btn-link nav-link position-relative p-2 bell" type="button">
           <i class="bi bi-bell-fill"></i>
           <span class="badge rounded-pill bg-danger position-absolute badge-notif-count"
                 th:if="${unreadNotificationsCount > 0}"
                 th:text="${unreadNotificationsCount}">
-    </span>
+          </span>
         </a>
 
         <ul id="notifPanel" class="notification-panel shadow-lg scrollable-container">
           <li class="notification-header text-center">
-            <h6 class="m-0 small fw-bold">Известия</h6>
+            <h6 class="m-0 small fw-bold" th:text="#{nav.notifications.title}">Известия</h6>
           </li>
 
           <li th:if="${unreadNotificationsCount == 0}">
-            <div class="dropdown-item text-center py-4 text-muted small">Нямате нови известия</div>
+            <div class="dropdown-item text-center py-4 text-muted small" th:text="#{nav.notifications.empty}">Нямате нови известия</div>
           </li>
 
           <li th:each="n : ${allUnreadNotifications}">
@@ -48,15 +44,13 @@
         </ul>
       </div>
     </div>
-    <!-- Toggler for collapse -->
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <!-- Collapsible menu -->
     <div class="collapse navbar-collapse" id="navbarContent">
 
-      <!-- For not logged in users -->
       <ul th:if="${userDto == null}" class="navbar-nav ms-auto w-100-mobile gap-5">
         <li class="nav-item"><a class="nav-link" th:href="@{/home}" th:text="#{nav.home}"></a></li>
         <li class="nav-item"><a class="nav-link" th:href="@{/login}" th:text="#{nav.sign-in}"></a></li>
@@ -66,7 +60,6 @@
         <li class="nav-item"><a class="nav-link" th:href="@{/search}" th:text="#{nav.search}"></a></li>
       </ul>
 
-      <!-- For CLIENT users -->
       <ul th:if="${userDto != null and userDto.role.name() == 'CLIENT'}" class="navbar-nav ms-auto w-100-mobile gap-5">
         <li class="nav-item"><a class="nav-link" th:href="@{/home}" th:text="#{nav.home}"></a></li>
         <li class="nav-item"><a class="nav-link" th:href="@{/create?newProgram=true}" th:text="#{nav.create-workout}"></a></li>
@@ -76,7 +69,6 @@
         <li class="nav-item"><a class="nav-link" th:href="@{/logout}" th:text="#{nav.log-out}"></a></li>
       </ul>
 
-      <!-- For TRAINER users -->
       <ul th:if="${userDto != null and userDto.role.name() == 'TRAINER'}" class="navbar-nav ms-auto w-100-mobile gap-5">
         <li class="nav-item"><a class="nav-link" th:href="@{/home}" th:text="#{nav.home}"></a></li>
         <li class="nav-item"><a class="nav-link" th:href="@{/create?newProgram=true}" th:text="#{nav.create-workout}"></a></li>
@@ -86,10 +78,8 @@
         <li class="nav-item"><a class="nav-link" th:href="@{/logout}" th:text="#{nav.log-out}"></a></li>
       </ul>
 
-
-      <!-- For Admin users -->
       <ul th:if="${userDto != null and userDto.role.name() == 'ADMIN'}" class="navbar-nav ms-auto w-100-mobile gap-5">
-        <li class="nav-item"><a class="nav-link" th:href="@{/admin/management}">Admin Panel</a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/admin/management}" th:text="#{nav.admin-panel}">Admin Panel</a></li>
         <li class="nav-item"><a class="nav-link" th:href="@{/home}" th:text="#{nav.home}"></a></li>
         <li class="nav-item"><a class="nav-link" th:href="@{/create?newProgram=true}" th:text="#{nav.create-workout}"></a></li>
         <li class="nav-item"><a class="nav-link" th:href="@{/stats}" th:text="#{nav.stats}"></a></li>

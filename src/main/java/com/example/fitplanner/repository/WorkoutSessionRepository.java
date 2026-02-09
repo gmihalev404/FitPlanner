@@ -47,9 +47,11 @@ public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, 
     Iterable<? extends WorkoutSession> findByUserId(Long id);
 
     @Query("SELECT s FROM WorkoutSession s " +
-            "JOIN FETCH s.user " +      // Зарежда потребителя веднага
-            "JOIN FETCH s.program " +   // Зарежда програмата веднага
-            "WHERE s.scheduledFor = :date AND s.program.notifications = true")
+            "JOIN FETCH s.user " +
+            "JOIN FETCH s.program " +
+            "WHERE s.scheduledFor = :date " +
+            "AND s.program.notifications = true " +
+            "AND s.finished = false")
     List<WorkoutSession> findAllByScheduledForAndProgramNotificationsTrue(@Param("date") LocalDate date);
 
     @Query("SELECT DISTINCT ws FROM WorkoutSession ws " +

@@ -179,6 +179,33 @@
     }
 }
 
+@media (min-width: 992px) and (max-width: 1200px) {
+    .nav-link-custom {
+        font-size: 0.85rem; /* Малко по-малък шрифт, за да се събере всичко */
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+}
+
+/* Оправяме подравняването в мобилното меню */
+@media (max-width: 991px) {
+    .navbar-nav {
+        gap: 10px !important; /* Намаляваме дупката, когато е в хамбургер менюто */
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    .nav-item {
+        width: 100%;
+        border-bottom: 1px solid rgba(255,255,255,0.1); /* Лека разделителна линия */
+    }
+}
+
+/* Предпазваме текста от пренасяне на нов ред, което разваля височината на бара */
+.nav-link {
+    white-space: nowrap;
+}
+
 /*.navbar {*/
 /*    z-index: 9999 !important;*/
 /*}*/

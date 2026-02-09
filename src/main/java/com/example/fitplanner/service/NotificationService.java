@@ -26,8 +26,8 @@ public class NotificationService {
     private final WorkoutSessionRepository workoutSessionRepository;
     private final ModelMapper modelMapper;
 
-    // Runs every day at 04:00 PM
-    @Scheduled(initialDelay = 5000, fixedDelay = 3600000) // 5 сек след старт
+//    @Scheduled(initialDelay = 5000, fixedDelay = 3600000) // 5 сек след старт
+    @Scheduled(cron = "0 0 9 * * *")
     public void checkAndSendDailyWorkoutNotifications() {
         LocalDate today = LocalDate.now();
         System.out.println("DEBUG: Cron task started for date: " + today);

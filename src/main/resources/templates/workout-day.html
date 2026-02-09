@@ -5,7 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workout Day</title>
+    <title th:text="#{workout.day.title} + ' | FitPlanner'">Workout Day</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
@@ -25,16 +26,16 @@
 
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h4 class="fw-bold mb-0" th:text="'Workout for ' + ${date}"></h4>
+                <h4 class="fw-bold mb-0" th:text="#{workout.for} + ' ' + ${date}"></h4>
                 <div class="mt-2">
                     <span th:if="${isFinished}" class="badge bg-success status-badge">
-                        <i class="bi bi-check-circle-fill"></i> Completed
+                        <i class="bi bi-check-circle-fill"></i> <span th:text="#{workout.status.completed}">Completed</span>
                     </span>
                     <span th:if="${!isFinished && isPast && !isToday}" class="badge bg-secondary status-badge">
-                        <i class="bi bi-clock-history"></i> Past Session
+                        <i class="bi bi-clock-history"></i> <span th:text="#{workout.status.past}">Past Session</span>
                     </span>
                     <span th:if="${!isFinished && isToday}" class="badge bg-warning text-dark status-badge">
-                        <i class="bi bi- lightning-charge-fill"></i> Today's Goal
+                        <i class="bi bi-lightning-charge-fill"></i> <span th:text="#{workout.status.today}">Today's Goal</span>
                     </span>
                 </div>
             </div>
@@ -42,7 +43,7 @@
 
         <div th:if="${exercises.isEmpty()}" class="text-center w-100 py-5">
             <i class="bi bi-calendar-x fs-1 text-muted"></i>
-            <p class="fw-bold mt-2" th:text="'No workout scheduled for ' + ${date}"></p>
+            <p class="fw-bold mt-2" th:text="#{workout.no_exercises} + ' ' + ${date}"></p>
         </div>
 
         <div th:if="${!exercises.isEmpty()}" class="session-exercises scrollable-container">
@@ -50,41 +51,35 @@
 
                 <div class="col-5 col-lg-3 d-flex flex-column">
                     <label th:text="${exercise.name}" class="fw-bold text-truncate d-block mb-0"></label>
-                    <span th:text="${'Program: ' + exercise.programName}" class="text-info text-truncate small"></span>
+                    <span th:text="#{exercise.program} + ': ' + ${exercise.programName}" class="text-info text-truncate small"></span>
                 </div>
 
                 <div class="col-2 col-lg-5 d-flex flex-column flex-lg-row justify-content-lg-around small px-1">
-                    <span class="fw-bold"><i class="bi bi-weight me-1"></i><span th:text="${#numbers.formatDecimal(exercise.weight, 1, 2) + units}"></span></span>
-                    <span><i class="bi bi-arrow-repeat me-1"></i><span th:text="${exercise.reps + ' reps'}"></span></span>
-                    <span><i class="bi bi-layers me-1"></i><span th:text="${exercise.sets + ' sets'}"></span></span>
+                    <span class="fw-bold">
+                        <i class="bi bi-weight me-1"></i>
+                        <span th:text="${#numbers.formatDecimal(exercise.weight, 1, 2)} + ' ' + ${units}"></span>
+                    </span>
+                    <span>
+                        <i class="bi bi-arrow-repeat me-1"></i>
+                        <span th:text="${exercise.reps} + ' ' + #{exercise.reps}"></span>
+                    </span>
+                    <span>
+                        <i class="bi bi-layers me-1"></i>
+                        <span th:text="${exercise.sets} + ' ' + #{exercise.sets}"></span>
+                    </span>
                 </div>
 
                 <div class="col-2 col-lg-2 text-center text-lg-start">
                     <span th:if="${exercise.finished}" class="text-success fw-bold small">
-                        <i class="bi bi-check-lg"></i> Done
+                        <i class="bi bi-check-lg"></i> <span th:text="#{exercise.done}">Done</span>
                     </span>
-                    <span th:if="${!exercise.finished && (isFinished || isPast)}" class="text-muted small italic">
+                    <span th:if="${!exercise.finished && (isFinished || isPast)}" class="text-muted small italic" th:text="#{exercise.skipped}">
                         Skipped
                     </span>
                 </div>
 
                 <div class="col-3 col-lg-2 d-flex justify-content-end align-items-center">
-
-<!--                    <th:block th:if="${isToday && !isFinished}">-->
-<!--                        <form th:action="@{/edit-session-exercise}" method="get" class="me-2">-->
-<!--                            <button type="submit" class="btn text-primary fs-4 p-0 px-1" title="Edit">-->
-<!--                                <i class="bi bi-pencil-square"></i>-->
-<!--                            </button>-->
-<!--                        </form>-->
-
-<!--                        <form th:action="@{/remove-session-exercise}" method="post" onsubmit="return confirm('Remove this exercise?')">-->
-<!--                            <button type="submit" class="btn text-danger fs-4 p-0 px-1" title="Remove">-->
-<!--                                <i class="bi bi-x-lg"></i>-->
-<!--                            </button>-->
-<!--                        </form>-->
-<!--                    </th:block>-->
-
-                    <span th:if="${isFinished || isPast}" class="read-only-icon text-muted" title="Read Only">
+                    <span th:if="${isFinished || isPast}" class="read-only-icon text-muted" th:title="#{workout.readonly}">
                         <i class="bi bi-lock-fill fs-5"></i>
                     </span>
                 </div>
@@ -101,11 +96,11 @@
                 </div>
 
                 <button th:if="${isToday && !isFinished}" class="btn btn-success px-5 py-2 fw-bold shadow-sm" type="submit">
-                    <i class="bi bi-play-circle-fill me-2"></i> Start Session
+                    <i class="bi bi-play-circle-fill me-2"></i> <span th:text="#{workout.btn.start}">Start Session</span>
                 </button>
 
                 <button th:if="${isFinished || (isPast && !isToday)}" class="btn btn-outline-info px-5 py-2 fw-bold shadow-sm" type="submit">
-                    <i class="bi bi-info-circle-fill me-2"></i> View Day Summary
+                    <i class="bi bi-info-circle-fill me-2"></i> <span th:text="#{workout.btn.summary}">View Day Summary</span>
                 </button>
             </form>
         </div>

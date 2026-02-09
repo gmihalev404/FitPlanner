@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statistics</title>
+    <title th:text="#{nav.stats} + ' | FitPlanner'">Statistics | FitPlanner</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -24,8 +24,10 @@
 <div th:replace="fragment/navbar.html::navbar"></div>
 <div class="background-section">
     <div class="container my-5 p-2">
-        <h1 class="container-heading text-center mb-4">Statistics</h1>
+        <h1 class="container-heading text-center mb-4" th:text="#{stats.title}">Statistics</h1>
+
         <div th:replace="fragment/search-bar.html::search-bar('exerciseSearch', #{exercise.search_placeholder}, '.exercise-item')"></div>
+
         <div th:replace="~{fragment/exercise-components.html::exercise-filters}">
             <div class="row mb-4 mt-3">
                 <div class="col-md-4 mb-2">
@@ -71,10 +73,21 @@
                  ">
                     <div class="card exercise-selectable-card p-0 h-100" onclick="toggleExercise(this)">
                         <div class="card-body row align-items-center p-2 g-2">
-                            <div class="exercise-name-label col-3" th:text="${'Name: ' + ex.name}"></div>
-                            <div class="exercise-name-label col-3" th:text="${'Type: ' + ex.exerciseType}"></div>
-                            <div class="exercise-name-label col-3" th:text="${'Equipment:' + ex.equipmentType}"></div>
-                            <div class="exercise-name-label col-3" th:text="${'Category: ' + ex.category}"></div>
+                            <div class="exercise-name-label col-3">
+                                <span th:text="#{exercise.name} + ': '">Name: </span><span th:text="${ex.name}"></span>
+                            </div>
+                            <div class="exercise-name-label col-3">
+                                <span th:text="#{exercise.type} + ': '">Type: </span>
+                                <span th:text="#{${'et.' + #strings.toLowerCase(ex.exerciseType)}}"></span>
+                            </div>
+                            <div class="exercise-name-label col-3">
+                                <span th:text="#{exercise.equipment} + ': '">Equipment: </span>
+                                <span th:text="#{${'eq.' + #strings.toLowerCase(ex.equipmentType)}}"></span>
+                            </div>
+                            <div class="exercise-name-label col-3">
+                                <span th:text="#{exercise.category} + ': '">Category: </span>
+                                <span th:text="#{${'cat.' + #strings.toLowerCase(ex.category)}}"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -88,8 +101,12 @@
             <div class="col-12 mb-5">
                 <div class="card shadow-sm">
                     <div class="card-header text-white d-flex justify-content-between align-items-center">
-                        <span>Exercise Progress Comparison</span>
-                        <small id="selectedCounter" class="bg-white text-primary p-2 rounded d-flex align-items-center text-wrap"> 0 selected </small>                    </div>
+                        <span th:text="#{stats.progress_comparison}">Exercise Progress Comparison</span>
+                        <small id="selectedCounter" class="bg-white text-primary p-2 rounded d-flex align-items-center text-wrap"
+                               th:data-label-selected="#{stats.selected_label}">
+                            0 [[#{stats.selected_label}]]
+                        </small>
+                    </div>
                     <div class="card-body chart-container">
                         <canvas id="exerciseProgressChart"></canvas>
                     </div>
@@ -98,7 +115,7 @@
 
             <div class="col-12 mb-5">
                 <div class="card shadow-sm">
-                    <div class="card-header text-white">Personal Progress (Weight)</div>
+                    <div class="card-header text-white" th:text="#{stats.personal_weight}">Personal Progress (Weight)</div>
                     <div class="card-body chart-container">
                         <canvas id="personalProgressChart"></canvas>
                     </div>
@@ -115,7 +132,12 @@
 <script th:src="@{/js/filters.js(v=${#dates.createNow().time})}"></script>
 <script th:src="@{/js/search-bar.js(v=${#dates.createNow().time})}"></script>
 <script th:inline="javascript">
-    /* These variables are initialized by Thymeleaf and made global for stats.js */
+    /* Глобални променливи за Chart.js преводи */
+    window.i18n = {
+        weightLabel: /*[[#{profile.weight}]]*/ 'Weight',
+        dateLabel: /*[[#{stats.date}]]*/ 'Date'
+    };
+
     window.userStatsConfig = {
         unit: /*[[${units != null ? units : 'kg'}]]*/ 'kg',
         personalLabels: /*[[${personalLabels}]]*/ [],

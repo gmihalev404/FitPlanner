@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitPlanner | Home</title>
+    <title th:text="'FitPlanner | ' + #{nav.home}">FitPlanner | Home</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -16,7 +16,6 @@
     <link rel="stylesheet" th:href="@{/css/footer.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/dark-theme.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/light-theme.css(v=${#dates.createNow().time})}">
-
     <link rel="stylesheet" th:href="@{/css/home.css(v=${#dates.createNow().time})}">
 </head>
 <body>
@@ -28,17 +27,17 @@
             <div class="col-lg-7">
                 <div class="hero-content p-md-5">
                     <h1 class="display-1 fw-black hero-title text-uppercase mb-0">
-                        Level <span class="accent-text">Up</span>
+                        <span th:text="#{home.hero.level}">Level</span> <span class="accent-text" th:text="#{home.hero.up}">Up</span>
                     </h1>
                     <h2 class="display-3 fw-bold hero-title text-uppercase mb-4">
-                        Your <span class="text-outline">Performance</span>
+                        <span th:text="#{home.hero.your}">Your</span> <span class="text-outline" th:text="#{home.hero.performance}">Performance</span>
                     </h2>
-                    <p class="fs-4 text-white mb-5 opacity-90 shadow-text max-w-500">
+                    <p class="fs-4 text-white mb-5 opacity-90 shadow-text max-w-500" th:text="#{home.hero.subtitle}">
                         Experience the only training platform utilizing double-progression logic to automate your growth.
                     </p>
                     <div class="d-flex gap-3">
-                        <a href="/register" class="btn btn-primary btn-lg px-5 py-3 rounded-pill fw-bold shadow-lg">START NOW</a>
-                        <a href="/login" class="btn btn-outline-light btn-lg px-5 py-3 rounded-pill fw-bold">SIGN IN</a>
+                        <a href="/register" class="btn btn-primary btn-lg px-5 py-3 rounded-pill fw-bold shadow-lg" th:text="#{home.btn.start}">START NOW</a>
+                        <a href="/login" class="btn btn-outline-light btn-lg px-5 py-3 rounded-pill fw-bold" th:text="#{home.btn.signin}">SIGN IN</a>
                     </div>
                 </div>
             </div>
@@ -49,20 +48,20 @@
 
         <div class="glass-panel p-4 mb-5 d-flex flex-wrap justify-content-around align-items-center gap-4">
             <div class="text-center">
-                <span class="d-block text-uppercase small color-soft fw-bold mb-1">Current Streak</span>
+                <span class="d-block text-uppercase small color-soft fw-bold mb-1" th:text="#{home.stats.streak}">Current Streak</span>
                 <span class="fs-1 fw-black color-main">
                     <span th:text="${userStats.currentStreak}">0</span>
                     <i class="bi bi-fire" th:classappend="${userStats.currentStreak > 10} ? 'text-danger' : 'text-warning'"></i>
                 </span>
             </div>
             <div class="text-center border-start border-soft ps-4">
-                <span class="d-block text-uppercase small color-soft fw-bold mb-1">Monthly Volume</span>
+                <span class="d-block text-uppercase small color-soft fw-bold mb-1" th:text="#{home.stats.volume}">Monthly Volume</span>
                 <span class="fs-1 fw-black color-main">
                     <span th:text="${#numbers.formatDecimal(userStats.monthlyVolume, 1, 1)}">0.0</span><small class="fs-6">t</small>
                 </span>
             </div>
             <div class="text-center border-start border-soft ps-4">
-                <span class="d-block text-uppercase small color-soft fw-bold mb-1">Success Rate</span>
+                <span class="d-block text-uppercase small color-soft fw-bold mb-1" th:text="#{home.stats.success}">Success Rate</span>
                 <span class="fs-1 fw-black color-main" th:text="${userStats.successRate + '%'}">0%</span>
             </div>
         </div>
@@ -71,15 +70,15 @@
             <div class="col-md-6">
                 <a href="/my-workouts" class="action-card h-100 p-5 text-center text-decoration-none">
                     <i class="bi bi-calendar3-week fs-1 color-link mb-3"></i>
-                    <h3 class="text-uppercase fw-black color-main">Workout Calendar</h3>
-                    <p class="color-soft mb-0 small">Execute your sessions and maintain your streaks.</p>
+                    <h3 class="text-uppercase fw-black color-main" th:text="#{home.card.calendar.title}">Workout Calendar</h3>
+                    <p class="color-soft mb-0 small" th:text="#{home.card.calendar.desc}">Execute your sessions and maintain your streaks.</p>
                 </a>
             </div>
             <div class="col-md-6">
                 <a href="/stats" class="action-card h-100 p-5 text-center text-decoration-none">
                     <i class="bi bi-graph-up fs-1 color-link mb-3"></i>
-                    <h3 class="text-uppercase fw-black color-main">Progress Insights</h3>
-                    <p class="color-soft mb-0 small">Analyze lift history and progression markers.</p>
+                    <h3 class="text-uppercase fw-black color-main" th:text="#{home.card.stats.title}">Progress Insights</h3>
+                    <p class="color-soft mb-0 small" th:text="#{home.card.stats.desc}">Analyze lift history and progression markers.</p>
                 </a>
             </div>
 
@@ -93,16 +92,18 @@
 
             <div class="col-12">
                 <div class="row g-3">
-                    <div class="col-4"><a href="/exercises" class="btn-quick d-block text-decoration-none text-center p-3"><i class="bi bi-search fs-4 d-block mb-1"></i><span class="small fw-bold">Exercises</span></a></div>
-                    <div class="col-4"><a href="/search" class="btn-quick d-block text-decoration-none text-center p-3"><i class="bi bi-journal-text fs-4 d-block mb-1"></i><span class="small fw-bold">Programs</span></a></div>
-                    <div class="col-4"><a href="/profile" class="btn-quick d-block text-decoration-none text-center p-3"><i class="bi bi-person-circle fs-4 d-block mb-1"></i><span class="small fw-bold">Profile</span></a></div>
+                    <div class="col-4"><a href="/exercises" class="btn-quick d-block text-decoration-none text-center p-3"><i class="bi bi-search fs-4 d-block mb-1"></i><span class="small fw-bold" th:text="#{nav.exercises}">Exercises</span></a></div>
+                    <div class="col-4"><a href="/search" class="btn-quick d-block text-decoration-none text-center p-3"><i class="bi bi-journal-text fs-4 d-block mb-1"></i><span class="small fw-bold" th:text="#{nav.programs}">Programs</span></a></div>
+                    <div class="col-4"><a href="/profile" class="btn-quick d-block text-decoration-none text-center p-3"><i class="bi bi-person-circle fs-4 d-block mb-1"></i><span class="small fw-bold" th:text="#{nav.profile}">Profile</span></a></div>
                 </div>
             </div>
 
             <div class="col-12 mt-4">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="color-main text-uppercase fw-black mb-0 tracking-wider">Recommended Programs</h5>
-                    <a href="/search" class="text-decoration-none small color-link">Explore All <i class="bi bi-arrow-right"></i></a>
+                    <h5 class="color-main text-uppercase fw-black mb-0 tracking-wider" th:text="#{home.programs.recommended}">Recommended Programs</h5>
+                    <a href="/search" class="text-decoration-none small color-link">
+                        <span th:text="#{home.link.explore}">Explore All</span> <i class="bi bi-arrow-right"></i>
+                    </a>
                 </div>
 
                 <div class="row g-4">
@@ -124,7 +125,7 @@
 
                                 <span class="badge position-absolute top-0 end-0 m-3"
                                       style="background: var(--delimiter-color); color: #000; font-weight: 800;"
-                                      th:text="${prog.difficulty}">STRENGTH</span>
+                                      th:text="#{${'Difficulty.' + prog.difficulty}}">STRENGTH</span>
                             </div>
                             <div class="p-4">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
@@ -135,7 +136,9 @@
                                     </div>
                                 </div>
                                 <p class="color-soft x-small mb-4 text-truncate-2" th:text="${prog.descriptionShort}">Description...</p>
-                                <a th:href="@{/programs/details/{id}(id=${prog.id})}" class="btn btn-sm btn-outline-custom w-100 rounded-pill">View Details</a>
+                                <a th:href="@{/programs/details/{id}(id=${prog.id})}"
+                                   class="btn btn-sm btn-outline-custom w-100 rounded-pill"
+                                   th:text="#{exercise.btn_show}">View Details</a>
                             </div>
                         </div>
                     </div>
@@ -144,9 +147,9 @@
 
             <div class="col-12 mt-5">
                 <div class="glass-panel p-4">
-                    <h6 class="color-main text-uppercase fw-black mb-3 small opacity-50">Recent Activity</h6>
+                    <h6 class="color-main text-uppercase fw-black mb-3 small opacity-50" th:text="#{home.activity.recent}">Recent Activity</h6>
                     <div class="d-flex gap-5 overflow-auto pb-2">
-                        <div th:if="${#lists.isEmpty(recentActivities)}" class="color-soft small">
+                        <div th:if="${#lists.isEmpty(recentActivities)}" class="color-soft small" th:text="#{home.activity.empty}">
                             No recent activity. Time to hit the gym!
                         </div>
                         <div th:each="activity, activityStat : ${recentActivities}"
