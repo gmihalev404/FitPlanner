@@ -83,38 +83,51 @@ public class WorkoutProgramScheduleController {
         return "redirect:/create";
     }
 
-    @PostMapping("/edit-program")
-    public String editProgram(@ModelAttribute("programForm") CreatedProgramDto createdProgramDto,
-                              HttpSession session) {
-        Long programId = (Long) session.getAttribute("programId");
-        UserDto userDto = (UserDto) session.getAttribute("loggedUser");
-        ProgramsUserDto programsUserDto = userService.getById(userDto.getId(), ProgramsUserDto.class);
+@PostMapping("/edit-program")
+public String editProgram(@ModelAttribute("programForm") CreatedProgramDto createdProgramDto,
+                          HttpSession session) {
 
-        // Get the data currently in the session (which contains the URL set by showEditForm OR AJAX)
-        CreatedProgramDto sessionForm = (CreatedProgramDto) session.getAttribute("programForm");
-        System.out.println(sessionForm);
-        System.out.println(createdProgramDto);
-        // LOGIC:
-        // 1. If createdProgramDto already has it (from a hidden input), keep it.
-        // 2. Otherwise, check if sessionForm has a URL (the original one or a newly uploaded one).
-        if ((createdProgramDto.getImageUrl() == null || createdProgramDto.getImageUrl().isEmpty())
-                && sessionForm != null) {
-            createdProgramDto.setImageUrl(sessionForm.getImageUrl());
-        }
+    UserDto userDto = (UserDto) session.getAttribute("loggedUser");
+    if (userDto == null) {
+        return "redirect:/login";
+    }
 
-        List<DayWorkout> sessionDays = (List<DayWorkout>) session.getAttribute("weekDays");
-        createdProgramDto.setWeekDays(sessionDays != null ? sessionDays : new ArrayList<>());
-
-        programService.updateProgram(programId, createdProgramDto, programsUserDto.getMeasuringUnits());
-
-        // Clean up
-        session.removeAttribute("programForm");
-        session.removeAttribute("weekDays");
-        session.removeAttribute("programId");
-
+    Long programId = (Long) session.getAttribute("programId");
+    if (programId == null) {
         return "redirect:/my-workouts";
     }
 
+    ProgramsUserDto programsUserDto =
+            userService.getById(userDto.getId(), ProgramsUserDto.class);
+
+    CreatedProgramDto sessionForm =
+            (CreatedProgramDto) session.getAttribute("programForm");
+
+    if ((createdProgramDto.getImageUrl() == null ||
+         createdProgramDto.getImageUrl().isEmpty())
+            && sessionForm != null) {
+        createdProgramDto.setImageUrl(sessionForm.getImageUrl());
+    }
+
+    List<DayWorkout> sessionDays =
+            (List<DayWorkout>) session.getAttribute("weekDays");
+
+    createdProgramDto.setWeekDays(
+            sessionDays != null ? sessionDays : new ArrayList<>()
+    );
+
+    programService.updateProgram(
+            programId,
+            createdProgramDto,
+            programsUserDto.getMeasuringUnits()
+    );
+
+    session.removeAttribute("programForm");
+    session.removeAttribute("weekDays");
+    session.removeAttribute("programId");
+
+    return "redirect:/my-workouts";
+}
     @PostMapping("/remove-program")
     public String removeProgram(@RequestParam Long programId) {
         programService.removeProgram(programId);
