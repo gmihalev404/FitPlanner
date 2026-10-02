@@ -30,7 +30,18 @@ public class AppConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(sessionCleanupInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/css/**", "/js/**", "/img/**", "/favicon.ico", "/webjars/**", "/error");
+                .excludePathPatterns(
+        "/css/**",
+        "/js/**",
+        "/images/**",
+        "/icons/**",
+        "/videos/**",
+        "/uploads/**",
+        "/favicon.ico",
+        "/webjars/**",
+        "/actuator/**",
+        "/error"
+);;
     }
 
     @Bean
