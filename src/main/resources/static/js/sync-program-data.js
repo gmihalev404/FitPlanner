@@ -45,9 +45,15 @@ const ProgramSyncer = {
 
         // Синхронизация при кликване на бутони, които напускат страницата
         document.querySelectorAll('.sync-required').forEach(form => {
-            form.addEventListener('submit', async (e) => {
-                await this.sync();
-            });
+        form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    try {
+        await this.sync();
+    } finally {
+        HTMLFormElement.prototype.submit.call(form);
+    }
+});
         });
     }
 };
