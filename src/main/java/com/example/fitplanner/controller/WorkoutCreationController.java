@@ -88,25 +88,25 @@ public class WorkoutCreationController {
 
         return "create";
     }
-    @GetMapping("/exercise-log")
-    public String showExerciseLog(@RequestParam(required = false) String day,
-                                  HttpSession session,
-                                  Model model) {
-        UserDto sessionUser = (UserDto) session.getAttribute("loggedUser");
-        if (sessionUser == null) return "redirect:/login";
+@GetMapping("/exercise-log")
+public String showExerciseLog(@RequestParam(required = false) String day,
+                              HttpSession session,
+                              Model model) {
 
-        UserDto userDto = userService.getById(sessionUser.getId(), UserDto.class);
-        ProgramsUserDto programsUserDto = userService.getById(sessionUser.getId(), ProgramsUserDto.class);
+    UserDto userDto = (UserDto) session.getAttribute("loggedUser");
 
-        if (day != null) session.setAttribute("currentDay", day);
-
-        List<ExerciseDto> exercises = exerciseService.getAll();
-        model.addAttribute("exercises", exercises);
-        model.addAttribute("userDto", userDto);
-        model.addAttribute("programsUserDto", programsUserDto);
-
-        return "exercises-log";
+    if (userDto == null) {
+        return "redirect:/login";
     }
+
+    if (day != null) {
+        session.setAttribute("currentDay", day);
+    }
+
+    model.addAttribute("exercises", exerciseService.getAll());
+
+    return "exercises-log";
+}
 
     @GetMapping("/edit-exercise")
     public String showEditPage(@RequestParam String day,
