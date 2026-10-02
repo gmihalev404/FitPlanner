@@ -36,8 +36,21 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:uploads/");
     }
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new UserLocaleInterceptor());
-    }
+@Override
+public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(new UserLocaleInterceptor())
+            .addPathPatterns("/**")
+            .excludePathPatterns(
+                    "/css/**",
+                    "/js/**",
+                    "/images/**",
+                    "/icons/**",
+                    "/videos/**",
+                    "/uploads/**",
+                    "/favicon.ico",
+                    "/webjars/**",
+                    "/actuator/**",
+                    "/error"
+            );
+}
 }
