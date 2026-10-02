@@ -8,22 +8,28 @@ import java.nio.file.*;
 @Service
 public class FileService {
 
-    private final String uploadDir = "uploads/";
+    private final Path uploadDir;
+
+    public FileService(@Value("${app.upload-dir}") String uploadDir) {
+        this.uploadDir = Paths.get(uploadDir);
+    }
 
     public String saveFile(MultipartFile file) {
         if (file == null || file.isEmpty()) return null;
 
-        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        String fileName =
+                System.currentTimeMillis() + "_" + file.getOriginalFilename();
+
         try {
-            Path uploadPath = Paths.get(uploadDir);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
+            Files.createDirectories(uploadDir);
 
-            Path filePath = uploadPath.resolve(fileName);
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            Path filePath = uploadDir.resolve(fileName);
+            Files.copy(
+                    file.getInputStream(),
+                    filePath,
+                    StandardCopyOption.REPLACE_EXISTING
+            );
 
-            // Returns the web-accessible path
             return "/uploads/" + fileName;
         } catch (IOException e) {
             throw new RuntimeException("Could not save image file", e);
@@ -36,12 +42,8 @@ public class FileService {
         }
 
         try {
-            // Extracts the filename from the "/uploads/filename.jpg" string
-            Path path = Paths.get(imageUrl);
-            String fileName = path.getFileName().toString();
-            Path fileToDelete = Paths.get(uploadDir).resolve(fileName);
-
-            Files.deleteIfExists(fileToDelete);
+            String fileName = Paths.get(imageUrl).getFileName().toString();
+            Files.deleteIfExists(uploadDir.resolve(fileName));
         } catch (IOException e) {
             System.err.println("Could not delete file: " + e.getMessage());
         }
