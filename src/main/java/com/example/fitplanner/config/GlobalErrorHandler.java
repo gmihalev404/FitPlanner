@@ -26,13 +26,13 @@ public class GlobalErrorHandler {
     }
 
     // 3. The "Catch-All" Safety Net (For actual server crashes/bugs)
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGeneralError(Exception ex) {
-        // Log the error so you can see it in the console
-        ex.printStackTrace();
+    // @ExceptionHandler(Exception.class)
+    // public ResponseEntity<String> handleGeneralError(Exception ex) {
+    //     // Log the error so you can see it in the console
+    //     ex.printStackTrace();
 
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("An unexpected error occurred. Please check your request.");
-    }
+    //     return ResponseEntity
+    //             .status(HttpStatus.INTERNAL_SERVER_ERROR)
+    //             .body("An unexpected error occurred. Please check your request.");
+    // }
 }
