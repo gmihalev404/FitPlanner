@@ -101,7 +101,7 @@ public interface ExerciseProgressRepository extends JpaRepository<ExerciseProgre
     FROM ExerciseProgress ep
     WHERE ep.user.id = :userId
 """)
-    Object[] getDashboardAggregates(
+    List<Object[]> getDashboardAggregates(
             @Param("userId") Long userId,
             @Param("startDate") LocalDate startDate
     );

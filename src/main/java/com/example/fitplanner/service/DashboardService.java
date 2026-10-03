@@ -6,6 +6,7 @@ import com.example.fitplanner.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class DashboardService {
@@ -24,11 +25,15 @@ public class DashboardService {
         Integer streakValue = userRepository.findStreakById(userId);
         int streak = streakValue != null ? streakValue : 0;
 
-        Object[] stats =
+        List<Object[]> result =
                 exerciseProgressRepository.getDashboardAggregates(
                         userId,
                         thirtyDaysAgo
                 );
+
+        Object[] stats = result.isEmpty()
+                ? new Object[]{0.0, 0L, 0L}
+                : result.get(0);
 
         double rawVolume =
                 stats[0] != null
@@ -48,7 +53,6 @@ public class DashboardService {
         double volumeInTons = rawVolume / 1000.0;
 
         int rate = 0;
-
         if (scheduled > 0) {
             rate = (int) Math.round(
                     (double) completed / scheduled * 100
@@ -62,3 +66,4 @@ public class DashboardService {
         );
     }
 }
+
