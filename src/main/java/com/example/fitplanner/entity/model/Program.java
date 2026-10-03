@@ -21,7 +21,7 @@ public class Program extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @NotNull
     private User user;
 
