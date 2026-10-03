@@ -18,30 +18,47 @@ public class DashboardService {
     }
 
     public DashboardStatsDto getDashboardStats(Long userId) {
-        // 1. Calculate the sliding window (Today minus 30 days)
+
         LocalDate thirtyDaysAgo = LocalDate.now().minusDays(30);
 
-        // 2. Fetch Streak
-        int streak = userRepository.findStreakById(userId);
+        Integer streakValue = userRepository.findStreakById(userId);
+        int streak = streakValue != null ? streakValue : 0;
 
-        // 3. Calculate volume for the last 30 days
-        Double rawVolume = exerciseProgressRepository.calculateMonthlyVolume(userId, thirtyDaysAgo);
-        double volumeInTons = (rawVolume != null) ? rawVolume / 1000.0 : 0.0;
+        Object[] stats =
+                exerciseProgressRepository.getDashboardAggregates(
+                        userId,
+                        thirtyDaysAgo
+                );
 
-        // 4. Calculate success rate logic using the 30-day window
-        long scheduled = exerciseProgressRepository.countScheduledLast30Days(userId, thirtyDaysAgo);
+        double rawVolume =
+                stats[0] != null
+                        ? ((Number) stats[0]).doubleValue()
+                        : 0.0;
 
-        // FIX: Use the 'Completed' specific repository method here
-        long completed = exerciseProgressRepository.countCompletedLast30Days(userId, thirtyDaysAgo);
+        long scheduled =
+                stats[1] != null
+                        ? ((Number) stats[1]).longValue()
+                        : 0L;
 
-        System.out.println("Scheduled (30d): " + scheduled);
-        System.out.println("Completed (30d): " + completed);
+        long completed =
+                stats[2] != null
+                        ? ((Number) stats[2]).longValue()
+                        : 0L;
+
+        double volumeInTons = rawVolume / 1000.0;
 
         int rate = 0;
+
         if (scheduled > 0) {
-            rate = (int) Math.round((double) completed / scheduled * 100);
+            rate = (int) Math.round(
+                    (double) completed / scheduled * 100
+            );
         }
 
-        return new DashboardStatsDto(streak, volumeInTons, rate);
+        return new DashboardStatsDto(
+                streak,
+                volumeInTons,
+                rate
+        );
     }
 }

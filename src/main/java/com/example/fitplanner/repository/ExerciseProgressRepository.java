@@ -57,8 +57,53 @@ public interface ExerciseProgressRepository extends JpaRepository<ExerciseProgre
     long countCompletedLast30Days(@Param("userId") Long userId,
                                   @Param("startDate") LocalDate startDate);
 
-    @Query("SELECT ep FROM ExerciseProgress ep " +
-            "WHERE ep.user.id = :userId " +
-            "AND ep.completed = true " +
-            "ORDER BY ep.lastCompleted DESC")
-    List<ExerciseProgress> findRecentCompletedExercises(@Param("userId") Long userId, Pageable pageable);}
+    @Query("""
+    SELECT ep
+    FROM ExerciseProgress ep
+    JOIN FETCH ep.exercise
+    WHERE ep.user.id = :userId
+      AND ep.completed = true
+    ORDER BY ep.lastCompleted DESC
+""")
+    List<ExerciseProgress> findRecentCompletedExercises(
+            @Param("userId") Long userId,
+            Pageable pageable
+    );
+
+    @Query("""
+    SELECT
+        COALESCE(SUM(
+            CASE
+                WHEN ep.completed = true
+                 AND ep.lastCompleted BETWEEN :startDate AND CURRENT_DATE
+                THEN ep.weight * ep.setsCompleted * ep.reps
+                ELSE 0
+            END
+        ), 0),
+
+        COALESCE(SUM(
+            CASE
+                WHEN ep.lastScheduled BETWEEN :startDate AND CURRENT_DATE
+                THEN 1
+                ELSE 0
+            END
+        ), 0),
+
+        COALESCE(SUM(
+            CASE
+                WHEN ep.completed = true
+                 AND ep.lastCompleted BETWEEN :startDate AND CURRENT_DATE
+                THEN 1
+                ELSE 0
+            END
+        ), 0)
+
+    FROM ExerciseProgress ep
+    WHERE ep.user.id = :userId
+""")
+    Object[] getDashboardAggregates(
+            @Param("userId") Long userId,
+            @Param("startDate") LocalDate startDate
+    );
+}
+
