@@ -1,29 +1,21 @@
 package com.example.fitplanner.controller;
 
-import com.example.fitplanner.dto.DayWorkout;
 import com.example.fitplanner.dto.ProgramDetailsDto;
-import com.example.fitplanner.dto.ProgramDto;
 import com.example.fitplanner.dto.UserDto;
 import com.example.fitplanner.service.ProgramService;
-import com.example.fitplanner.service.UserService;
-import com.example.fitplanner.service.WorkoutSessionService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
-
 @Controller
 @RequestMapping("/programs")
 public class ProgramController {
     private final ProgramService programService;
-    private final UserService userService;
 
-    public ProgramController(ProgramService programService, UserService userService) {
+    public ProgramController(ProgramService programService) {
         this.programService = programService;
-        this.userService = userService;
     }
 
     @PostMapping("/fork/{id}") // Added leading slash
@@ -31,8 +23,7 @@ public class ProgramController {
         UserDto loggedUser = (UserDto) session.getAttribute("loggedUser");
 
         if (loggedUser == null) {
-            // Ensure this matches your actual login GET route (likely /users/login)
-            return "redirect:/users/login";
+            return "redirect:/login";
         }
 
         programService.forkProgram(id, loggedUser.getId());
@@ -48,7 +39,7 @@ public class ProgramController {
 
         // Използваме новия метод, който събира всичко в едно DTO
         // Този метод трябва да връща ProgramDetailsDto
-        ProgramDetailsDto programDetails = programService.getProgramDetails(id);
+        ProgramDetailsDto programDetails = programService.getProgramDetails(id, userDto.getId());
 
         model.addAttribute("program", programDetails);
 
@@ -58,9 +49,23 @@ public class ProgramController {
     }
 
     @PostMapping("/rate/{id}")
-    public String rateProgram(@PathVariable Long id, @RequestParam("rating") int stars, RedirectAttributes redirectAttributes) {
-        programService.addRating(id, stars);
-        redirectAttributes.addFlashAttribute("successMessage", "Благодарим ви за оценката!");
+    public String rateProgram(@PathVariable Long id,
+                              @RequestParam("rating") int stars,
+                              HttpSession session,
+                              RedirectAttributes redirectAttributes) {
+        UserDto userDto = (UserDto) session.getAttribute("loggedUser");
+        if (userDto == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Please log in to rate programs.");
+            return "redirect:/login";
+        }
+
+        try {
+            programService.rateProgram(id, userDto.getId(), stars);
+            redirectAttributes.addFlashAttribute("successMessage", "Thank you for rating this program.");
+        } catch (IllegalStateException | IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+
         return "redirect:/programs/details/" + id;
     }
 }

@@ -19,7 +19,14 @@ public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, 
     @Query("SELECT COALESCE(s.finished, false) FROM WorkoutSession s WHERE s.user.id = :userId AND s.scheduledFor = :date")
     List<Boolean> isSessionFinished(@Param("userId") Long userId, @Param("date") LocalDate date);
 
-    @Query("SELECT ws FROM WorkoutSession ws WHERE ws.program.id IN :programIds AND ws.scheduledFor = :date")
+    @Query("""
+            SELECT DISTINCT ws
+            FROM WorkoutSession ws
+            LEFT JOIN FETCH ws.exercises e
+            LEFT JOIN FETCH e.exercise
+            JOIN FETCH ws.program
+            WHERE ws.program.id IN :programIds AND ws.scheduledFor = :date
+            """)
     List<WorkoutSession> getByProgramIdsAndDate(@Param("programIds") List<Long> programIds, @Param("date") LocalDate date);
 
     @Query("""

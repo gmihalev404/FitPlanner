@@ -133,6 +133,7 @@
                                     <div class="text-warning x-small">
                                         <i class="bi bi-star-fill"></i>
                                         <span th:text="${#numbers.formatDecimal(prog.rating, 1, 1)}">5.0</span>
+                                        <span class="color-soft">(<span th:text="${prog.ratingCount}">0</span>)</span>
                                     </div>
                                 </div>
                                 <p class="color-soft x-small mb-4 text-truncate-2" th:text="${prog.descriptionShort}">Description...</p>

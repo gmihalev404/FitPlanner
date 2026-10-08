@@ -44,15 +44,9 @@ public class WorkoutSessionController {
 
         // Calculate progress for the progress bar
         int totalSets = exercises.stream().mapToInt(ExerciseSessionDto::getSets).sum();
-        int completedSets = exercises.stream().mapToInt(ex ->
-                workoutSessionService.getSetsCompletedForExercise(userDto.getId(), ex.getExerciseId(), date)).sum();
+        int completedSets = exercises.stream().mapToInt(ExerciseSessionDto::getSetsCompleted).sum();
 
         long progressPercent = (totalSets > 0) ? Math.round(((double) completedSets / totalSets) * 100) : 0;
-
-        // Map existing database completion counts to the DTOs
-        exercises.forEach(ex -> ex.setSetsCompleted(
-                workoutSessionService.getSetsCompletedForExercise(userDto.getId(), ex.getExerciseId(), date)
-        ));
 
         WorkoutResultWrapper wrapper = new WorkoutResultWrapper();
 
@@ -104,8 +98,6 @@ public class WorkoutSessionController {
                 }
             }
         }
-        System.out.println(form);
-
         // 2. Save progress to ExerciseProgress and update WorkoutSession as 'finished'
         workoutSessionService.finishSession(form.getResults(), sessionDate, userDto.getId());
 

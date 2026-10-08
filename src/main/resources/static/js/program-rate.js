@@ -1,5 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     const ratingForm = document.getElementById('ratingForm');
+    if (!ratingForm || ratingForm.dataset.locked === 'true') {
+        return;
+    }
     const stars = ratingForm.querySelectorAll('input[name="rating"]');
 
     stars.forEach(star => {

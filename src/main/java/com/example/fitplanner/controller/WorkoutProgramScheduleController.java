@@ -33,7 +33,6 @@ public class WorkoutProgramScheduleController {
     public String showWorkouts(HttpSession session, Model model) {
         UserDto userDto = (UserDto) session.getAttribute("loggedUser");
         if (userDto == null) return "redirect:/login";
-        ProgramsUserDto programsUserDto = userService.getById(userDto.getId(), ProgramsUserDto.class);
         List<ProgramDto> programDtos = programService.getProgramsByUserId(userDto.getId());
         model.addAttribute("programs", programDtos);
         return "my-workouts";

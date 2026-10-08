@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -58,8 +57,11 @@ public class Program extends BaseEntity {
     @Column
     private Double rating = 0.0;
 
-    @ElementCollection
-    private List<Integer> starslist = new ArrayList<>();
+    @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
+    private Long ratingCount = 0L;
+
+    @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProgramRating> ratings = new LinkedList<>();
 
     public Program(String name, User user, Integer scheduleMonths, Boolean notifications, Boolean isPublic, String imageUrl) {
         this.name = name;
@@ -75,12 +77,8 @@ public class Program extends BaseEntity {
         sessions.add(session);
     }
 
-    public void addStars(int stars) {
-        starslist.add(stars);
-        int sum = 0;
-        for(int s : starslist) {
-            sum += s;
-        }
-        rating = sum * 1.0 / starslist.size();
+    public void updateRatingStats(double averageRating, long totalRatings) {
+        this.rating = averageRating;
+        this.ratingCount = totalRatings;
     }
 }

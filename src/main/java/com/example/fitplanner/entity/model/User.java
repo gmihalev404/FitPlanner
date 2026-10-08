@@ -95,6 +95,9 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "observer", cascade = CascadeType.ALL)
     private Set<Notification> notifications = new HashSet<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProgramRating> programRatings = new HashSet<>();
+
     @Column(nullable = false)
     private Integer streak = 0;
 
