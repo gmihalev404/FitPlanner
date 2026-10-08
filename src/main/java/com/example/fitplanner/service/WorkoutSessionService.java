@@ -58,7 +58,7 @@ public class WorkoutSessionService {
                 dto.setReps(progress.getReps());
                 dto.setSets(progress.getSets());
                 dto.setFinished(progress.getCompleted());
-                dto.setSetsCompleted(progress.getSetsCompleted());
+                dto.setSetsCompleted(progress.getSetsCompleted() != null ? progress.getSetsCompleted() : 0);
                 dto.setSuggestedIncrease(progress.getSuggestedChangeIncrease());
                 dto.setSuggestedChange(progress.getSuggestedChange());
                 dto.setIncreaseAccepted(null);
@@ -68,14 +68,6 @@ public class WorkoutSessionService {
                 dto.setWeight(weight);
 
                 exercises.add(dto);
-
-                System.out.println("Mapped ExerciseSessionDto: progressId=" + progress.getId() +
-                        ", exerciseId=" + progress.getExercise().getId() +
-                        ", name=" + progress.getExercise().getName() +
-                        ", sets=" + progress.getSets() +
-                        ", reps=" + progress.getReps() +
-                        ", weight=" + progress.getWeight() +
-                        ", completed=" + progress.getCompleted());
             });
         }
         return exercises;
@@ -93,20 +85,6 @@ public class WorkoutSessionService {
                 .findByUserIdAndExerciseIdAndLastScheduled(userId, exerciseId, date);
 
         return progressList.isEmpty() ? null : progressList.get(0).getSuggestedChange();
-    }
-
-    public int getSetsCompletedForExercise(Long userId, Long exerciseId, LocalDate date) {
-        List<ExerciseProgress> progressList = exerciseProgressRepository
-                .findByUserIdAndExerciseIdAndLastScheduled(userId, exerciseId, date);
-
-        if (!progressList.isEmpty()) {
-            ExerciseProgress ep = progressList.get(0);
-            System.out.println("Found ExerciseProgress ID=" + ep.getId() + " (First of " + progressList.size() + ")");
-            return ep.getSetsCompleted();
-        } else {
-            System.out.println("No ExerciseProgress found for userId=" + userId + ", exerciseId=" + exerciseId + ", date=" + date);
-            return 0;
-        }
     }
 
     public Boolean isSessionFinished(Long userId, LocalDate date) {

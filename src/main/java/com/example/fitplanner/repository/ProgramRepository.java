@@ -1,6 +1,7 @@
 package com.example.fitplanner.repository;
 
 import com.example.fitplanner.entity.model.Program;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,6 +16,10 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
 
     @Query("SELECT p FROM Program p WHERE p.user.id = :userId")
     List<Program> getByUserId(@Param(value = "userId") Long userId);
+
+    @EntityGraph(attributePaths = {"sessions"})
+    @Query("SELECT DISTINCT p FROM Program p WHERE p.user.id = :userId")
+    List<Program> findAllByUserIdWithSessions(@Param("userId") Long userId);
 
     @Query("SELECT p FROM Program p " +
             "WHERE p.isPublic = true " +
@@ -33,4 +38,8 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
 
     @Query("SELECT p FROM Program p WHERE p.user.id = :userId")
     List<Program> findAllByUserId(Long userId);
+
+    @EntityGraph(attributePaths = {"user", "sessions", "sessions.exercises", "sessions.exercises.exercise"})
+    @Query("SELECT p FROM Program p WHERE p.id = :programId")
+    Optional<Program> findByIdWithDetails(@Param("programId") Long programId);
 }

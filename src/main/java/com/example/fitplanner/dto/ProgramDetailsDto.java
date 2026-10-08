@@ -18,7 +18,8 @@ public class ProgramDetailsDto implements Serializable {
     private String imageUrl;
     private String difficulty;
     private Double rating;
+    private Long ratingCount;
+    private Integer userRating;
     private String trainerName;
     private List<DateWorkout> workouts = new ArrayList<>();
 }
-

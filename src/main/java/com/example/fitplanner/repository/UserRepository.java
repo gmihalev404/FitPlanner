@@ -12,17 +12,17 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    @Query("SELECT u FROM User u WHERE u.username LIKE :username")
+    @Query("SELECT u FROM User u WHERE u.username = :username")
     Optional<User> getByUsername(@Param(value = "username") String username);
 
-    @Query("SELECT u FROM User u WHERE u.email LIKE :email")
+    @Query("SELECT u FROM User u WHERE u.email = :email")
     Optional<User> getByEmail(@Param(value = "email") String email);
 
-    @Query("SELECT u FROM User u WHERE u.username LIKE :username AND u.password LIKE :password")
+    @Query("SELECT u FROM User u WHERE u.username = :username AND u.password = :password")
     Optional<User> getByUsernameAndPassword(@Param(value = "username") String username,
                                  @Param(value = "password") String password);
 
-    @Query("SELECT u FROM User u WHERE u.email LIKE :email AND u.password LIKE :password")
+    @Query("SELECT u FROM User u WHERE u.email = :email AND u.password = :password")
     Optional<User> getByEmailAndPassword(@Param(value = "email") String email,
                                             @Param(value = "password") String password);
 

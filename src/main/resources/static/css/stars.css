@@ -46,3 +46,7 @@
 .star-rating label:active {
     transform: scale(1.2);
 }
+
+.star-rating input:disabled + label {
+    cursor: default;
+}

@@ -40,40 +40,16 @@ public class HomeController {
 //        if (model.getAttribute("userDto") == null) return "redirect:/login";
 
         if (userDto != null) {
-
-            long totalStart = System.nanoTime();
-
-            long start = System.nanoTime();
-            List<ForkableProgramDto> recommended =
-                    programService.getRecommendedPrograms(userDto.getId());
-            System.out.println("PERF recommendedPrograms: "
-                    + (System.nanoTime() - start) / 1_000_000 + " ms");
-
-            start = System.nanoTime();
-            DashboardStatsDto stats =
-                    dashboardService.getDashboardStats(userDto.getId());
-            System.out.println("PERF dashboardStats: "
-                    + (System.nanoTime() - start) / 1_000_000 + " ms");
-
-            start = System.nanoTime();
-            List<RecentActivityDto> recentActivities =
-                    activityService.getRecentActivity(userDto.getId());
-            System.out.println("PERF recentActivity: "
-                    + (System.nanoTime() - start) / 1_000_000 + " ms");
-
-            start = System.nanoTime();
+            List<ForkableProgramDto> recommended = programService.getRecommendedPrograms(userDto.getId());
+            DashboardStatsDto stats = dashboardService.getDashboardStats(userDto.getId());
+            List<RecentActivityDto> recentActivities = activityService.getRecentActivity(userDto.getId());
             QuoteDto quote = quoteService.getRandomQuote();
-            System.out.println("PERF randomQuote: "
-                    + (System.nanoTime() - start) / 1_000_000 + " ms");
 
 
             model.addAttribute("recommendedPrograms", recommended);
             model.addAttribute("userStats", stats);
             model.addAttribute("recentActivities", recentActivities);
             model.addAttribute("dailyQuote", quote);
-
-            System.out.println("PERF HOME TOTAL SERVICES: "
-                    + (System.nanoTime() - totalStart) / 1_000_000 + " ms");
         }
 
         return "home";

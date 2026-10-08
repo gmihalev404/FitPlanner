@@ -4,20 +4,17 @@ import com.example.fitplanner.dto.*;
 import com.example.fitplanner.entity.enums.Difficulty;
 import com.example.fitplanner.entity.model.*;
 import com.example.fitplanner.repository.*;
-import jakarta.persistence.EntityNotFoundException;
-import org.hibernate.Hibernate;
-import org.springframework.transaction.annotation.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,6 +27,7 @@ public class ProgramService {
     private final ExerciseProgressRepository exerciseProgressRepository;
     private final ExerciseRepository exerciseRepository;
     private final UserRepository userRepository;
+    private final ProgramRatingRepository programRatingRepository;
     private final ModelMapper modelMapper;
 
     private final double LB_TO_KG = 0.45359237;
@@ -40,24 +38,23 @@ public class ProgramService {
                           ExerciseProgressRepository exerciseProgressRepository,
                           ExerciseRepository exerciseRepository,
                           UserRepository userRepository,
+                          ProgramRatingRepository programRatingRepository,
                           ModelMapper modelMapper) {
         this.programRepository = programRepository;
         this.workoutSessionRepository = workoutSessionRepository;
         this.exerciseProgressRepository = exerciseProgressRepository;
         this.exerciseRepository = exerciseRepository;
         this.userRepository = userRepository;
+        this.programRatingRepository = programRatingRepository;
         this.modelMapper = modelMapper;
     }
 
     // Inside ProgramService
     @Transactional(readOnly = true)
     public List<ProgramDto> getProgramsByUserId(Long userId) {
-        List<Program> entities = programRepository.findAllByUserId(userId);
+        List<Program> entities = programRepository.findAllByUserIdWithSessions(userId);
 
         return entities.stream().map(entity -> {
-            // Force Hibernate to load the sessions collection
-            Hibernate.initialize(entity.getSessions());
-
             ProgramDto dto = modelMapper.map(entity, ProgramDto.class);
 
             // Explicitly map the dates from Sessions to DateWorkout
@@ -193,14 +190,14 @@ public class ProgramService {
     }
 
     public <T> T getById(Long id, Class<T> dtoType) {
-        Program program = programRepository.findById(id)
+        Program program = programRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid ID"));
         return modelMapper.map(program, dtoType);
     }
 
     @Transactional
     public void forkProgram(Long programId, Long userId) {
-        Program original = programRepository.findById(programId).orElseThrow();
+        Program original = programRepository.findByIdWithDetails(programId).orElseThrow();
         User newUser = userRepository.findById(userId).orElseThrow();
         if(original.getUser().getId().equals(userId)){
             return;
@@ -287,6 +284,7 @@ public class ProgramService {
                 program.getDifficulty().name() : "INTERMEDIATE");
 
         dto.setRating(program.getRating() != null ? program.getRating() : 0.0);
+        dto.setRatingCount(program.getRatingCount() != null ? program.getRatingCount() : 0L);
 
         return dto;
     }
@@ -302,8 +300,8 @@ public class ProgramService {
     }
 
     @Transactional(readOnly = true)
-    public ProgramDetailsDto getProgramDetails(Long programId) {
-        Program program = programRepository.findById(programId)
+    public ProgramDetailsDto getProgramDetails(Long programId, Long currentUserId) {
+        Program program = programRepository.findByIdWithDetails(programId)
                 .orElseThrow();
 
         ProgramDetailsDto dto = new ProgramDetailsDto();
@@ -312,7 +310,15 @@ public class ProgramService {
         dto.setDescription(program.getDescription());
         dto.setImageUrl(program.getImageUrl());
         dto.setDifficulty(program.getDifficulty().name());
-        dto.setRating(program.getRating());
+        dto.setRating(program.getRating() != null ? program.getRating() : 0.0);
+        dto.setRatingCount(program.getRatingCount() != null ? program.getRatingCount() : 0L);
+        if (currentUserId != null) {
+            dto.setUserRating(
+                    programRatingRepository.findByUserIdAndProgramId(currentUserId, programId)
+                            .map(ProgramRating::getRating)
+                            .orElse(null)
+            );
+        }
         dto.setTrainerName(program.getUser().getFirstName() + " " + program.getUser().getLastName());
 
         // 1. Намираме понеделник на текущата седмица за база
@@ -349,14 +355,56 @@ public class ProgramService {
 
         dto.setWorkouts(workouts);
         return dto;
-    }    @Transactional
-    public void addRating(Long id, int stars) {
-        Program program = programRepository.findById(id).orElseThrow();
-        program.addStars(stars);
+    }
+
+    @Transactional
+    public void rateProgram(Long programId, Long userId, int stars) {
+        if (userId == null) {
+            throw new IllegalArgumentException("Authentication required");
+        }
+        if (stars < 1 || stars > 5) {
+            throw new IllegalArgumentException("Rating must be between 1 and 5 stars");
+        }
+
+        Program program = programRepository.findById(programId)
+                .orElseThrow(() -> new IllegalArgumentException("Program not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (programRatingRepository.existsByUserIdAndProgramId(userId, programId)) {
+            throw new IllegalStateException("You already rated this program");
+        }
+
+        ProgramRating rating = new ProgramRating();
+        rating.setProgram(program);
+        rating.setUser(user);
+        rating.setRating(stars);
+
+        try {
+            programRatingRepository.saveAndFlush(rating);
+        } catch (DataIntegrityViolationException ex) {
+            throw new IllegalStateException("You already rated this program");
+        }
+
+        refreshProgramRatingStats(program);
+    }
+
+    private void refreshProgramRatingStats(Program program) {
+        Object[] stats = programRatingRepository.findProgramRatingSummary(program.getId());
+
+        double averageRating = 0.0;
+        long totalRatings = 0L;
+        if (stats != null && stats.length == 2) {
+            averageRating = stats[0] != null ? ((Number) stats[0]).doubleValue() : 0.0;
+            totalRatings = stats[1] != null ? ((Number) stats[1]).longValue() : 0L;
+        }
+
+        program.updateRatingStats(averageRating, totalRatings);
+        programRepository.save(program);
     }
 
     public List<DayWorkout> getProgramTemplate(Long programId) {
-        Program program = programRepository.findById(programId)
+        Program program = programRepository.findByIdWithDetails(programId)
                 .orElseThrow();
 
         // Подготвяме празна карта за всички 7 дни, за да гарантираме реда и наличието на Rest Days

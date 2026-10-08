@@ -26,6 +26,11 @@
     <div class="p-4">
         <div class="d-flex justify-content-between align-items-start mb-2">
             <h6 class="color-main fw-bold mb-0" th:text="${prog.name}">Program Name</h6>
+            <div class="text-warning x-small">
+                <i class="bi bi-star-fill"></i>
+                <span th:text="${#numbers.formatDecimal(prog.rating, 1, 1)}">0.0</span>
+                <span class="color-soft">(<span th:text="${prog.ratingCount}">0</span>)</span>
+            </div>
         </div>
         <p class="color-soft x-small mb-4 text-truncate-2" style="height: 3rem;" th:text="${prog.descriptionShort}">Description...</p>
         <a th:href="@{/programs/details/{id}(id=${prog.id})}" class="btn btn-sm btn-outline-custom w-100 rounded-pill">View Details</a>

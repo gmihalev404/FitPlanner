@@ -14,5 +14,6 @@ public class ForkableProgramDto {
     private String imageUrl;
     private String difficulty;
     private Double rating;
+    private Long ratingCount;
     private String trainerName;
 }
