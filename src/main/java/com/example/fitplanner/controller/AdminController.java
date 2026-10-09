@@ -65,22 +65,35 @@ public class AdminController {
 
         exerciseDto.setId(id);
 
+        String oldImageUrl = existing.getImageUrl();
+        String oldVideoUrl = existing.getVideoUrl();
+
+        String newImageUrl = oldImageUrl;
+        String newVideoUrl = oldVideoUrl;
+
         if (!imageFile.isEmpty()) {
-            fileService.deleteFile(existing.getImageUrl());
-            exerciseDto.setImageUrl(fileService.saveFile(imageFile));
-        } else {
-            exerciseDto.setImageUrl(existing.getImageUrl());
+            newImageUrl = fileService.saveFile(imageFile);
         }
 
         if (!videoFile.isEmpty()) {
-            fileService.deleteFile(existing.getVideoUrl());
-            exerciseDto.setVideoUrl(fileService.saveFile(videoFile));
-        } else {
-            exerciseDto.setVideoUrl(existing.getVideoUrl());
+            newVideoUrl = fileService.saveFile(videoFile);
         }
 
+        exerciseDto.setImageUrl(newImageUrl);
+        exerciseDto.setVideoUrl(newVideoUrl);
+
         exerciseDto.setGetLastCompleted(existing.getGetLastCompleted());
+
         exerciseService.update(id, exerciseDto);
+
+        if (!imageFile.isEmpty()) {
+            fileService.deleteFile(oldImageUrl);
+        }
+
+        if (!videoFile.isEmpty()) {
+            fileService.deleteFile(oldVideoUrl);
+        }
+
         return "redirect:/admin/management";
     }
 

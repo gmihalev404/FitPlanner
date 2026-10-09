@@ -52,7 +52,7 @@
                            name="profileImage"
                            accept="image/*"
                            style="display: none;"
-                           onchange="previewImage(this)">
+                           onchange="FileUploader.previewLocal(this, '.avatar-wrapper')">
                 </div>
 
                 <h3 th:text="*{username}">Username</h3>

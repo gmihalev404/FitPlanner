@@ -197,65 +197,73 @@ public class ProgramService {
 
     @Transactional
     public void forkProgram(Long programId, Long userId) {
-        Program original = programRepository.findByIdWithDetails(programId).orElseThrow();
-        User newUser = userRepository.findById(userId).orElseThrow();
-        if(original.getUser().getId().equals(userId)){
-            return;
-        }
+        Program original = programRepository.findByIdWithDetails(programId)
+                .orElseThrow(() -> new IllegalArgumentException("Program not found"));
+
+        User newUser = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // Create an independent copy of the program
         Program fork = new Program();
         fork.setUser(newUser);
         fork.setName(original.getName() + " (Copied)");
-        fork.setCreatedAt(LocalDateTime.now());
-        fork.setLastChanged(LocalDateTime.now());
-        // Copy other essential fields
+        fork.setDescription(original.getDescription());
+        fork.setImageUrl(original.getImageUrl());
         fork.setDifficulty(original.getDifficulty());
 
-        // 1. Save Program first
-        Program savedFork = programRepository.save(fork);
+        fork.setRepeats(original.getRepeats());
+        fork.setScheduleMonths(original.getScheduleMonths());
+        fork.setNotifications(original.getNotifications());
+        fork.setIsPublic(false);
 
-        // 2. Initialize the sessions list to avoid nulls
-        if (savedFork.getSessions() == null) {
-            savedFork.setSessions(new LinkedList<>());
-        }
+        fork.setCreatedAt(LocalDateTime.now());
+        fork.setLastChanged(LocalDateTime.now());
+
+        Program savedFork = programRepository.save(fork);
 
         LocalDate originalStart = original.getSessions().stream()
                 .map(WorkoutSession::getScheduledFor)
-                .min(LocalDate::compareTo).orElse(LocalDate.now());
-        long dayOffset = java.time.temporal.ChronoUnit.DAYS.between(originalStart, LocalDate.now());
+                .min(LocalDate::compareTo)
+                .orElse(LocalDate.now());
+
+        long dayOffset = java.time.temporal.ChronoUnit.DAYS
+                .between(originalStart, LocalDate.now());
 
         for (WorkoutSession originalSession : original.getSessions()) {
-            LocalDate newDate = originalSession.getScheduledFor().plusDays(dayOffset);
+            LocalDate newDate = originalSession.getScheduledFor()
+                    .plusDays(dayOffset);
 
-            WorkoutSession targetSession = workoutSessionRepository
-                    .findByUserIdAndScheduledFor(newUser.getId(), newDate)
-                    .orElseGet(() -> {
-                        WorkoutSession s = new WorkoutSession();
-                        s.setUser(newUser);
-                        s.setProgram(savedFork); // Link to new program
-                        s.setScheduledFor(newDate);
-                        s.setFinished(false);
-                        return workoutSessionRepository.save(s);
-                    });
+            // Always create a new session for the copied program
+            WorkoutSession newSession = new WorkoutSession();
+            newSession.setUser(newUser);
+            newSession.setProgram(savedFork);
+            newSession.setScheduledFor(newDate);
+            newSession.setFinished(false);
 
-            // CRITICAL: Ensure the bidirectional link is established
-            targetSession.setProgram(savedFork);
-            savedFork.getSessions().add(targetSession);
+            WorkoutSession savedSession =
+                    workoutSessionRepository.save(newSession);
 
+            savedFork.getSessions().add(savedSession);
+
+            // Copy exercises without copying their completion history
             for (ExerciseProgress originalEp : originalSession.getExercises()) {
-                ExerciseProgress newEp = new ExerciseProgress();
-                newEp.setWorkoutSession(targetSession);
-                newEp.setExercise(originalEp.getExercise());
-                newEp.setUser(newUser);
-                newEp.setReps(originalEp.getReps());
-                newEp.setSets(originalEp.getSets());
-                newEp.setWeight(originalEp.getWeight());
-                newEp.setLastScheduled(newDate);
+                ExerciseProgress newEp = new ExerciseProgress(
+                        savedSession,
+                        originalEp.getExercise(),
+                        newUser,
+                        originalEp.getReps(),
+                        originalEp.getSets(),
+                        originalEp.getWeight(),
+                        newDate
+                );
+
                 exerciseProgressRepository.save(newEp);
             }
         }
-        // Final save/flush to sync the relationship
+
         programRepository.saveAndFlush(savedFork);
     }
+
     public List<ForkableProgramDto> getRecommendedPrograms(Long currentUserId) {
         // Fetch top 4 trainer programs that the user doesn't own
         Pageable limit = PageRequest.of(0, 4);
@@ -390,16 +398,14 @@ public class ProgramService {
     }
 
     private void refreshProgramRatingStats(Program program) {
-        Object[] stats = programRatingRepository.findProgramRatingSummary(program.getId());
+        Double average = programRatingRepository.findAverageRating(program.getId());
+        long count = programRatingRepository.countByProgramId(program.getId());
 
-        double averageRating = 0.0;
-        long totalRatings = 0L;
-        if (stats != null && stats.length == 2) {
-            averageRating = stats[0] != null ? ((Number) stats[0]).doubleValue() : 0.0;
-            totalRatings = stats[1] != null ? ((Number) stats[1]).longValue() : 0L;
-        }
+        program.updateRatingStats(
+                average != null ? average : 0.0,
+                count
+        );
 
-        program.updateRatingStats(averageRating, totalRatings);
         programRepository.save(program);
     }
 

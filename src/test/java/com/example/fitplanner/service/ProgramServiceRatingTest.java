@@ -62,8 +62,8 @@ class ProgramServiceRatingTest {
         when(programRepository.findById(10L)).thenReturn(Optional.of(program));
         when(userRepository.findById(20L)).thenReturn(Optional.of(user));
         when(programRatingRepository.existsByUserIdAndProgramId(20L, 10L)).thenReturn(false);
-        when(programRatingRepository.findProgramRatingSummary(10L)).thenReturn(new Object[]{4.5, 2L});
-
+        when(programRatingRepository.findAverageRating(10L)).thenReturn(4.5);
+        when(programRatingRepository.countByProgramId(10L)).thenReturn(2L);
         programService.rateProgram(10L, 20L, 5);
 
         verify(programRatingRepository).saveAndFlush(any(ProgramRating.class));

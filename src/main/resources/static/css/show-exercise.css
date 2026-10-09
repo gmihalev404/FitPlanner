@@ -39,7 +39,7 @@ html.show .background-section {
     width: 100% !important;
     height: 100% !important;
     display: block;
-    object-fit: cover; /* Ensures video fills the 400x400 area */
+    object-fit: contain;
     border: none;
 }
 

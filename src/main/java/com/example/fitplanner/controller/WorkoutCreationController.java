@@ -254,18 +254,37 @@ public String showExerciseLog(@RequestParam(required = false) String day,
 
     @PostMapping("/upload-program-image-session")
     @ResponseBody
-    public String uploadImageToSession(@RequestParam("programImage") MultipartFile imageFile,
-                                       HttpSession session) {
-        if (imageFile != null && !imageFile.isEmpty()) {
-            String imageUrl = fileService.saveFile(imageFile);
-            CreatedProgramDto sessionProgramForm = (CreatedProgramDto) session.getAttribute("programForm");
-            if (sessionProgramForm == null) sessionProgramForm = new CreatedProgramDto();
+    public String uploadImageToSession(
+            @RequestParam("programImage") MultipartFile imageFile,
+            HttpSession session) {
 
-            sessionProgramForm.setImageUrl(imageUrl);
-            session.setAttribute("programForm", sessionProgramForm);
-            return imageUrl;
+        if (imageFile == null || imageFile.isEmpty()) {
+            return "error";
         }
-        return "error";
+
+        CreatedProgramDto sessionProgramForm =
+                (CreatedProgramDto) session.getAttribute("programForm");
+
+        if (sessionProgramForm == null) {
+            sessionProgramForm = new CreatedProgramDto();
+        }
+
+        String oldImageUrl = sessionProgramForm.getImageUrl();
+
+        // Upload the new image first
+        String newImageUrl = fileService.saveFile(imageFile);
+
+        // Update the session
+        sessionProgramForm.setImageUrl(newImageUrl);
+        session.setAttribute("programForm", sessionProgramForm);
+
+        // Delete the previous image only if it belongs to Cloudinary
+        if (oldImageUrl != null && oldImageUrl.startsWith(
+                "https://res.cloudinary.com/")) {
+            fileService.deleteFile(oldImageUrl);
+        }
+
+        return newImageUrl;
     }
 
     @PostMapping("/update-program-session")

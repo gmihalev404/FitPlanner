@@ -82,22 +82,37 @@ public class ProfileController {
             return "redirect:/login";
         }
 
-        // 1. Handle Image Logic
-        ProfileUserDto existing = userService.getById(profileDto.getId(), ProfileUserDto.class);
+// 1. Handle Image Logic
+        ProfileUserDto existing = userService.getById(
+                profileDto.getId(), ProfileUserDto.class
+        );
 
-        if (profileImage != null && !profileImage.isEmpty()) {
-            // Clean up disk space: remove the old image before saving the new one
-            fileService.deleteFile(existing.getProfileImageUrl());
+        String oldImageUrl = existing.getProfileImageUrl();
+        String newImageUrl = null;
 
-            String newImagePath = fileService.saveFile(profileImage);
-            profileDto.setProfileImageUrl(newImagePath);
-        } else {
-            // Keep the old image path if no new file was uploaded
-            profileDto.setProfileImageUrl(existing.getProfileImageUrl());
+        try {
+            if (profileImage != null && !profileImage.isEmpty()) {
+                newImageUrl = fileService.saveFile(profileImage);
+                profileDto.setProfileImageUrl(newImageUrl);
+            } else {
+                profileDto.setProfileImageUrl(oldImageUrl);
+            }
+
+            // 2. Persist User Data
+            userService.updateProfile(profileDto);
+
+        } catch (RuntimeException e) {
+            // Remove newly uploaded image if saving the profile fails
+            if (newImageUrl != null) {
+                fileService.deleteFile(newImageUrl);
+            }
+            throw e;
         }
 
-        // 2. Persist User Data
-        userService.updateProfile(profileDto);
+// Delete the old image only after the profile was saved
+        if (newImageUrl != null) {
+            fileService.deleteFile(oldImageUrl);
+        }
 
         // 3. Update Session & UI Settings (Language, Theme, Units)
         UserDto updatedUser = userService.getById(profileDto.getId(), UserDto.class);

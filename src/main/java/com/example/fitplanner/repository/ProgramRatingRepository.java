@@ -14,9 +14,11 @@ public interface ProgramRatingRepository extends JpaRepository<ProgramRating, Lo
     Optional<ProgramRating> findByUserIdAndProgramId(Long userId, Long programId);
 
     @Query("""
-            SELECT COALESCE(AVG(pr.rating), 0), COUNT(pr)
-            FROM ProgramRating pr
-            WHERE pr.program.id = :programId
-            """)
-    Object[] findProgramRatingSummary(@Param("programId") Long programId);
+       SELECT AVG(pr.rating)
+       FROM ProgramRating pr
+       WHERE pr.program.id = :programId
+       """)
+    Double findAverageRating(@Param("programId") Long programId);
+
+    long countByProgramId(Long programId);
 }
