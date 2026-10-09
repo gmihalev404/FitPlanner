@@ -75,7 +75,6 @@
 :root {
     --accent-color: #50a16b;
     --bg-glass: rgba(255, 255, 255, 0.1);
-    --text-main: #ffffff;
     --workout-day-bg: #3e7048; /* Darker green for regular workout days */
     --workout-border: #2ecc71; /* Bright green for the border */
 }

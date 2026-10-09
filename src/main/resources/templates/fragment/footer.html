@@ -1,39 +1,89 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
+
 <footer class="pt-5 pb-4">
     <div class="row">
+        <!-- About FitPlanner -->
         <div class="col-md-9 mb-4">
             <h3 th:text="#{aboutFitPlanner}">About FitPlanner</h3>
+
             <p th:text="#{aboutDescription}">
-                FitPlanner helps you build healthier habits, stay motivated, and reach your fitness goals.
-                Create personalized workout programs or follow ready-made routines from experienced trainers.
+                FitPlanner helps you build healthier habits,
+                stay motivated, and reach your fitness goals.
             </p>
+
+            <p class="small opacity-75"
+               th:text="#{footer.projectDisclaimer}">
+                FitPlanner is a personal, non-commercial software
+                project developed for educational and portfolio purposes.
+            </p>
+
             <p>
-                <a href="/about" class="text-white text-decoration-underline" th:text="#{readMore}">Read more</a>
+                <a th:href="@{/about}"
+                   class="text-decoration-underline"
+                   th:text="#{readMore}">
+                    Read more
+                </a>
             </p>
         </div>
+
+        <!-- Contact -->
         <div class="col-md-3 mb-4">
             <h3 th:text="#{contact}">Contact</h3>
-            <div class="mb-2">
-                <strong th:text="#{email}">Email:</strong> <br>
-                <a href="mailto:support@fitplanner.com" class="text-white">support@fitplanner.com</a>
+
+            <div class="mb-3">
+                <strong th:text="#{email}">Email</strong><br>
+                <a href="mailto:gogostanimirov@gmail.com">
+                    gogostanimirov@gmail.com
+                </a>
             </div>
-            <div class="mb-2">
-                <strong th:text="#{phone}">Phone:</strong> <br>
-                <a href="tel:+1234567890" class="text-white">+1 234 567 890</a>
+
+            <div class="mb-3">
+                <strong>LinkedIn</strong><br>
+                <a href="https://www.linkedin.com/in/georgi-mihalev404"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    Georgi Mihalev
+                </a>
+            </div>
+
+            <div class="mb-3">
+                <strong>GitHub</strong><br>
+                <a href="https://github.com/gmihalev404/FitPlanner"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    FitPlanner Repository
+                </a>
             </div>
         </div>
     </div>
+
+    <!-- Copyright and Developer -->
     <div class="row mt-3">
         <div class="col text-center">
-            <p class="mb-0" th:text="#{copyright}">© 2025 FitPlanner. All rights reserved.</p>
+            <p class="mb-1" th:text="#{copyright}">
+                © 2026 FitPlanner. All rights reserved.
+            </p>
+
+            <p class="mb-0 small opacity-75">
+                <span th:text="#{footer.developedBy}">
+                    Developed by
+                </span>
+                <a href="https://www.linkedin.com/in/georgi-mihalev404"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="fw-semibold">
+                    Georgi Mihalev
+                </a>
+            </p>
         </div>
     </div>
 </footer>
+
 </body>
 </html>
