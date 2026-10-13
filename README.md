@@ -1,119 +1,185 @@
-# 🏋️ FitPlanner
-Online Fitness Program Planner & Workout Tracker
+# FitPlanner
 
-## 📌 Overview
+![Java](https://img.shields.io/badge/Java-21-orange)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.7-brightgreen)
+![MySQL](https://img.shields.io/badge/MySQL-Database-blue)
+![Thymeleaf](https://img.shields.io/badge/Thymeleaf-Server--Side%20UI-green)
+![Gradle](https://img.shields.io/badge/Gradle-Build%20Tool-02303A)
 
-FitPlanner is a web-based fitness application that allows users to create, manage, and track personalized workout programs.
-The platform helps users organize their training, record completed workouts, and monitor progress over time.
+**FitPlanner** is a full-stack fitness planning and workout tracking web application built with Java and Spring Boot.
 
-The application is designed to be simple to use while still supporting structured and customizable training programs.
+Users can organize workout programs, schedule training sessions, record exercise performance, and review their training progress through a browser-based interface.
 
-## 🧩 Application Flow
+## Live Demo
 
-### 🏗️ Workout Planning
+**[Open FitPlanner](https://fitplanner.dns.army)**
 
-Users can create workout programs by selecting exercises from a shared exercise library.
-Each program consists of training days, and each exercise can be configured with:
-- 🧮 Sets
-- 🔁 Repetitions
-- ⚖️ Weight
-- ⏱️ Rest time
-- 📝 Personal notes
+The demo runs on Heroku with a hosted MySQL database. Availability may occasionally be affected by free-tier database limitations.
 
-Programs can be saved for personal use or published as public or sample programs.
+---
 
-### 📚 Exercise Library
+## Features
 
-FitPlanner includes a shared exercise library containing:
-- 🏷️ Exercise descriptions
-- 🧠 Categories (muscle group, type)
-- 📈 Difficulty level
-- 🏋️ Required equipment
-- 🎥 Images and videos
+### Workout Programs
+- Create and manage personalized workout programs.
+- Select exercises from a shared exercise library.
+- Configure training details such as sets, repetitions, and weights.
+- Organize workouts across training days.
 
-The exercise library is managed by administrators to ensure consistency and accuracy.
+### Exercise Library
+- Browse exercises with descriptions and categories.
+- View exercise illustrations and supported media.
+- Use exercises when building workout programs.
 
-### ▶️ Workout Execution
+### Workout Sessions
+- Schedule workouts and access them by date.
+- Start a session from a workout program.
+- Record performed sets, repetitions, and weights.
+- Track exercise completion during a session.
 
-During a workout session, users can:
-- ▶️ Start a workout based on a saved program
-- ✅ Mark exercises and sets as completed
-- 📊 Record actual repetitions and used weights
-- 📝 Add notes for each exercise
+### Progress and Statistics
+- Review workout history and recorded performance.
+- Follow training progress over time.
+- Use calendar and statistics views to keep track of activity.
 
-Each completed workout is stored as a workout session.
+### User Experience
+- User accounts and personalized workout data.
+- Responsive browser interface with light and dark themes.
+- Multilingual interface support.
 
-## 📊 Progress Tracking
+---
 
-The application provides tools for tracking fitness progress, including:
-- 🗂️ Workout history
-- 📈 Performance tracking per exercise
-- 📆 Weekly and monthly summaries
-- 🏆 Personal bests (planned feature)
+## Tech Stack
 
-These features help users analyze their performance and stay motivated.
+| Layer | Technology |
+|---|---|
+| Language | Java 21 |
+| Backend | Spring Boot 3.5.7, Spring MVC |
+| Persistence | Spring Data JPA / Hibernate |
+| Database | MySQL |
+| Frontend | Thymeleaf, HTML, CSS, JavaScript |
+| Build Tool | Gradle |
+| Media Storage | Cloudinary |
+| Monitoring | Spring Boot Actuator |
+| Hosting | Heroku |
+| Testing | Spring Boot Test, JUnit, H2 |
 
-## 👥 User Roles
+---
 
-### 👀 Anonymous
-- Browse general information
-- Preview exercises and sample programs
+## Architecture
 
-### 🧍 Registered User
-- Create and manage workout programs
-- Log workout sessions
-- View personal statistics
-- Edit profile and fitness goals
+FitPlanner uses a layered Spring Boot architecture:
 
-### 🧑‍🏫 Trainer
-- Create public or sample workout programs
-- View aggregated client statistics
+```text
+Browser
+   |
+   | HTTP
+   v
+Spring MVC Controllers
+   |
+   v
+Services / Business Logic
+   |
+   v
+Spring Data JPA Repositories
+   |
+   v
+MySQL
+```
 
-### 🛠️ Administrator
-- Manage exercises and categories
-- Manage users and assign roles
-- Moderate public programs
+Thymeleaf renders the web interface, while Cloudinary hosts uploaded media used by the application.
 
-## 🖱️ Controls and Interaction
+---
 
-- The application is accessed through a web interface
-- Built using HTML, CSS, JavaScript, and Thymeleaf
-- Interaction is handled through forms, buttons, and UI components
-- No special input devices are required
+## Running Locally
 
-## 💾 Saving Progress
+### Requirements
+- JDK 21
+- MySQL
+- Git
 
-- User data is automatically stored in the database
-- Users can log out and continue later without losing progress
-- Session-based authentication ensures secure access
+The repository includes the Gradle Wrapper, so a separate Gradle installation is not required.
 
-## ✨ Features
+### 1. Clone the repository
 
-- 🏗️ Custom workout program builder
-- 📚 Shared exercise library
-- ▶️ Workout session logging
-- 📊 Progress tracking and statistics
-- 🔐 Role-based access control
-- 🛠️ Administrative management tools
-- 🔌 REST-based backend architecture
+```bash
+git clone https://github.com/gmihalev404/FitPlanner.git
+cd FitPlanner
+```
 
-## 🧪 Technical Details
+### 2. Configure the database
 
-- ⚙️ Backend: Spring Boot (Java)
-- 🎨 Frontend: Thymeleaf, HTML, CSS, JavaScript
-- 🗄️ Database: Relational database with JPA/Hibernate
-- 🏛️ Architecture: MVC with REST API
-- ⚡ Real-time features prepared using SSE or WebSocket
+The default local configuration connects to:
 
-## 🚧 Project Status
+```text
+Host: localhost
+Port: 3306
+Database: FitPlanner
+Username: root
+```
 
-- ✅ Core backend functionality implemented
-- 🎨 User interface under active development
-- 📊 Statistics and real-time features planned
-- 🎓 Developed as a university project
+Set the required environment variables, including `DB_PASSWORD`. You can override the database connection using `DB_URL` and `DB_USERNAME`.
 
-## 📝 Notes
+The application also expects `ADMIN_CODE` and `TRAINER_CODE` configuration values. Media upload features may require additional Cloudinary credentials.
 
-- This project is intended for educational and portfolio purposes
-- The codebase is modular and easy to extend
-- Future improvements may include mobile support and advanced analytics
+**Windows PowerShell:**
+
+```powershell
+$env:DB_PASSWORD="your_mysql_password"
+$env:ADMIN_CODE="your_admin_code"
+$env:TRAINER_CODE="your_trainer_code"
+```
+
+**Linux / macOS:**
+
+```bash
+export DB_PASSWORD="your_mysql_password"
+export ADMIN_CODE="your_admin_code"
+export TRAINER_CODE="your_trainer_code"
+```
+
+### 3. Start the application
+
+**Windows:**
+
+```powershell
+.\gradlew.bat bootRun
+```
+
+**Linux / macOS:**
+
+```bash
+./gradlew bootRun
+```
+
+Open **http://localhost:8080**.
+
+### Run Tests
+
+**Windows:**
+
+```powershell
+.\gradlew.bat test
+```
+
+**Linux / macOS:**
+
+```bash
+./gradlew test
+```
+
+---
+
+## Deployment
+
+The live application is hosted on **Heroku**. Its MySQL database is hosted on **Aiven**, and exercise media is stored using **Cloudinary**.
+
+Production configuration is supplied through environment variables rather than committing credentials to the repository. Spring Boot Actuator exposes a health endpoint for uptime monitoring.
+
+---
+
+## Project Status
+
+FitPlanner is a deployed portfolio project with working workout planning and tracking functionality. Improvements to the exercise media library and user experience are ongoing.
+
+The project was developed for learning and portfolio purposes, with a focus on Spring Boot, relational data modeling, server-rendered web interfaces, and production deployment.
